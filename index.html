@@ -1,23 +1,168 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Générateur documentaire — Ordre</title><style>
-:root{--bg:#0b0d0c;--panel:#141715;--line:#353a36;--ink:#eceeea;--muted:#969d97;--paper:#f5f4ef;--black:#111}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Courier New,Courier,monospace}.top{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}.top b{letter-spacing:.08em}.top span{color:var(--muted);font-size:12px}.app{display:grid;grid-template-columns:minmax(330px,430px) 1fr;min-height:calc(100vh - 62px)}aside{padding:18px;border-right:1px solid var(--line);overflow:auto}main{padding:22px;overflow:auto}.group{border:1px solid var(--line);padding:14px;margin-bottom:14px;background:var(--panel)}h2{font-size:12px;letter-spacing:.12em;margin:0 0 12px}label{display:block;font-size:11px;color:var(--muted);margin:10px 0 5px}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;background:#0e100f;color:var(--ink);border:1px solid #414742;padding:9px;border-radius:0}textarea{min-height:110px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.checks{display:grid;grid-template-columns:1fr 1fr;gap:5px}.checks label{margin:0;color:var(--ink);display:flex;gap:7px;align-items:center}.checks input{width:auto}.btns{display:flex;flex-wrap:wrap;gap:7px}.btns button{background:#1d211e;color:var(--ink);border:1px solid #4a504b;padding:9px 11px;cursor:pointer}.status{font-size:11px;padding:10px;border:1px solid #4a504b;margin-bottom:12px}.paper{width:210mm;min-height:297mm;margin:auto;background:var(--paper);color:var(--black);padding:18mm 18mm 16mm;box-shadow:0 10px 40px #000;font-family:Courier New,Courier,monospace;position:relative}.dochead{border-bottom:1px solid #999;padding-bottom:9px;margin-bottom:15px}.ref{font-weight:bold;font-size:12px}.org{font-size:10px;margin-top:4px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:9px;margin:14px 0 18px}.meta div{border-bottom:1px dotted #bbb;padding:3px 0}.title{font-weight:bold;font-size:15px;margin:18px 0 12px}.body{font-size:10px;line-height:1.55;white-space:pre-wrap}.foot{position:absolute;left:18mm;right:18mm;bottom:10mm;border-top:1px solid #aaa;padding-top:5px;font-size:8px;display:flex;justify-content:space-between}.seal{float:right;border:2px solid #222;padding:8px;font-size:8px;margin:0 0 10px 10px}.warn{color:#d7b86a}@media(max-width:1000px){.app{grid-template-columns:1fr}.paper{transform-origin:top left;max-width:100%;width:100%;min-height:900px}.foot{position:absolute}aside{border-right:0;border-bottom:1px solid var(--line)}}@media print{body{background:white}.top,aside,.status{display:none!important}.app{display:block}.paper{box-shadow:none;margin:0;width:210mm;min-height:297mm}.paper{page-break-after:always}main{padding:0}}
-</style></head><body><div class="top"><div><b>GÉNÉRATEUR DOCUMENTAIRE</b><br><span>L'ORDRE DES CINQ OMBRES // CHARTE V1</span></div><span>OUTIL AUTEUR</span></div><div class="app"><aside>
-<div class="group"><h2>01 // IDENTIFICATION</h2><div class="row"><div><label>Dossier</label><input id="dossier" value="D001"></div><div><label>N° de pièce</label><input id="num" value="01" maxlength="2"></div></div><label>Catégorie</label><select id="cat"><option value="M">M — Mission / ordre de mission</option><option value="D">D — Document / pièce documentaire</option><option value="P">P — Photographie / plan / relevé</option><option value="T" selected>T — Témoignage / audition / transcription</option><option value="O">O — Objet / pièce physique</option><option value="A">A — Anomalie / enregistrement</option><option value="R">R — Recrutement / administratif</option><option value="X">X — Pièce non qualifiée</option></select><label>Intitulé du document</label><input id="doctype" value="PROCÈS-VERBAL D'AUDITION"></div>
-<div class="group"><h2>02 // CLASSIFICATION</h2><label>Accréditation</label><select id="access"><option>NON CLASSIFIÉ</option><option selected>OMBRE I</option><option>OMBRE II</option><option>OMBRE III</option><option>ACCÈS REFUSÉ</option></select><label>Diffusion</label><select id="diff"><option value="">— aucune —</option><option>DIFFUSION INTERNE</option><option selected>DIFFUSION RESTREINTE</option><option>NON CLASSIFIÉ</option></select><label>Mode</label><select id="mode"><option value="canon">MODE CANON</option><option value="custom">MODE PERSONNALISÉ</option></select></div>
-<div class="group"><h2>03 // MÉTADONNÉES</h2><div class="checks" id="metachecks"></div><div id="metafields"></div></div>
-<div class="group"><h2>04 // CONTENU</h2><label>Titre interne</label><input id="title" value="AUDITION — CLAIRE VARENNE"><label>Corps du document</label><textarea id="body">[Saisissez ici le texte du document.]</textarea><label>Sceau</label><select id="seal"><option value="">Aucun</option><option>ŒIL FENDU</option><option>FLAMME INVERSÉE</option><option>MAIN CASSÉE</option><option>SPIRALE D'OS</option><option>SABLIER NOIR</option><option>ORDRE</option></select><div class="btns" style="margin-top:10px"><button data-ins="[INFORMATION RETIRÉE]">+ INFO RETIRÉE</button><button data-ins="[ACCÈS OMBRE II REQUIS]">+ ACCÈS OII</button><button data-ins="████████████">+ BARRE NOIRE</button></div></div>
-<div class="group"><h2>05 // SORTIE</h2><div class="btns"><button onclick="window.print()">IMPRIMER / PDF</button><button id="save">SAUVEGARDER BROUILLON</button><button id="reset">RÉINITIALISER</button></div></div>
-</aside><main><div class="status" id="status">CONFORMITÉ CHARTE : 100 % // MODE CANON</div><section class="paper" id="paper"><div class="dochead"><div class="ref" id="pvref"></div><div class="org">ORDRE DES CINQ OMBRES</div></div><div id="pvseal"></div><div class="meta" id="pvmeta"></div><div class="title" id="pvtitle"></div><div class="body" id="pvbody"></div><div class="foot"><span id="pvfoot"></span><span>1 / 1</span></div></section></main></div>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Générateur documentaire // Ordre des Cinq Ombres V2</title>
+<style>
+:root{--bg:#0b0c0c;--panel:#151717;--ink:#e9e9e4;--muted:#999d99;--line:#353938;--paper:#f4f2e9;--paperink:#151515;--accent:#b8bbb5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Courier,monospace}
+header{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;align-items:center}
+header b{letter-spacing:.08em}header small{color:var(--muted)}
+.app{display:grid;grid-template-columns:minmax(330px,430px) 1fr;min-height:calc(100vh - 68px)}
+.controls{padding:18px;border-right:1px solid var(--line);overflow:auto;max-height:calc(100vh - 68px)}
+.previewWrap{padding:24px;overflow:auto;background:#101111}
+fieldset{border:1px solid var(--line);margin:0 0 14px;padding:12px}legend{padding:0 7px;color:#cfd1cc;font-weight:bold}
+label{display:block;font-size:11px;color:var(--muted);margin:8px 0 4px}
+input,select,textarea,button{font:inherit}input,select,textarea{width:100%;background:#0f1111;color:var(--ink);border:1px solid var(--line);padding:8px}
+textarea{min-height:100px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+button{background:#1b1e1d;color:var(--ink);border:1px solid #4a4f4d;padding:9px 11px;cursor:pointer}button:hover{background:#242827}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.pill{border:1px solid var(--line);padding:5px 7px;font-size:10px;color:var(--muted)}
+.paper{width:210mm;min-height:297mm;margin:auto;background:var(--paper);color:var(--paperink);padding:18mm 18mm 17mm;box-shadow:0 10px 40px #000;position:relative}
+.dochead{display:grid;grid-template-columns:25mm 1fr;gap:7mm;border-bottom:1px solid #222;padding-bottom:7mm;margin-bottom:8mm}
+.logoBox{width:22mm;height:22mm;border:1px solid #222;display:flex;align-items:center;justify-content:center;font-size:8px;text-align:center;overflow:hidden}
+.logoBox img{max-width:100%;max-height:100%;object-fit:contain}.ref{font-weight:bold;font-size:13px}.org{font-size:10px;margin-top:4px}.doctype{font-size:18px;font-weight:bold;margin-top:8px}
+.meta{border-collapse:collapse;width:100%;font-size:9px;margin-bottom:8mm}.meta td{border-bottom:1px solid #bbb;padding:4px 5px;vertical-align:top}.meta td:first-child{width:37mm;font-weight:bold}
+.content{font-size:10.5px;line-height:1.55;white-space:pre-wrap}.content h2{font-size:12px;border-bottom:1px solid #777;padding-bottom:3px;margin-top:16px}
+.signature{margin-top:16mm;display:grid;grid-template-columns:1fr 1fr;gap:12mm;font-size:9px}.sigbox{border-top:1px solid #444;padding-top:4px;min-height:16mm}
+.foot{position:absolute;left:18mm;right:18mm;bottom:10mm;border-top:1px solid #aaa;padding-top:3mm;font-size:8px;display:flex;justify-content:space-between}
+.seal{position:absolute;right:20mm;top:24mm;border:2px solid #444;border-radius:50%;width:24mm;height:24mm;display:none;align-items:center;justify-content:center;text-align:center;font-size:7px;transform:rotate(-8deg)}
+.note{font-size:10px;color:var(--muted);line-height:1.4}.warn{color:#d5c9a3}.ok{color:#b9cfb9}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:5px}.checks label{margin:0;color:#c7cac6}.checks input{width:auto;margin-right:5px}
+.saved{display:grid;gap:5px;margin-top:8px}.saved button{text-align:left}
+@media(max-width:1000px){.app{grid-template-columns:1fr}.controls{max-height:none;border-right:0;border-bottom:1px solid var(--line)}.paper{transform-origin:top left}}
+@media print{body{background:#fff}.controls,header{display:none}.app{display:block}.previewWrap{padding:0;background:#fff}.paper{box-shadow:none;margin:0;width:210mm;min-height:297mm;page-break-after:always}}
+</style>
+</head>
+<body>
+<header><div><b>GÉNÉRATEUR DOCUMENTAIRE // V2</b><br><small>OUTIL AUTEUR — CHARTE CANONIQUE</small></div><div id="compliance" class="pill ok">CONFORMITÉ : CANON</div></header>
+<div class="app">
+<section class="controls">
+<fieldset><legend>01 // IDENTITÉ</legend>
+<div class="row"><div><label>Dossier</label><input id="dossier" value="D001"></div><div><label>N° de pièce</label><input id="num" value="01" maxlength="3"></div></div>
+<label>Catégorie</label><select id="cat"></select>
+<label>Modèle</label><select id="template"></select>
+<label>Titre du document</label><input id="title" value="ORDRE DE MISSION">
+</fieldset>
+
+<fieldset><legend>02 // CLASSIFICATION</legend>
+<div class="row"><div><label>Accréditation</label><select id="access"><option>OMBRE I</option><option>OMBRE II</option><option>OMBRE III</option><option>ACCÈS REFUSÉ</option><option>NON CLASSIFIÉ</option></select></div>
+<div><label>Diffusion</label><select id="diff"><option>DIFFUSION RESTREINTE</option><option>DIFFUSION INTERNE</option><option>NON CLASSIFIÉ</option></select></div></div>
+<div class="row"><div><label>Statut</label><input id="status" value="ACTIF"></div><div><label>Sceau</label><select id="seal"><option value="">Aucun</option><option>ŒIL FENDU</option><option>FLAMME INVERSÉE</option><option>MAIN CASSÉE</option><option>SPIRALE D'OS</option><option>SABLIER NOIR</option><option>ORDRE</option></select></div></div>
+</fieldset>
+
+<fieldset><legend>03 // MÉTADONNÉES</legend>
+<div class="row"><div><label>Date</label><input id="date" value="03.02.2026"></div><div><label>Heure</label><input id="time" value="16:47"></div></div>
+<label>Destinataire</label><input id="recipient" placeholder="INITIÉ / SERVICE / ...">
+<label>Sujet</label><input id="subject" placeholder="Sujet, personne, lieu ou phénomène">
+<label>Lieu</label><input id="place" placeholder="Lieu concerné">
+<label>Auteur / Service</label><input id="author" placeholder="Service émetteur">
+<label>Pièces associées</label><input id="related" placeholder="D001/P01, D001/O01">
+<div class="checks" id="metaChecks"></div>
+</fieldset>
+
+<fieldset><legend>04 // CONTENU</legend>
+<label>Corps du document</label><textarea id="body"></textarea>
+<div class="actions">
+<button data-ins="[INFORMATION RETIRÉE]">Info retirée</button>
+<button data-ins="[ACCÈS OMBRE II REQUIS]">Accès OII</button>
+<button data-ins="████████████">Barre noire</button>
+<button data-ins="[INFORMATION RETIRÉE — MOTIF : ACCRÉDITATION INSUFFISANTE]">Retrait + motif</button>
+</div>
+<label><input type="checkbox" id="signature" style="width:auto"> Ajouter zones de signature</label>
+</fieldset>
+
+<fieldset><legend>05 // EMBLÈME</legend>
+<label>Importer l'emblème officiel exact (PNG/JPG)</label><input type="file" id="logoFile" accept="image/*">
+<p class="note">Le générateur ne redessine jamais l'emblème. L'image importée est conservée localement dans ce navigateur.</p>
+</fieldset>
+
+<fieldset><legend>06 // DOCUMENTS</legend>
+<label>Nom du brouillon</label><input id="draftName" placeholder="Ex. D001 - Audition Claire">
+<div class="actions"><button id="save">Enregistrer</button><button id="new">Nouveau</button><button id="print">Imprimer / PDF</button></div>
+<div class="saved" id="saved"></div>
+</fieldset>
+
+<fieldset><legend>07 // MODE</legend>
+<select id="mode"><option value="canon">MODE CANON</option><option value="custom">MODE PERSONNALISÉ</option></select>
+<p class="note">Le mode personnalisé permet une dérogation ponctuelle sans modifier la charte canonique.</p>
+</fieldset>
+</section>
+
+<section class="previewWrap"><article class="paper" id="paper">
+<div class="seal" id="sealPreview"></div>
+<div class="dochead"><div class="logoBox" id="logoPreview">EMBLÈME<br>OFFICIEL</div><div><div class="ref" id="refPreview"></div><div class="org">ORDRE DES CINQ OMBRES</div><div class="doctype" id="titlePreview"></div></div></div>
+<table class="meta" id="metaPreview"></table>
+<div class="content" id="bodyPreview"></div>
+<div class="signature" id="sigPreview" style="display:none"><div class="sigbox">AUTEUR / SERVICE</div><div class="sigbox">VALIDATION / SCEAU</div></div>
+<div class="foot"><span id="footLeft"></span><span>1 / 1</span></div>
+</article></section>
+</div>
+
 <script>
-const defs={
-M:['DOCUMENT','DOSSIER','DESTINATAIRE','STATUT','ACCRÉDITATION'],D:['DOCUMENT','DOSSIER','TYPE','SUJET','DATE','AUTEUR / SERVICE'],P:['DOCUMENT','DOSSIER','TYPE','SUJET','DATE','HEURE','LIEU','AUTEUR / SERVICE'],T:['DOCUMENT','DOSSIER','TYPE','SUJET','DATE','HEURE','LIEU','AUTEUR / SERVICE'],O:['DOCUMENT','DOSSIER','TYPE','SUJET','STATUT','PIÈCES ASSOCIÉES'],A:['DOCUMENT','DOSSIER','TYPE','SUJET','DATE','HEURE','LIEU','STATUT','ACCRÉDITATION','DIFFUSION','AUTEUR / SERVICE','PIÈCES ASSOCIÉES'],R:['DOCUMENT','TYPE','DESTINATAIRE','SUJET','DATE','STATUT','ACCRÉDITATION','DIFFUSION','AUTEUR / SERVICE'],X:['DOCUMENT','DOSSIER','SUJET','STATUT','ACCRÉDITATION','DIFFUSION','PIÈCES ASSOCIÉES']};
-const all=['DOCUMENT','DOSSIER','TYPE','DESTINATAIRE','SUJET','DATE','HEURE','LIEU','STATUT','ACCRÉDITATION','DIFFUSION','AUTEUR / SERVICE','PIÈCES ASSOCIÉES'];
-const values={'DESTINATAIRE':'INITIÉ','SUJET':'CLAIRE VARENNE','DATE':'03.02.2026','HEURE':'16:47','LIEU':'','STATUT':'ACTIF','AUTEUR / SERVICE':'','PIÈCES ASSOCIÉES':''};
-const $=id=>document.getElementById(id);function ref(){return `${$('dossier').value.trim()}/${$('cat').value}${$('num').value.padStart(2,'0')}`}
-function buildMeta(){let c=$('metachecks'),f=$('metafields');c.innerHTML='';f.innerHTML='';all.forEach(k=>{let lab=document.createElement('label'),ch=document.createElement('input');ch.type='checkbox';ch.dataset.key=k;ch.checked=defs[$('cat').value].includes(k);ch.onchange=render;lab.append(ch,document.createTextNode(k));c.append(lab);let wrap=document.createElement('div');wrap.dataset.field=k;let l=document.createElement('label');l.textContent=k;let i=document.createElement('input');i.dataset.input=k;i.value=values[k]||'';i.oninput=render;wrap.append(l,i);f.append(wrap)});render()}
-function render(){let r=ref(),cat=$('cat').value,access=$('access').value,diff=$('diff').value;$('pvref').textContent=`${r} // ${$('doctype').value}`;$('pvtitle').textContent=$('title').value;$('pvbody').textContent=$('body').value;$('pvfoot').textContent=`${r} // ${access==='NON CLASSIFIÉ'?'NON CLASSIFIÉ':'ACCÈS '+access}`;let m=$('pvmeta');m.innerHTML='';document.querySelectorAll('#metachecks input').forEach(ch=>{let field=document.querySelector(`[data-field="${ch.dataset.key}"]`);field.style.display=ch.checked?'block':'none';if(!ch.checked)return;let k=ch.dataset.key,v='';if(k==='DOCUMENT')v=r;else if(k==='DOSSIER')v=$('dossier').value;else if(k==='TYPE')v=$('doctype').value;else if(k==='ACCRÉDITATION')v=access;else if(k==='DIFFUSION')v=diff;else v=document.querySelector(`[data-input="${k}"]`).value;if(v){let d=document.createElement('div');d.textContent=`${k} : ${v}`;m.append(d)}});let s=$('seal').value;$('pvseal').innerHTML=s?`<div class="seal">SCEAU // ${s}</div>`:'';let custom=$('mode').value==='custom';$('status').innerHTML=custom?'<span class="warn">MODE PERSONNALISÉ // DÉROGATIONS AUTORISÉES</span>':'CONFORMITÉ CHARTE : 100 % // MODE CANON'}
-['dossier','num','cat','doctype','access','diff','mode','title','body','seal'].forEach(id=>$(id).addEventListener(id==='body'?'input':'change',()=>{if(id==='cat')buildMeta();else render()}));
-document.querySelectorAll('[data-ins]').forEach(b=>b.onclick=()=>{let t=$('body'),p=t.selectionStart;t.value=t.value.slice(0,p)+b.dataset.ins+t.value.slice(t.selectionEnd);t.focus();t.selectionStart=t.selectionEnd=p+b.dataset.ins.length;render()});
-$('save').onclick=()=>{let data={};document.querySelectorAll('input,select,textarea').forEach(x=>{if(x.id)data[x.id]=x.value});localStorage.setItem('ordreDocDraft',JSON.stringify(data));alert('Brouillon sauvegardé sur cet appareil.')};
-$('reset').onclick=()=>{if(confirm('Réinitialiser le générateur ?')){localStorage.removeItem('ordreDocDraft');location.reload()}};
-let saved=localStorage.getItem('ordreDocDraft');if(saved){try{let d=JSON.parse(saved);Object.entries(d).forEach(([k,v])=>{if($(k))$(k).value=v})}catch(e){}}buildMeta();
-</script></body></html>
+const cats={
+ M:"Mission / ordre de mission",D:"Document / pièce documentaire",P:"Photographie / plan / relevé",
+ T:"Témoignage / audition / transcription",O:"Objet / pièce physique",A:"Anomalie / enregistrement",
+ R:"Recrutement / administratif",X:"Pièce non qualifiée"
+};
+const templates={
+ M:[["Ordre de mission","ORDRE DE MISSION","OBJET DE LA MISSION :\n\nCONTEXTE :\n\nOBJECTIF OPÉRATIONNEL :\n\nCONSIGNES :\n\nCRITÈRE DE CLÔTURE :"]],
+ D:[["Note interne","NOTE INTERNE","OBJET :\n\nCONTENU :\n\nOBSERVATIONS :"],["Rapport","RAPPORT","SYNTHÈSE :\n\nFAITS ÉTABLIS :\n\nÉLÉMENTS INCERTAINS :\n\nCONCLUSION :"]],
+ P:[["Relevé","RELEVÉ","DESCRIPTION :\n\nCONDITIONS DE RELEVÉ :\n\nOBSERVATIONS :"],["Photographie","RELEVÉ PHOTOGRAPHIQUE","DESCRIPTION DE LA PIÈCE :\n\nCONTEXTE :\n\nOBSERVATIONS :"]],
+ T:[["Audition","PROCÈS-VERBAL D'AUDITION","IDENTITÉ DU TÉMOIN :\n\nDÉCLARATION :\n\nOBSERVATIONS DE L'AGENT :"],["Transcription","TRANSCRIPTION","SOURCE :\n\nTRANSCRIPTION :\n\nNOTE D'ANALYSE :"]],
+ O:[["Fiche objet","FICHE OBJET","DÉSIGNATION :\n\nDESCRIPTION :\n\nPROVENANCE :\n\nÉTAT :\n\nOBSERVATIONS :"]],
+ A:[["Rapport anomalie","RAPPORT D'ANOMALIE","MANIFESTATION OBSERVÉE :\n\nCONDITIONS :\n\nEFFETS :\n\nANALYSE :\n\nMESURES PRISES :"]],
+ R:[["Document administratif","DOCUMENT ADMINISTRATIF","OBJET :\n\nINFORMATIONS :\n\nINSTRUCTIONS :"]],
+ X:[["Pièce non qualifiée","PIÈCE NON QUALIFIÉE","DESCRIPTION :\n\nCONTEXTE :\n\nSTATUT :"]]
+};
+const recommended={
+ M:["document","dossier","destinataire","statut","accreditation"],
+ D:["document","dossier","type","sujet","date","auteur"],
+ P:["document","dossier","type","sujet","date","heure","lieu","auteur"],
+ T:["document","dossier","type","sujet","date","heure","lieu","auteur"],
+ O:["document","dossier","type","sujet","statut","associees"],
+ A:["document","dossier","type","sujet","date","heure","lieu","statut","accreditation","diffusion","auteur","associees"],
+ R:["document","type","destinataire","sujet","date","statut","accreditation","diffusion","auteur"],
+ X:["document","dossier","sujet","statut","accreditation","diffusion","associees"]
+};
+const metaDefs=[
+ ["document","DOCUMENT"],["dossier","DOSSIER"],["type","TYPE"],["destinataire","DESTINATAIRE"],["sujet","SUJET"],["date","DATE"],["heure","HEURE"],["lieu","LIEU"],["statut","STATUT"],["accreditation","ACCRÉDITATION"],["diffusion","DIFFUSION"],["auteur","AUTEUR / SERVICE"],["associees","PIÈCES ASSOCIÉES"]
+];
+const $=id=>document.getElementById(id);
+function ref(){return `${$("dossier").value.trim()}/${$("cat").value}${String($("num").value||"01").padStart(2,"0")}`}
+function fillCats(){Object.entries(cats).forEach(([k,v])=>{let o=document.createElement("option");o.value=k;o.textContent=`${k} — ${v}`;$("cat").appendChild(o)})}
+function fillTemplates(reset=true){$("template").innerHTML="";templates[$("cat").value].forEach((x,i)=>{let o=document.createElement("option");o.value=i;o.textContent=x[0];$("template").appendChild(o)});if(reset)applyTemplate()}
+function applyTemplate(){let t=templates[$("cat").value][+$("template").value];$("title").value=t[1];$("body").value=t[2];buildChecks();render()}
+function buildChecks(){let active=new Set(recommended[$("cat").value]);$("metaChecks").innerHTML="";metaDefs.forEach(([id,label])=>{let l=document.createElement("label");l.innerHTML=`<input type="checkbox" data-meta="${id}" ${active.has(id)?"checked":""}>${label}`;$("metaChecks").appendChild(l)});$("metaChecks").querySelectorAll("input").forEach(x=>x.onchange=render)}
+function valFor(id){return {document:ref(),dossier:$("dossier").value,type:cats[$("cat").value],destinataire:$("recipient").value,sujet:$("subject").value,date:$("date").value,heure:$("time").value,lieu:$("place").value,statut:$("status").value,accreditation:$("access").value,diffusion:$("diff").value,auteur:$("author").value,associees:$("related").value}[id]||""}
+function render(){
+ $("refPreview").textContent=`${ref()} // ${$("title").value.toUpperCase()}`;
+ $("titlePreview").textContent=$("title").value.toUpperCase();
+ let rows=[];$("metaChecks").querySelectorAll("input:checked").forEach(c=>{let id=c.dataset.meta,v=valFor(id);if(v||["document","dossier","type","statut","accreditation","diffusion"].includes(id))rows.push(`<tr><td>${metaDefs.find(x=>x[0]==id)[1]}</td><td>${escapeHtml(v||"—")}</td></tr>`)});
+ $("metaPreview").innerHTML=rows.join("");
+ $("bodyPreview").innerHTML=formatBody($("body").value);
+ $("footLeft").textContent=`${ref()} // ${$("access").value==="NON CLASSIFIÉ" ? "NON CLASSIFIÉ" : "ACCÈS "+$("access").value.replace("ACCÈS ","")}`;
+ $("sigPreview").style.display=$("signature").checked?"grid":"none";
+ let s=$("seal").value;$("sealPreview").style.display=s?"flex":"none";$("sealPreview").textContent=s;
+ let canon=$("mode").value==="canon";$("compliance").textContent=canon?"CONFORMITÉ : CANON":"MODE PERSONNALISÉ — DÉROGATION";$("compliance").className="pill "+(canon?"ok":"warn");
+}
+function escapeHtml(s){return String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function formatBody(s){let e=escapeHtml(s);return e.replace(/^([A-ZÀ-ÖØ-Ý0-9 '’\/-]{3,}) :$/gm,"<h2>$1</h2>")}
+function insertText(txt){let a=$("body"),start=a.selectionStart,end=a.selectionEnd;a.value=a.value.slice(0,start)+txt+a.value.slice(end);a.focus();a.selectionStart=a.selectionEnd=start+txt.length;render()}
+function storeLogo(file){let r=new FileReader();r.onload=()=>{localStorage.setItem("oci_doc_logo",r.result);showLogo()};r.readAsDataURL(file)}
+function showLogo(){let d=localStorage.getItem("oci_doc_logo");$("logoPreview").innerHTML=d?`<img src="${d}" alt="Emblème officiel">`:"EMBLÈME<br>OFFICIEL"}
+function state(){let ids=["dossier","num","cat","template","title","access","diff","status","seal","date","time","recipient","subject","place","author","related","body","signature","mode"];let o={};ids.forEach(id=>o[id]=$(id).type==="checkbox"?$(id).checked:$(id).value);o.meta=[...$("metaChecks").querySelectorAll("input:checked")].map(x=>x.dataset.meta);return o}
+function loadState(o){if(!o)return;["dossier","num","cat","access","diff","status","seal","date","time","recipient","subject","place","author","related","signature","mode"].forEach(id=>{if(o[id]!==undefined)$(id).type==="checkbox"?$(id).checked=o[id]:$(id).value=o[id]});fillTemplates(false);$("template").value=o.template||0;$("title").value=o.title||"";$("body").value=o.body||"";buildChecks();if(o.meta){$("metaChecks").querySelectorAll("input").forEach(x=>x.checked=o.meta.includes(x.dataset.meta))}render()}
+function drafts(){return JSON.parse(localStorage.getItem("oci_doc_drafts")||"{}")}
+function listDrafts(){let d=drafts(),box=$("saved");box.innerHTML="";Object.keys(d).sort().forEach(name=>{let b=document.createElement("button");b.textContent="↳ "+name;b.onclick=()=>loadState(d[name]);box.appendChild(b)})}
+fillCats();$("cat").value="M";fillTemplates();
+document.querySelectorAll("input,select,textarea").forEach(el=>{if(!["logoFile","cat","template"].includes(el.id))el.addEventListener("input",render)});
+$("cat").onchange=()=>fillTemplates();$("template").onchange=applyTemplate;
+document.querySelectorAll("[data-ins]").forEach(b=>b.onclick=e=>{e.preventDefault();insertText(b.dataset.ins)});
+$("logoFile").onchange=e=>{if(e.target.files[0])storeLogo(e.target.files[0])};
+$("save").onclick=()=>{let name=$("draftName").value.trim()||ref();let d=drafts();d[name]=state();localStorage.setItem("oci_doc_drafts",JSON.stringify(d));listDrafts()};
+$("new").onclick=()=>{if(confirm("Créer un nouveau document ? Le brouillon non enregistré sera perdu.")){location.reload()}};
+$("print").onclick=()=>window.print();
+showLogo();listDrafts();render();
+</script>
+</body></html>
