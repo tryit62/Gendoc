@@ -43,6 +43,25 @@
 .fontSizeCtl{display:grid;grid-template-columns:1fr 58px;gap:6px;align-items:center}
 .fontSizeCtl input[type=range]{width:100%;padding:0}
 .fontSizeCtl input[type=number]{width:100%;box-sizing:border-box}
+
+@page{size:A4;margin:0}
+@media print{
+  html,body{margin:0!important;padding:0!important;background:#fff!important}
+  body *{visibility:hidden!important}
+  #paper,#paper *{visibility:visible!important}
+  #paper{
+    position:absolute!important;
+    left:0!important;top:0!important;
+    width:210mm!important;
+    min-height:297mm!important;
+    margin:0!important;
+    box-shadow:none!important;
+    transform:none!important;
+  }
+  #paper .freeText{border-color:transparent!important;background:transparent!important}
+  #paper .resize,.guide{display:none!important}
+}
+
 </style></head><body>
 <header><b>GENDOC // V4</b><span id="badge" class="small ok">CANON</span></header><div class="app">
 <nav><div class="actions"><button id="add">+ PIÈCE</button><button id="addD">+ DOSSIER</button></div><h4>SAISON I</h4><div id="tree"></div><h4>PROJET</h4><div class="actions"><button id="exp">Exporter</button><button id="impB">Importer</button><input id="imp" type="file" accept=".json" class="hide"></div><p class="small">Sauvegarde locale automatique.</p></nav>
@@ -54,7 +73,7 @@
 <div id="bodyEditor" contenteditable="true" style="min-height:250px;width:100%;box-sizing:border-box;background:#070909;color:#eceee9;border:1px solid #2a2e2c;border-radius:6px;padding:10px;font:11px/1.5 'Courier New',monospace;white-space:pre-wrap;overflow:auto"></div>
 <textarea id="body" style="display:none"></textarea><div class="actions"><button data-ins="[INFORMATION RETIRÉE]">Retirée</button><button data-ins="[ACCÈS OMBRE II REQUIS]">Accès OII</button><button data-ins="████████████">Barre noire</button><button data-ins="[INFORMATION RETIRÉE — MOTIF : ACCRÉDITATION INSUFFISANTE]">Retrait + motif</button></div></fieldset><fieldset><legend>MISE EN PAGE LIBRE</legend><div class="formatbar"><button id="addText">+ TEXTE</button><button id="boldB" title="Gras"><b>G</b></button><button id="italicB" title="Italique"><i>I</i></button><button id="underB" title="Souligné"><u>S</u></button><button id="leftB">Gauche</button><button id="centerB">Centre</button><button id="rightB">Droite</button></div><div class="row"><div><label>Taille</label><div class="fontSizeCtl"><input id="fontSize" type="range" min="8" max="36" step="1" value="10"><input id="fontSizeNum" type="number" min="8" max="72" step="1" value="10"></div></div><div><label>Largeur du bloc (mm)</label><input id="blockW" type="number" min="15" max="190" value="70"></div></div><div class="actions"><button id="dupText">Dupliquer bloc</button><button id="delText">Supprimer bloc</button></div><p class="freehint">Ajoute un bloc puis déplace-le directement sur la feuille. Double-clique pour modifier son texte. Les flèches déplacent le bloc sélectionné ; Maj + flèche = déplacement de 5 mm.</p></fieldset></div>
 <div id="media" class="hide"><fieldset><legend>EMBLÈME EXACT</legend><input id="logoF" type="file" accept="image/*"><p class="small">Importé sans redessin et conservé localement.</p></fieldset><fieldset><legend>IMAGE DE PIÈCE</legend><input id="imgF" type="file" accept="image/*"><label>Légende</label><input id="caption"><button id="rmImg">Retirer</button></fieldset></div>
-<div id="check" class="hide"><fieldset><legend>CONTRÔLE DE CHARTE</legend><div id="issues"></div></fieldset><fieldset><legend>SORTIE</legend><div class="actions"><button onclick="print()">Imprimer / PDF</button><button id="dup">Dupliquer</button><button id="del">Supprimer</button></div></fieldset></div>
+<div id="check" class="hide"><fieldset><legend>CONTRÔLE DE CHARTE</legend><div id="issues"></div></fieldset><fieldset><legend>SORTIE</legend><div class="actions"><button id="pdfB" type="button">ENREGISTRER EN PDF</button><button id="dup">Dupliquer</button><button id="del">Supprimer</button></div></fieldset></div>
 </section>
 <main class="view"><article class="paper" id="paper"><div class="guideV" id="guideV"></div><div id="sealP" class="seal"></div><div class="head"><div id="logoP" class="logo">EMBLÈME<br>OFFICIEL</div><div><div id="refP" class="ref"></div><div class="org">ORDRE DES CINQ OMBRES</div><div id="titleP" class="title"></div></div></div><table id="metaP" class="meta"></table><div id="bodyP" class="body"></div><div id="imgP" class="img"></div><div class="foot"><span id="foot"></span><span>1 / 1</span></div></article></main></div>
 <script>
@@ -257,5 +276,29 @@ $("fontSize").onchange=()=>applyFontSize($("fontSize").value);
 $("fontSizeNum").onchange=()=>applyFontSize($("fontSizeNum").value);
 $("blockW").oninput=()=>{let o=getText();if(!o)return;o.w=+$("blockW").value;save();renderFree()};
 document.addEventListener("keydown",e=>{let o=getText();if(!o||["INPUT","TEXTAREA"].includes(document.activeElement.tagName)||document.activeElement.isContentEditable)return;let step=e.shiftKey?5:1;if(e.key=="ArrowLeft")o.x-=step;else if(e.key=="ArrowRight")o.x+=step;else if(e.key=="ArrowUp")o.y-=step;else if(e.key=="ArrowDown")o.y+=step;else return;e.preventDefault();o.x=Math.max(0,Math.min(210-o.w,o.x));o.y=Math.max(0,Math.min(285,o.y));save();renderFree()});
+
+
+
+function saveCurrentAsPDF(){
+  const d=cur();
+  if(!d)return;
+  // Commit the active main editor before opening the print dialog.
+  if($("bodyEditor")){
+    d.bodyHtml=$("bodyEditor").innerHTML;
+    d.body=$("bodyEditor").innerText.replace(/\n+$/,"");
+  }
+  save();
+  render();
+  // Use the document reference/title as the suggested browser print title.
+  const oldTitle=document.title;
+  const ref=(d.ref||d.code||"DOCUMENT").replace(/[\\/:*?"<>|]+/g,"-");
+  const title=(d.title||"ORDRE_DES_CINQ_OMBRES").replace(/[\\/:*?"<>|]+/g,"-");
+  document.title=ref+"_"+title;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    window.print();
+    setTimeout(()=>{document.title=oldTitle},800);
+  }));
+}
+if($("pdfB"))$("pdfB").onclick=saveCurrentAsPDF;
 
 </script></body></html>
