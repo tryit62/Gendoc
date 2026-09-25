@@ -1,4 +1,4 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenDoc V7</title>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenDoc V7.3</title>
 <style>
 :root{--b:#090b0b;--p:#151817;--l:#38403c;--i:#eceee9;--m:#929a95;--paper:#f2efe5}*{box-sizing:border-box}body{margin:0;background:var(--b);color:var(--i);font-family:Courier,monospace}button,input,select,textarea{font:inherit}button{background:#1c211f;color:var(--i);border:1px solid #4a524e;padding:8px;cursor:pointer}input,select,textarea{width:100%;background:#0e1110;color:var(--i);border:1px solid var(--l);padding:7px}header{height:62px;border-bottom:1px solid var(--l);padding:12px 16px;display:flex;justify-content:space-between}.app{display:grid;grid-template-columns:260px 410px 1fr;height:calc(100vh - 62px)}nav,.edit{overflow:auto;border-right:1px solid var(--l);padding:12px}.view{overflow:auto;padding:20px}label{display:block;font-size:10px;color:var(--m);margin:7px 0 3px}.row{display:grid;grid-template-columns:1fr 1fr;gap:7px}fieldset{border:1px solid var(--l);margin-bottom:11px}legend{font-size:10px}.tree{margin:8px 0;border-top:1px solid var(--l);padding-top:7px}.item{display:block;width:100%;border:0;border-left:2px solid transparent;background:none;text-align:left}.item.on{border-left-color:white;background:#191d1b}.small{font-size:9px;color:var(--m)}.actions{display:flex;gap:5px;flex-wrap:wrap}.paper{width:210mm;min-height:297mm;background:var(--paper);color:#161716;margin:auto;padding:18mm;position:relative;box-shadow:0 10px 35px #000}.head{display:grid;grid-template-columns:23mm 1fr;gap:7mm;border-bottom:1px solid #222;padding-bottom:6mm}.logo{width:21mm;height:21mm;border:1px solid #333;display:flex;align-items:center;justify-content:center;text-align:center;font-size:7px;overflow:hidden}.logo img{max-width:100%;max-height:100%}.ref{font-weight:bold;font-size:12px}.org{font-size:9px;margin-top:4px}.title{font-weight:bold;font-size:17px;margin-top:7px}.meta{width:100%;border-collapse:collapse;font-size:8.5px;margin:7mm 0}.meta td{border-bottom:1px solid #bbb;padding:4px}.meta td:first-child{font-weight:bold;width:38mm}.body{white-space:pre-wrap;font-size:10px;line-height:1.5}.img{text-align:center;margin-top:8mm}.img img{max-width:100%;max-height:90mm}.foot{position:absolute;left:18mm;right:18mm;bottom:10mm;border-top:1px solid #aaa;padding-top:3mm;font-size:7px;display:flex;justify-content:space-between}.issue{font-size:9px;border-left:2px solid #d7c78f;padding:4px;margin:4px 0}.ok{color:#b7c9b8}.seal{position:absolute;right:19mm;top:22mm;border:2px solid #444;border-radius:50%;width:23mm;height:23mm;display:none;align-items:center;justify-content:center;text-align:center;font-size:6px}.tabs{display:flex;gap:4px;margin-bottom:9px}.hide{display:none}.checks{display:grid;grid-template-columns:1fr 1fr}.checks label{margin:2px}.checks input{width:auto}@media(max-width:950px){.app{display:block;height:auto}.paper{transform:scale(.72);transform-origin:top left;margin-right:-58mm;margin-bottom:-80mm}}
 .paper .logo img,
@@ -74,7 +74,7 @@
 
 .sealGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .sealGrid label{font-size:9px}
-.sealGrid input{display:block;width:100%;margin-top:3px}
+.sealGrid input{display:block;width:100%;margin-top:3px}.sealGrid label[data-loaded="1"]{outline:1px solid #7f9b7f;padding:3px}.sealGrid label[data-loaded="1"]::after{content:" ✓ importé";font-size:8px}
 #sealP{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important}
 #sealP img{display:block;width:100%;height:100%;object-fit:contain;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important}
 </style><style>
@@ -94,9 +94,13 @@
   background-image:none !important;
 }
 </style>
-</head><body>
-<header><b>GENDOC // V7</b><span id="badge" class="small ok">CANON</span></header><div class="app">
-<nav><div class="actions"><button id="add">+ PIÈCE</button><button id="addD">+ DOSSIER</button></div><h4>SAISON I</h4><div id="tree"></div><h4>PROJET</h4><div class="actions"><button id="exp">Exporter</button><button id="impB">Importer</button><input id="imp" type="file" accept=".json" class="hide"></div><p class="small">Sauvegarde locale automatique.</p></nav>
+<style id="gendoc-v7-3-seasons">
+#seasonTree> .seasonSection{border-top:1px solid #303532;padding-top:4px;margin-top:6px}
+#seasonTree> .seasonSection:first-child{border-top:0;margin-top:0}
+#seasonTree h4{margin:8px 0 5px}
+</style></head><body>
+<header><b>GENDOC // V7.3</b><span id="badge" class="small ok">CANON</span></header><div class="app">
+<nav><div class="actions"><button id="add">+ PIÈCE</button><button id="addD">+ DOSSIER</button><button id="addS">+ SAISON</button></div><div id="seasonTree"></div><h4>PROJET</h4><div class="actions"><button id="exp">Exporter</button><button id="impB">Importer</button><input id="imp" type="file" accept=".json" class="hide"></div><p class="small">Sauvegarde locale automatique.</p></nav>
 <section class="edit"><div class="tabs"><button data-t="doc">Document</button><button data-t="text">Contenu</button><button data-t="media">Médias</button><button data-t="check">Contrôle</button></div>
 <div id="doc"><fieldset><legend>IDENTITÉ</legend><div class="row"><div><label>Dossier</label><select id="dossier"></select></div><div><label>N°</label><input id="num"></div></div><div class="row"><div><label>Catégorie</label><select id="cat"></select></div><div><label>Modèle</label><select id="tpl"></select></div></div><label>Titre</label><input id="title"></fieldset>
 <fieldset><legend>CLASSIFICATION</legend><div class="row"><div><label>Accréditation</label><select id="access"><option>OMBRE I</option><option>OMBRE II</option><option>OMBRE III</option><option>ACCÈS REFUSÉ</option><option>NON CLASSIFIÉ</option></select></div><div><label>Diffusion</label><select id="diff"><option>DIFFUSION RESTREINTE</option><option>DIFFUSION INTERNE</option><option>NON CLASSIFIÉ</option></select></div></div><div class="row"><div><label>Statut</label><input id="status"></div><div><label>Sceau</label><select id="seal"><option value="">Aucun</option><option>ORDRE</option><option>ŒIL FENDU</option><option>FLAMME INVERSÉE</option><option>MAIN CASSÉE</option><option>SPIRALE D'OS</option><option>SABLIER NOIR</option></select></div></div></fieldset>
@@ -127,9 +131,9 @@ const M=[["document","DOCUMENT"],["dossier","DOSSIER"],["type","TYPE"],["destina
 const $=x=>document.getElementById(x),E=s=>String(s??"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));
 let selectedText=null;
 let P=JSON.parse(localStorage.getItem("oci_v3")||"null")||{dossiers:{D000:"LE RECRUTEMENT",D001:"LA PIÈCE QUI N'EXISTE PAS"},docs:{},cur:null},logo=localStorage.getItem("oci_logo")||"";
-const uid=()=>Date.now()+"_"+Math.random().toString(36).slice(2,6),ref=d=>`${d.dossier}/${d.cat}${String(d.num).padStart(2,"0")}`;
+if(!P.seasons)P.seasons={S01:"SAISON I"};if(!P.activeSeason)P.activeSeason="S01";Object.values(P.docs||{}).forEach(d=>{if(!d.season)d.season="S01"}); const uid=()=>Date.now()+"_"+Math.random().toString(36).slice(2,6),ref=d=>`${d.dossier}/${d.cat}${String(d.num).padStart(2,"0")}`;
 function next(ds,c){let a=Object.values(P.docs).filter(x=>x.dossier==ds&&x.cat==c).map(x=>+x.num);return String((a.length?Math.max(...a):0)+1).padStart(2,"0")}
-function blank(ds="D001"){return{id:uid(),dossier:ds,num:next(ds,"M"),cat:"M",tpl:0,title:"ORDRE DE MISSION",access:"OMBRE I",diff:"DIFFUSION RESTREINTE",status:"ACTIF",seal:"",date:"03.02.2026",time:"16:47",recipient:"",subject:"",place:"",author:"",related:[],body:T.M[0][2],meta:[...R.M],image:"",caption:"",freeTexts:[]}}
+function blank(ds="D001"){return{id:uid(),season:(P.activeSeason||"S01"),dossier:ds,num:next(ds,"M"),cat:"M",tpl:0,title:"ORDRE DE MISSION",access:"OMBRE I",diff:"DIFFUSION RESTREINTE",status:"ACTIF",seal:"",date:"03.02.2026",time:"16:47",recipient:"",subject:"",place:"",author:"",related:[],body:T.M[0][2],meta:[...R.M],image:"",caption:"",freeTexts:[]}}
 function save(){localStorage.setItem("oci_v3",JSON.stringify(P))}
 function cur(){return P.docs[P.cur]}function ensure(){if(!P.cur||!P.docs[P.cur]){let d=blank();P.docs[d.id]=d;P.cur=d.id;save()}}
 Object.entries(C).forEach(([k,v])=>$("cat").add(new Option(`${k} — ${v}`,k)));ensure();
@@ -146,7 +150,34 @@ if(d.seal){
   let ss=sealImages[d.seal];
   $("sealP").innerHTML=ss?`<img src="${ss}" alt="${E(d.seal)}">`:`<span>${E(d.seal)}</span>`;
 }else $("sealP").innerHTML="";$("logoP").innerHTML=logo?`<img src="${logo}">`:"EMBLÈME<br>OFFICIEL";$("imgP").innerHTML=d.image?`<img src="${d.image}"><div class=small>${E(d.caption)}</div>`:"";let a=issues(d);$("issues").innerHTML=a.length?a.map(x=>`<div class=issue>${E(x)}</div>`).join(""):"<div class='ok small'>Aucune incohérence détectée.</div>";$("badge").textContent=a.length?"CANON // À VÉRIFIER":"CANON // CONFORME";renderFree()}
-function tree(){$("tree").innerHTML="";Object.entries(P.dossiers).forEach(([id,t])=>{let g=document.createElement("div");g.className="tree";g.innerHTML=`<b>${id}</b><div class=small>${E(t)}</div>`;Object.values(P.docs).filter(x=>x.dossier==id).sort((a,b)=>ref(a).localeCompare(ref(b))).forEach(d=>{let b=document.createElement("button");b.className="item "+(d.id==P.cur?"on":"");b.innerHTML=`${ref(d)}<div class=small>${E(d.title)}</div>`;b.onclick=()=>{P.cur=d.id;save();load()};g.append(b)});$("tree").append(g)})}
+function tree(){
+  if(!P.seasons)P.seasons={S01:"SAISON I"};
+  if(!P.activeSeason)P.activeSeason="S01";
+  Object.values(P.docs).forEach(d=>{if(!d.season)d.season="S01"});
+  let host=$("seasonTree"); if(!host)return;
+  host.innerHTML="";
+  Object.entries(P.seasons).forEach(([sid,stitle])=>{
+    let sec=document.createElement("div");
+    sec.className="seasonSection";
+    let h=document.createElement("h4");
+    h.textContent=sid+" // "+stitle;
+    sec.appendChild(h);
+    let docs=Object.values(P.docs).filter(x=>(x.season||"S01")==sid);
+    let dossierIds=[...new Set(docs.map(x=>x.dossier))];
+    dossierIds.forEach(id=>{
+      let g=document.createElement("div");g.className="tree";
+      g.innerHTML=`<b>${id}</b><div class=small>${E(P.dossiers[id]||"DOSSIER")}</div>`;
+      docs.filter(x=>x.dossier==id).sort((a,b)=>ref(a).localeCompare(ref(b))).forEach(d=>{
+        let b=document.createElement("button");b.className="item "+(d.id==P.cur?"on":"");
+        b.innerHTML=`${ref(d)}<div class=small>${E(d.title)}</div>`;
+        b.onclick=()=>{P.cur=d.id;P.activeSeason=sid;save();load()};
+        g.append(b);
+      });
+      sec.append(g);
+    });
+    host.append(sec);
+  });
+}
 function commit(){let d=cur();["dossier","num","cat","tpl","title","access","diff","status","seal","date","time","recipient","subject","place","author","body","caption"].forEach(id=>d[id]=$(id).value);d.related=[...$("related").selectedOptions].map(x=>x.value);save();render();tree()}
 load();
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{["doc","text","media","check"].forEach(x=>$(x).classList.toggle("hide",x!=b.dataset.t))});
@@ -154,7 +185,26 @@ document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{["doc","text
 $("cat").onchange=()=>{let d=cur();d.cat=$("cat").value;d.num=next(d.dossier,d.cat);d.tpl=0;d.meta=[...R[d.cat]];d.title=T[d.cat][0][1];d.body=T[d.cat][0][2];save();load()};
 $("tpl").onchange=()=>{let d=cur(),t=T[d.cat][+$("tpl").value];d.tpl=+$("tpl").value;d.title=t[1];d.body=t[2];d.meta=[...R[d.cat]];save();load()};
 document.querySelectorAll("[data-ins]").forEach(b=>b.onclick=()=>{let a=$("body"),s=a.selectionStart;a.value=a.value.slice(0,s)+b.dataset.ins+a.value.slice(a.selectionEnd);commit()});
-$("add").onclick=()=>{let d=blank(cur().dossier);P.docs[d.id]=d;P.cur=d.id;save();load()};$("addD").onclick=()=>{let id=(prompt("Identifiant (ex. D002)")||"").toUpperCase();if(!id)return;P.dossiers[id]=prompt("Titre du dossier")||"DOSSIER";let d=blank(id);P.docs[d.id]=d;P.cur=d.id;save();load()};
+$("add").onclick=()=>{let base=cur();let d=blank(base?base.dossier:"D001");d.season=(base&&base.season)||P.activeSeason||"S01";P.docs[d.id]=d;P.cur=d.id;P.activeSeason=d.season;save();load()};
+$("addS").onclick=()=>{
+  if(!P.seasons)P.seasons={S01:"SAISON I"};
+  let nums=Object.keys(P.seasons).map(x=>parseInt(String(x).replace(/\D/g,""))||0);
+  let n=(nums.length?Math.max(...nums):0)+1;
+  let sid="S"+String(n).padStart(2,"0");
+  let roman=["","I","II","III","IV","V","VI","VII","VIII","IX","X"][n]||String(n);
+  let title=prompt("Nom de la nouvelle saison","SAISON "+roman);
+  if(title===null)return;
+  P.seasons[sid]=title.trim()||("SAISON "+roman);
+  P.activeSeason=sid;
+  save();tree();
+  if(confirm("Créer maintenant le premier dossier de "+P.seasons[sid]+" ?")){
+    let did=(prompt("Identifiant du premier dossier (ex. D013)")||"").toUpperCase();
+    if(did){
+      P.dossiers[did]=prompt("Titre du dossier")||"DOSSIER";
+      let d=blank(did);d.season=sid;P.docs[d.id]=d;P.cur=d.id;save();load();
+    }
+  }
+};$("addD").onclick=()=>{let id=(prompt("Identifiant (ex. D002)")||"").toUpperCase();if(!id)return;P.dossiers[id]=prompt("Titre du dossier")||"DOSSIER";let d=blank(id);d.season=(cur()&&cur().season)||P.activeSeason||"S01";P.docs[d.id]=d;P.cur=d.id;P.activeSeason=d.season;save();load()};
 $("dup").onclick=()=>{let d=JSON.parse(JSON.stringify(cur()));d.id=uid();d.num=next(d.dossier,d.cat);P.docs[d.id]=d;P.cur=d.id;save();load()};$("del").onclick=()=>{if(confirm("Supprimer cette pièce ?")){delete P.docs[P.cur];P.cur=Object.keys(P.docs)[0]||null;ensure();save();load()}};
 function imageLoad(inp,cb){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f)}
 $("logoF").onchange=()=>imageLoad($("logoF"),x=>{logo=x;localStorage.setItem("oci_logo",x);render()});$("imgF").onchange=()=>imageLoad($("imgF"),x=>{cur().image=x;save();render()});$("rmImg").onclick=()=>{cur().image="";save();render()};
@@ -397,7 +447,7 @@ async function saveCurrentAsPDF(){
       x.style.background="transparent";
     });
 
-    clone.querySelectorAll("#logoBox,.logoBox,#plogo,[class*='logo'],[class*='emblem'],[class*='seal'],[class*='stamp'],[class*='sceau'],#seal,#stamp,#emblem,#sceau").forEach(x=>{
+    clone.querySelectorAll("#logoP,#logoP img,.head .logo,.head .logo img,#logoBox,.logoBox,#plogo,[class*='logo'],[class*='emblem'],[class*='seal'],[class*='stamp'],[class*='sceau'],#seal,#stamp,#emblem,#sceau").forEach(x=>{
       x.style.setProperty("border","0","important");
       x.style.setProperty("outline","0","important");
       x.style.setProperty("box-shadow","none","important");
@@ -445,7 +495,7 @@ if($("pdfB"))$("pdfB").onclick=saveCurrentAsPDF;
 
 </script>
 <style id="gendoc-v6-css">
-/* ===== GenDoc V7 — atelier PAO ===== */
+/* ===== GenDoc V7.3 — atelier PAO ===== */
 #v6Panel{margin-top:10px;border:1px solid #343936;padding:9px;border-radius:6px}
 #v6Panel legend{padding:0 5px}
 .v6bar{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0}
@@ -882,6 +932,219 @@ function initDoc(){ensureD();build();renderObjects();renderAssets();loadMemory()
 const oldLoad=window.load;if(typeof oldLoad==="function")window.load=function(){const r=oldLoad.apply(this,arguments);setTimeout(initDoc,0);return r};
 document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="c"&&selected){e.preventDefault();copyObj()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="v"&&X.clipboard){e.preventDefault();pasteObj()}});
 document.addEventListener("DOMContentLoaded",()=>setTimeout(initDoc,120));setTimeout(initDoc,180);
+})();
+</script>
+
+
+<script id="gendoc-v7-1-fixes">
+(()=>{
+const G=id=>document.getElementById(id);
+
+function currentDoc(){try{return cur()}catch(e){return null}}
+function persistProject(){try{save()}catch(e){}}
+function rerender(){try{render()}catch(e){} setTimeout(()=>{try{window.__v71_renderObjects&&window.__v71_renderObjects()}catch(e){}},0)}
+
+function readSealStore(){
+  try{return JSON.parse(localStorage.getItem("oci_seals")||"{}")}catch(e){return {}}
+}
+function writeSealStore(o){localStorage.setItem("oci_seals",JSON.stringify(o))}
+
+// Delegated upload works even if Safari rebuilt/reloaded the panel.
+document.addEventListener("change",e=>{
+  const inp=e.target.closest && e.target.closest(".sealFile");
+  if(!inp)return;
+  const f=inp.files&&inp.files[0]; if(!f)return;
+  const key=inp.dataset.seal;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const store=readSealStore(); store[key]=rd.result; writeSealStore(store);
+    try{sealImages=store}catch(err){}
+    rerender();
+    inp.dataset.loaded="1";
+    const lab=inp.closest("label"); if(lab)lab.dataset.loaded="1";
+  };
+  rd.readAsDataURL(f);
+});
+
+// Ensure render always refreshes sealImages from storage before drawing.
+const previousRender=window.render;
+if(typeof previousRender==="function"){
+  window.render=function(){
+    try{sealImages=readSealStore()}catch(e){}
+    return previousRender.apply(this,arguments);
+  };
+}
+
+// ---------- FIX 2–4: V7 object selection / inspector / delete / note ----------
+let selId=null;
+function d(){try{return ensureD()}catch(e){return currentDoc()}}
+function objs(){
+  const q=d(); if(!q)return [];
+  q.pages=q.pages||[{id:"p1",name:"Page 1",objects:[]}];
+  q.pageIndex=Math.min(q.pageIndex||0,q.pages.length-1);
+  return q.pages[q.pageIndex].objects||(q.pages[q.pageIndex].objects=[]);
+}
+function obj(){return objs().find(o=>o.id===selId)}
+function select(id){
+  selId=id;
+  document.querySelectorAll("#paper .v7x").forEach(el=>el.classList.toggle("v7-selected",el.dataset.xid===id));
+  const o=obj(); if(!o)return;
+  const map={v7X:"x",v7Y:"y",v7W:"w",v7H:"h",v7Rot:"rot",v7Opacity:"opacity"};
+  Object.entries(map).forEach(([el,k])=>{if(G(el))G(el).value=o[k]??""});
+  if(G("v71Delete"))G("v71Delete").disabled=false;
+}
+function applyInspector(){
+  const o=obj();if(!o)return;
+  const vals={
+    x:parseFloat(G("v7X")?.value), y:parseFloat(G("v7Y")?.value),
+    w:parseFloat(G("v7W")?.value), h:parseFloat(G("v7H")?.value),
+    rot:parseFloat(G("v7Rot")?.value), opacity:parseFloat(G("v7Opacity")?.value)
+  };
+  if(Number.isFinite(vals.x))o.x=vals.x;
+  if(Number.isFinite(vals.y))o.y=vals.y;
+  if(Number.isFinite(vals.w))o.w=Math.max(1,vals.w);
+  if(Number.isFinite(vals.h))o.h=Math.max(.5,vals.h);
+  if(Number.isFinite(vals.rot))o.rot=vals.rot;
+  if(Number.isFinite(vals.opacity))o.opacity=Math.max(0,Math.min(1,vals.opacity));
+  persistProject();
+  window.__v71_renderObjects();
+  select(o.id);
+}
+function deleteSelected(){
+  if(!selId)return;
+  const a=objs(),i=a.findIndex(o=>o.id===selId);if(i<0)return;
+  a.splice(i,1);selId=null;persistProject();window.__v71_renderObjects();
+  if(G("v71Delete"))G("v71Delete").disabled=true;
+}
+function renderFixed(){
+  const p=G("paper"),q=d();if(!p||!q)return;
+  p.querySelectorAll(".v7x,.v7pageBadge,.v7-guide").forEach(e=>e.remove());
+  objs().forEach(o=>{
+    let e=document.createElement(o.type==="signature"||o.type==="asset"?"img":"div");
+    e.className="v7x "+(
+      o.type==="stamp"?"v7stamp":
+      o.type==="redaction"?"v7redaction":
+      o.type==="annotation"?"v7annotation":
+      o.type==="arrow"?"v7arrow":
+      o.type==="signature"?"v7sig":""
+    );
+    e.dataset.xid=o.id;
+    if(o.type==="stamp")e.textContent=o.text||"";
+    if(o.type==="annotation"){
+      e.contentEditable="true";
+      e.innerHTML=o.html||o.text||"Annotation";
+      e.addEventListener("input",()=>{o.html=e.innerHTML;persistProject()});
+      e.addEventListener("pointerdown",ev=>ev.stopPropagation());
+    }
+    if(o.type==="signature"||o.type==="asset"){e.src=o.src||"";e.style.objectFit="contain"}
+    Object.assign(e.style,{
+      position:"absolute",left:(o.x??45)+"mm",top:(o.y??95)+"mm",
+      width:(o.w??40)+"mm",height:(o.h??10)+"mm",
+      opacity:String(o.opacity??1),transform:`rotate(${o.rot||0}deg)`
+    });
+    e.addEventListener("click",ev=>{ev.stopPropagation();select(o.id)});
+    // iPad-friendly dragging; contenteditable notes remain editable.
+    e.addEventListener("pointerdown",ev=>{
+      if(ev.target.isContentEditable)return;
+      select(o.id); const rect=p.getBoundingClientRect(),m=210/rect.width;
+      const sx=ev.clientX,sy=ev.clientY,ox=o.x??45,oy=o.y??95;
+      try{e.setPointerCapture(ev.pointerId)}catch(_){}
+      const mv=v=>{o.x=Math.max(0,Math.min(210-(o.w||0),ox+(v.clientX-sx)*m));o.y=Math.max(0,Math.min(297-(o.h||0),oy+(v.clientY-sy)*m));e.style.left=o.x+"mm";e.style.top=o.y+"mm"};
+      const up=()=>{e.removeEventListener("pointermove",mv);persistProject()};
+      e.addEventListener("pointermove",mv);e.addEventListener("pointerup",up,{once:true});
+    });
+    p.appendChild(e);
+  });
+  const b=document.createElement("div");b.className="v7pageBadge";b.textContent=`PAGE ${(q.pageIndex||0)+1}/${q.pages.length}`;p.appendChild(b);
+}
+window.__v71_renderObjects=renderFixed;
+
+function install(){
+  const panel=G("v7Panel");if(!panel)return;
+  // Add a visible delete control directly beside inspector.
+  if(!G("v71Delete")){
+    const insp=G("v7Inspector");
+    const bar=document.createElement("div");bar.className="v7bar";
+    bar.innerHTML='<button id="v71Delete" type="button" disabled>SUPPRIMER L’OBJET SÉLECTIONNÉ</button>';
+    insp.appendChild(bar);G("v71Delete").onclick=deleteSelected;
+  }
+
+  // Replace inspector handlers. Input + change means iPad number fields update immediately.
+  ["v7X","v7Y","v7W","v7H","v7Rot","v7Opacity"].forEach(id=>{
+    const old=G(id);if(!old)return;
+    const fresh=old.cloneNode(true);old.replaceWith(fresh);
+    fresh.addEventListener("input",applyInspector);
+    fresh.addEventListener("change",applyInspector);
+  });
+
+  // Fix +NOTE: directly creates a V7 annotation, no dependency on old closure.
+  const nb=G("v7Note");
+  if(nb){
+    const fresh=nb.cloneNode(true);nb.replaceWith(fresh);
+    fresh.onclick=()=>{
+      const q=d();if(!q)return;
+      const o={id:"x"+Date.now()+Math.random().toString(36).slice(2,6),type:"annotation",text:"Double-touchez pour écrire",html:"Double-touchez pour écrire",x:55,y:105,w:65,h:14,rot:-2,opacity:1};
+      objs().push(o);persistProject();renderFixed();select(o.id);
+    };
+  }
+
+  // Make all V7 generated objects deletable via the new delete button.
+  renderFixed();
+}
+document.addEventListener("click",e=>{
+  const el=e.target.closest&&e.target.closest("#paper .v7x");
+  if(el)select(el.dataset.xid);
+});
+document.addEventListener("keydown",e=>{
+  if((e.key==="Delete"||e.key==="Backspace")&&selId&&!e.target.matches("input,textarea,[contenteditable=true]"))deleteSelected();
+});
+document.addEventListener("DOMContentLoaded",()=>setTimeout(install,250));
+setTimeout(install,350);
+})();
+</script>
+
+
+<style id="gendoc-v7-2-embleme-fix">
+/* Correctif définitif : le véritable emblème de l'aperçu est #logoP.logo */
+#paper #logoP,
+#paper .head #logoP,
+#paper #logoP.logo,
+#paper .head .logo,
+#paper #logoP img,
+#paper .head #logoP img,
+#paper .head .logo img {
+  border: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+}
+#paper #logoP {
+  overflow: visible !important;
+}
+</style>
+<script id="gendoc-v7-2-embleme-runtime-fix">
+(()=>{
+ function cleanEmblem(root=document){
+   const nodes=root.querySelectorAll ? root.querySelectorAll("#logoP,#logoP img,.head .logo,.head .logo img") : [];
+   nodes.forEach(x=>{
+     x.style.setProperty("border","none","important");
+     x.style.setProperty("border-width","0","important");
+     x.style.setProperty("outline","none","important");
+     x.style.setProperty("box-shadow","none","important");
+     x.style.setProperty("background","transparent","important");
+     x.style.setProperty("border-radius","0","important");
+   });
+ }
+ const old=window.render;
+ if(typeof old==="function"){
+   window.render=function(){const r=old.apply(this,arguments);cleanEmblem(document);return r}
+ }
+ document.addEventListener("DOMContentLoaded",()=>setTimeout(()=>cleanEmblem(document),300));
+ setTimeout(()=>cleanEmblem(document),450);
+ window.__cleanGenDocEmblem=cleanEmblem;
 })();
 </script>
 
