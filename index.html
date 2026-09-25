@@ -1,4 +1,4 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenDoc V5.5</title>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenDoc V7</title>
 <style>
 :root{--b:#090b0b;--p:#151817;--l:#38403c;--i:#eceee9;--m:#929a95;--paper:#f2efe5}*{box-sizing:border-box}body{margin:0;background:var(--b);color:var(--i);font-family:Courier,monospace}button,input,select,textarea{font:inherit}button{background:#1c211f;color:var(--i);border:1px solid #4a524e;padding:8px;cursor:pointer}input,select,textarea{width:100%;background:#0e1110;color:var(--i);border:1px solid var(--l);padding:7px}header{height:62px;border-bottom:1px solid var(--l);padding:12px 16px;display:flex;justify-content:space-between}.app{display:grid;grid-template-columns:260px 410px 1fr;height:calc(100vh - 62px)}nav,.edit{overflow:auto;border-right:1px solid var(--l);padding:12px}.view{overflow:auto;padding:20px}label{display:block;font-size:10px;color:var(--m);margin:7px 0 3px}.row{display:grid;grid-template-columns:1fr 1fr;gap:7px}fieldset{border:1px solid var(--l);margin-bottom:11px}legend{font-size:10px}.tree{margin:8px 0;border-top:1px solid var(--l);padding-top:7px}.item{display:block;width:100%;border:0;border-left:2px solid transparent;background:none;text-align:left}.item.on{border-left-color:white;background:#191d1b}.small{font-size:9px;color:var(--m)}.actions{display:flex;gap:5px;flex-wrap:wrap}.paper{width:210mm;min-height:297mm;background:var(--paper);color:#161716;margin:auto;padding:18mm;position:relative;box-shadow:0 10px 35px #000}.head{display:grid;grid-template-columns:23mm 1fr;gap:7mm;border-bottom:1px solid #222;padding-bottom:6mm}.logo{width:21mm;height:21mm;border:1px solid #333;display:flex;align-items:center;justify-content:center;text-align:center;font-size:7px;overflow:hidden}.logo img{max-width:100%;max-height:100%}.ref{font-weight:bold;font-size:12px}.org{font-size:9px;margin-top:4px}.title{font-weight:bold;font-size:17px;margin-top:7px}.meta{width:100%;border-collapse:collapse;font-size:8.5px;margin:7mm 0}.meta td{border-bottom:1px solid #bbb;padding:4px}.meta td:first-child{font-weight:bold;width:38mm}.body{white-space:pre-wrap;font-size:10px;line-height:1.5}.img{text-align:center;margin-top:8mm}.img img{max-width:100%;max-height:90mm}.foot{position:absolute;left:18mm;right:18mm;bottom:10mm;border-top:1px solid #aaa;padding-top:3mm;font-size:7px;display:flex;justify-content:space-between}.issue{font-size:9px;border-left:2px solid #d7c78f;padding:4px;margin:4px 0}.ok{color:#b7c9b8}.seal{position:absolute;right:19mm;top:22mm;border:2px solid #444;border-radius:50%;width:23mm;height:23mm;display:none;align-items:center;justify-content:center;text-align:center;font-size:6px}.tabs{display:flex;gap:4px;margin-bottom:9px}.hide{display:none}.checks{display:grid;grid-template-columns:1fr 1fr}.checks label{margin:2px}.checks input{width:auto}@media(max-width:950px){.app{display:block;height:auto}.paper{transform:scale(.72);transform-origin:top left;margin-right:-58mm;margin-bottom:-80mm}}
 .paper .logo img,
@@ -71,6 +71,12 @@
   #paper .freeText{border-color:transparent!important;background:transparent!important}
 }
 
+
+.sealGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.sealGrid label{font-size:9px}
+.sealGrid input{display:block;width:100%;margin-top:3px}
+#sealP{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important}
+#sealP img{display:block;width:100%;height:100%;object-fit:contain;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important}
 </style><style>
 /* V5.3 — emblème officiel sans aucun encadré */
 #logoBox, .logoBox, #plogo, #plogo img,
@@ -81,8 +87,15 @@
   background: transparent !important;
 }
 </style>
+<style id='v62-white-page'>
+/* V6.2 — feuille documentaire blanche */
+#paper.paper, .paper#paper {
+  background:#ffffff !important;
+  background-image:none !important;
+}
+</style>
 </head><body>
-<header><b>GENDOC // V5.5</b><span id="badge" class="small ok">CANON</span></header><div class="app">
+<header><b>GENDOC // V7</b><span id="badge" class="small ok">CANON</span></header><div class="app">
 <nav><div class="actions"><button id="add">+ PIÈCE</button><button id="addD">+ DOSSIER</button></div><h4>SAISON I</h4><div id="tree"></div><h4>PROJET</h4><div class="actions"><button id="exp">Exporter</button><button id="impB">Importer</button><input id="imp" type="file" accept=".json" class="hide"></div><p class="small">Sauvegarde locale automatique.</p></nav>
 <section class="edit"><div class="tabs"><button data-t="doc">Document</button><button data-t="text">Contenu</button><button data-t="media">Médias</button><button data-t="check">Contrôle</button></div>
 <div id="doc"><fieldset><legend>IDENTITÉ</legend><div class="row"><div><label>Dossier</label><select id="dossier"></select></div><div><label>N°</label><input id="num"></div></div><div class="row"><div><label>Catégorie</label><select id="cat"></select></div><div><label>Modèle</label><select id="tpl"></select></div></div><label>Titre</label><input id="title"></fieldset>
@@ -91,7 +104,18 @@
 <div id="text" class="hide"><fieldset><legend>CONTENU PRINCIPAL</legend>
 <div id="bodyEditor" contenteditable="true" style="min-height:250px;width:100%;box-sizing:border-box;background:#070909;color:#eceee9;border:1px solid #2a2e2c;border-radius:6px;padding:10px;font:11px/1.5 'Courier New',monospace;white-space:pre-wrap;overflow:auto"></div>
 <textarea id="body" style="display:none"></textarea><div class="actions"><button data-ins="[INFORMATION RETIRÉE]">Retirée</button><button data-ins="[ACCÈS OMBRE II REQUIS]">Accès OII</button><button data-ins="████████████">Barre noire</button><button data-ins="[INFORMATION RETIRÉE — MOTIF : ACCRÉDITATION INSUFFISANTE]">Retrait + motif</button></div></fieldset><fieldset><legend>MISE EN PAGE LIBRE</legend><div class="formatbar"><button id="addText">+ TEXTE</button><button id="boldB" title="Gras"><b>G</b></button><button id="italicB" title="Italique"><i>I</i></button><button id="underB" title="Souligné"><u>S</u></button><button id="leftB">Gauche</button><button id="centerB">Centre</button><button id="rightB">Droite</button></div><div class="row"><div><label>Taille</label><div class="fontSizeCtl"><input id="fontSize" type="range" min="8" max="36" step="1" value="10"><input id="fontSizeNum" type="number" min="8" max="72" step="1" value="10"></div></div><div><label>Largeur du bloc (mm)</label><input id="blockW" type="number" min="15" max="190" value="70"></div></div><div class="actions"><button id="dupText">Dupliquer bloc</button><button id="delText">Supprimer bloc</button></div><p class="freehint">Ajoute un bloc puis déplace-le directement sur la feuille. Double-clique pour modifier son texte. Les flèches déplacent le bloc sélectionné ; Maj + flèche = déplacement de 5 mm.</p></fieldset></div>
-<div id="media" class="hide"><fieldset><legend>EMBLÈME EXACT</legend><input id="logoF" type="file" accept="image/*"><p class="small">Importé sans redessin et conservé localement.</p></fieldset><fieldset><legend>IMAGE DE PIÈCE</legend><input id="imgF" type="file" accept="image/*"><label>Légende</label><input id="caption"><button id="rmImg">Retirer</button></fieldset></div>
+<div id="media" class="hide"><fieldset><legend>EMBLÈME EXACT</legend><input id="logoF" type="file" accept="image/*"><p class="small">Importé sans redessin et conservé localement.</p></fieldset><fieldset><legend>SCEAUX DES DIVISIONS</legend>
+<p class="small">Importe une fois l’image officielle de chaque sceau. Elle sera ensuite utilisée automatiquement selon le sceau choisi dans Document.</p>
+<div class="sealGrid">
+<label>ORDRE<input class="sealFile" data-seal="ORDRE" type="file" accept="image/*"></label>
+<label>ŒIL FENDU<input class="sealFile" data-seal="ŒIL FENDU" type="file" accept="image/*"></label>
+<label>FLAMME INVERSÉE<input class="sealFile" data-seal="FLAMME INVERSÉE" type="file" accept="image/*"></label>
+<label>MAIN CASSÉE<input class="sealFile" data-seal="MAIN CASSÉE" type="file" accept="image/*"></label>
+<label>SPIRALE D'OS<input class="sealFile" data-seal="SPIRALE D'OS" type="file" accept="image/*"></label>
+<label>SABLIER NOIR<input class="sealFile" data-seal="SABLIER NOIR" type="file" accept="image/*"></label>
+</div>
+<button id="clearSeals" type="button">EFFACER LES SCEAUX IMPORTÉS</button>
+</fieldset><fieldset><legend>ILLUSTRATION DU DOCUMENT</legend><input id="imgF" type="file" accept="image/*"><p class="small">Photo, plan, fac-similé ou autre visuel intégré au document.</p><label>Légende</label><input id="caption"><button id="rmImg">Retirer</button></fieldset></div>
 <div id="check" class="hide"><fieldset><legend>CONTRÔLE DE CHARTE</legend><div id="issues"></div></fieldset><fieldset><legend>SORTIE</legend><div class="actions"><button id="pdfB" type="button">TÉLÉCHARGER LE PDF</button><button id="dup">Dupliquer</button><button id="del">Supprimer</button></div></fieldset></div>
 </section>
 <main class="view"><article class="paper" id="paper"><div class="guideV" id="guideV"></div><div id="sealP" class="seal"></div><div class="head"><div id="logoP" class="logo">EMBLÈME<br>OFFICIEL</div><div><div id="refP" class="ref"></div><div class="org">ORDRE DES CINQ OMBRES</div><div id="titleP" class="title"></div></div></div><table id="metaP" class="meta"></table><div id="bodyP" class="body"></div><div id="imgP" class="img"></div><div class="foot"><span id="foot"></span><span>1 / 1</span></div></article></main></div>
@@ -116,7 +140,12 @@ function rel(){let d=cur();$("related").innerHTML="";Object.values(P.docs).filte
 function load(){let d=cur();if(!d.freeTexts)d.freeTexts=[];dossiers();["dossier","num","cat","tpl","title","access","diff","status","seal","date","time","recipient","subject","place","author","body","caption"].forEach(id=>$(id).value=d[id]??"");tpl();checks();rel();render();tree()}
 function val(id,d){return{document:ref(d),dossier:d.dossier,type:C[d.cat],destinataire:d.recipient,sujet:d.subject,date:d.date,heure:d.time,lieu:d.place,statut:d.status,accreditation:d.access,diffusion:d.diff,auteur:d.author,associees:d.related.map(x=>P.docs[x]?ref(P.docs[x]):"").filter(Boolean).join(", ")}[id]||""}
 function issues(d){let a=[];R[d.cat].forEach(x=>{if(!d.meta.includes(x))a.push("Métadonnée recommandée absente : "+M.find(y=>y[0]==x)[1])});if(d.date&&!/^\d{2}\.\d{2}\.\d{4}$/.test(d.date))a.push("Date hors format JJ.MM.AAAA");if(d.time&&!/^\d{2}:\d{2}$/.test(d.time))a.push("Heure hors format HH:MM");return a}
-function render(){let d=cur();$("refP").textContent=`${ref(d)} // ${d.title}`;$("titleP").textContent=d.title;$("metaP").innerHTML=d.meta.map(x=>{let v=val(x,d);return v||["document","dossier","type","statut","accreditation","diffusion"].includes(x)?`<tr><td>${M.find(y=>y[0]==x)[1]}</td><td>${E(v||"—")}</td></tr>`:""}).join("");$("bodyP").innerHTML=d.bodyHtml!==undefined?d.bodyHtml:E(d.body||"").replace(/\n/g,"<br>");$("foot").textContent=`${ref(d)} // ${d.access=="NON CLASSIFIÉ"?"NON CLASSIFIÉ":"ACCÈS "+d.access}`;$("sealP").style.display=d.seal?"flex":"none";$("sealP").textContent=d.seal;$("logoP").innerHTML=logo?`<img src="${logo}">`:"EMBLÈME<br>OFFICIEL";$("imgP").innerHTML=d.image?`<img src="${d.image}"><div class=small>${E(d.caption)}</div>`:"";let a=issues(d);$("issues").innerHTML=a.length?a.map(x=>`<div class=issue>${E(x)}</div>`).join(""):"<div class='ok small'>Aucune incohérence détectée.</div>";$("badge").textContent=a.length?"CANON // À VÉRIFIER":"CANON // CONFORME";renderFree()}
+let sealImages=JSON.parse(localStorage.getItem("oci_seals")||"{}");
+function render(){let d=cur();$("refP").textContent=`${ref(d)} // ${d.title}`;$("titleP").textContent=d.title;$("metaP").innerHTML=d.meta.map(x=>{let v=val(x,d);return v||["document","dossier","type","statut","accreditation","diffusion"].includes(x)?`<tr><td>${M.find(y=>y[0]==x)[1]}</td><td>${E(v||"—")}</td></tr>`:""}).join("");$("bodyP").innerHTML=d.bodyHtml!==undefined?d.bodyHtml:E(d.body||"").replace(/\n/g,"<br>");$("foot").textContent=`${ref(d)} // ${d.access=="NON CLASSIFIÉ"?"NON CLASSIFIÉ":"ACCÈS "+d.access}`;$("sealP").style.display=d.seal?"flex":"none";
+if(d.seal){
+  let ss=sealImages[d.seal];
+  $("sealP").innerHTML=ss?`<img src="${ss}" alt="${E(d.seal)}">`:`<span>${E(d.seal)}</span>`;
+}else $("sealP").innerHTML="";$("logoP").innerHTML=logo?`<img src="${logo}">`:"EMBLÈME<br>OFFICIEL";$("imgP").innerHTML=d.image?`<img src="${d.image}"><div class=small>${E(d.caption)}</div>`:"";let a=issues(d);$("issues").innerHTML=a.length?a.map(x=>`<div class=issue>${E(x)}</div>`).join(""):"<div class='ok small'>Aucune incohérence détectée.</div>";$("badge").textContent=a.length?"CANON // À VÉRIFIER":"CANON // CONFORME";renderFree()}
 function tree(){$("tree").innerHTML="";Object.entries(P.dossiers).forEach(([id,t])=>{let g=document.createElement("div");g.className="tree";g.innerHTML=`<b>${id}</b><div class=small>${E(t)}</div>`;Object.values(P.docs).filter(x=>x.dossier==id).sort((a,b)=>ref(a).localeCompare(ref(b))).forEach(d=>{let b=document.createElement("button");b.className="item "+(d.id==P.cur?"on":"");b.innerHTML=`${ref(d)}<div class=small>${E(d.title)}</div>`;b.onclick=()=>{P.cur=d.id;save();load()};g.append(b)});$("tree").append(g)})}
 function commit(){let d=cur();["dossier","num","cat","tpl","title","access","diff","status","seal","date","time","recipient","subject","place","author","body","caption"].forEach(id=>d[id]=$(id).value);d.related=[...$("related").selectedOptions].map(x=>x.value);save();render();tree()}
 load();
@@ -129,6 +158,14 @@ $("add").onclick=()=>{let d=blank(cur().dossier);P.docs[d.id]=d;P.cur=d.id;save(
 $("dup").onclick=()=>{let d=JSON.parse(JSON.stringify(cur()));d.id=uid();d.num=next(d.dossier,d.cat);P.docs[d.id]=d;P.cur=d.id;save();load()};$("del").onclick=()=>{if(confirm("Supprimer cette pièce ?")){delete P.docs[P.cur];P.cur=Object.keys(P.docs)[0]||null;ensure();save();load()}};
 function imageLoad(inp,cb){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f)}
 $("logoF").onchange=()=>imageLoad($("logoF"),x=>{logo=x;localStorage.setItem("oci_logo",x);render()});$("imgF").onchange=()=>imageLoad($("imgF"),x=>{cur().image=x;save();render()});$("rmImg").onclick=()=>{cur().image="";save();render()};
+document.querySelectorAll(".sealFile").forEach(inp=>inp.onchange=()=>{
+  const f=inp.files&&inp.files[0]; if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{sealImages[inp.dataset.seal]=rd.result;localStorage.setItem("oci_seals",JSON.stringify(sealImages));render();};
+  rd.readAsDataURL(f); inp.value="";
+});
+$("clearSeals").onclick=()=>{if(confirm("Effacer toutes les images de sceaux enregistrées ?")){sealImages={};localStorage.removeItem("oci_seals");render();}};
+
 $("exp").onclick=()=>{let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(P,null,2)],{type:"application/json"}));a.download="Ordre_Projet_Documentaire.json";a.click()};$("impB").onclick=()=>$("imp").click();$("imp").onchange=()=>{let r=new FileReader();r.onload=()=>{try{P=JSON.parse(r.result);save();load()}catch{alert("Projet invalide")}};r.readAsText($("imp").files[0])};
 
 function renderFree(){
@@ -350,6 +387,8 @@ async function saveCurrentAsPDF(){
     clone.style.setProperty("overflow","hidden","important");
     clone.style.setProperty("transform","none","important");
     clone.style.setProperty("box-shadow","none","important");
+    clone.style.setProperty("background","#ffffff","important");
+    clone.style.setProperty("background-image","none","important");
 
     clone.querySelectorAll(".resize,.guide,.guideV").forEach(x=>x.remove());
     clone.querySelectorAll(".freeText").forEach(x=>{
@@ -358,12 +397,13 @@ async function saveCurrentAsPDF(){
       x.style.background="transparent";
     });
 
-    clone.querySelectorAll("#logoBox,.logoBox,#plogo,[class*='logo'],[class*='emblem']").forEach(x=>{
+    clone.querySelectorAll("#logoBox,.logoBox,#plogo,[class*='logo'],[class*='emblem'],[class*='seal'],[class*='stamp'],[class*='sceau'],#seal,#stamp,#emblem,#sceau").forEach(x=>{
       x.style.setProperty("border","0","important");
       x.style.setProperty("outline","0","important");
       x.style.setProperty("box-shadow","none","important");
       x.style.setProperty("background","transparent","important");
     });
+    clone.querySelectorAll("#sealP img").forEach(x=>{x.style.border="0";x.style.outline="0";x.style.boxShadow="none";x.style.background="transparent";});
 
     stage.appendChild(clone);
     document.body.appendChild(stage);
@@ -403,4 +443,446 @@ async function saveCurrentAsPDF(){
 }
 if($("pdfB"))$("pdfB").onclick=saveCurrentAsPDF;
 
-</script></body></html>
+</script>
+<style id="gendoc-v6-css">
+/* ===== GenDoc V7 — atelier PAO ===== */
+#v6Panel{margin-top:10px;border:1px solid #343936;padding:9px;border-radius:6px}
+#v6Panel legend{padding:0 5px}
+.v6bar{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0}
+.v6bar button,.v6bar select,.v6bar input{font:11px "Courier New",monospace}
+.v6bar button{padding:6px 8px}
+.v6row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:6px}
+.v6row label{display:block;font-size:9px;margin-bottom:2px}
+#v6Font,#v6Line,#v6Letter,#v6Z{width:100%}
+#v6Undo[disabled],#v6Redo[disabled]{opacity:.4}
+.v6obj{position:absolute;z-index:20;box-sizing:border-box}
+.v6obj.selected{outline:1px dashed #666}
+.v6obj.locked{pointer-events:none}
+.v6obj .v6handle{position:absolute;width:9px;height:9px;right:-5px;bottom:-5px;border:1px solid #555;background:#fff;cursor:nwse-resize}
+.v6obj[data-type="image"] img{width:100%;height:100%;display:block;object-fit:contain}
+.v6obj[data-type="line"]{height:1px;border-top:1px solid #222}
+.v6obj[data-type="rect"]{border:1px solid #222;background:transparent}
+.v6obj[data-type="table"] table{width:100%;height:100%;border-collapse:collapse;font:10px "Courier New",monospace}
+.v6obj[data-type="table"] td{border:1px solid #555;padding:3px;vertical-align:top}
+.v6obj[data-type="text"]{min-height:8mm;white-space:pre-wrap;font:10px/1.4 "Courier New",monospace}
+.v6obj[data-type="text"] .v6content{min-height:7mm;outline:none}
+#paper .seal,#paper .stamp,#paper .emblem,#paper .sceau,
+#paper [class*="seal"],#paper [class*="stamp"],#paper [class*="emblem"],#paper [class*="sceau"],
+#paper #seal,#paper #stamp,#paper #emblem,#paper #sceau,
+#paper .logoBox,#paper #logoBox,#paper #plogo{
+ border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important
+}
+@media print{.v6obj.selected{outline:none!important}.v6handle{display:none!important}}
+</style>
+
+<script id="gendoc-v6-js">
+(()=>{
+const $v=id=>document.getElementById(id);
+const paper=()=>document.getElementById("paper");
+let v6sel=null, undoStack=[], redoStack=[], restoring=false;
+
+function doc(){try{return cur()}catch(e){return null}}
+function ensure(){
+ const d=doc(); if(!d)return null;
+ if(!Array.isArray(d.v6objects))d.v6objects=[];
+ return d;
+}
+function snap(v){return Math.round(v*2)/2}
+function snapshot(){
+ const d=ensure(); if(!d||restoring)return;
+ undoStack.push(JSON.stringify(d.v6objects)); if(undoStack.length>60)undoStack.shift();
+ redoStack=[];buttons();
+}
+function buttons(){
+ if($v("v6Undo"))$v("v6Undo").disabled=!undoStack.length;
+ if($v("v6Redo"))$v("v6Redo").disabled=!redoStack.length;
+}
+function persist(){try{save()}catch(e){}}
+function mmPerPx(){return 210/paper().getBoundingClientRect().width}
+function uid(){return "v6_"+Date.now()+"_"+Math.random().toString(36).slice(2,7)}
+function select(id){
+ v6sel=id;
+ paper().querySelectorAll(".v6obj").forEach(x=>x.classList.toggle("selected",x.dataset.id===id));
+ syncControls();
+}
+function selected(){const d=ensure();return d&&d.v6objects.find(o=>o.id===v6sel)}
+function syncControls(){
+ const o=selected(); if(!o)return;
+ if($v("v6Font"))$v("v6Font").value=o.font||"Courier New";
+ if($v("v6Line"))$v("v6Line").value=o.line||1.4;
+ if($v("v6Letter"))$v("v6Letter").value=o.letter||0;
+ if($v("v6Z"))$v("v6Z").value=o.z||20;
+}
+function add(o){
+ const d=ensure(); snapshot(); o.id=uid();o.x=o.x??45;o.y=o.y??105;o.w=o.w??80;o.h=o.h??25;o.z=o.z??20;
+ d.v6objects.push(o);persist();renderV6();select(o.id);
+}
+function renderV6(){
+ const d=ensure(),p=paper(); if(!d||!p)return;
+ p.querySelectorAll(".v6obj").forEach(x=>x.remove());
+ d.v6objects.forEach(o=>{
+   const el=document.createElement("div");
+   el.className="v6obj"+(o.locked?" locked":"")+(o.id===v6sel?" selected":"");
+   el.dataset.id=o.id;el.dataset.type=o.type;
+   Object.assign(el.style,{left:o.x+"mm",top:o.y+"mm",width:o.w+"mm",height:o.h+"mm",zIndex:o.z||20});
+   if(o.type==="image"){el.innerHTML='<img draggable="false" src="'+o.src+'">';}
+   if(o.type==="line"){el.style.height="1px";el.style.borderTop=(o.thickness||1)+"px solid "+(o.color||"#222");}
+   if(o.type==="rect"){el.style.border=(o.thickness||1)+"px solid "+(o.color||"#222");}
+   if(o.type==="text"){
+      el.style.fontFamily=o.font||"Courier New";el.style.fontSize=(o.size||10)+"px";
+      el.style.lineHeight=o.line||1.4;el.style.letterSpacing=(o.letter||0)+"px";
+      el.innerHTML='<div class="v6content" contenteditable="true">'+(o.html||"Nouveau texte")+'</div>';
+      const c=el.querySelector(".v6content");
+      c.onfocus=()=>select(o.id);
+      c.oninput=()=>{o.html=c.innerHTML;persist()};
+   }
+   if(o.type==="table"){
+      let html="<table><tbody>";
+      for(let r=0;r<(o.rows||3);r++){html+="<tr>";for(let c=0;c<(o.cols||2);c++)html+='<td contenteditable="true"></td>';html+="</tr>"}
+      html+="</tbody></table>";el.innerHTML=html;
+      el.addEventListener("input",()=>{o.tableHTML=el.querySelector("table").innerHTML;persist()});
+      if(o.tableHTML)el.querySelector("table").innerHTML=o.tableHTML;
+   }
+   if(!o.locked){
+     const h=document.createElement("span");h.className="v6handle";el.appendChild(h);
+     drag(el,o);resize(el,o,h);
+   }
+   el.addEventListener("pointerdown",()=>select(o.id));
+   p.appendChild(el);
+ });
+}
+function drag(el,o){
+ el.addEventListener("pointerdown",e=>{
+   if(e.target.closest(".v6handle")||e.target.closest("[contenteditable=true]"))return;
+   e.preventDefault();snapshot();el.setPointerCapture(e.pointerId);
+   const r=paper().getBoundingClientRect(),m=mmPerPx(),sx=e.clientX,sy=e.clientY,ox=o.x,oy=o.y;
+   const mv=ev=>{o.x=snap(Math.max(0,Math.min(210-o.w,ox+(ev.clientX-sx)*m)));o.y=snap(Math.max(0,Math.min(297-o.h,oy+(ev.clientY-sy)*m)));el.style.left=o.x+"mm";el.style.top=o.y+"mm"};
+   const up=()=>{el.removeEventListener("pointermove",mv);persist()};
+   el.addEventListener("pointermove",mv);el.addEventListener("pointerup",up,{once:true});
+ });
+}
+function resize(el,o,h){
+ h.addEventListener("pointerdown",e=>{
+   e.stopPropagation();e.preventDefault();snapshot();h.setPointerCapture(e.pointerId);
+   const m=mmPerPx(),sx=e.clientX,sy=e.clientY,ow=o.w,oh=o.h;
+   const mv=ev=>{o.w=snap(Math.max(8,ow+(ev.clientX-sx)*m));o.h=snap(Math.max(4,oh+(ev.clientY-sy)*m));el.style.width=o.w+"mm";el.style.height=o.h+"mm"};
+   h.addEventListener("pointermove",mv);h.addEventListener("pointerup",()=>{h.removeEventListener("pointermove",mv);persist()},{once:true});
+ });
+}
+function mutate(fn){const o=selected();if(!o)return;snapshot();fn(o);persist();renderV6();select(o.id)}
+function undo(){const d=ensure();if(!d||!undoStack.length)return;redoStack.push(JSON.stringify(d.v6objects));restoring=true;d.v6objects=JSON.parse(undoStack.pop());restoring=false;persist();renderV6();buttons()}
+function redo(){const d=ensure();if(!d||!redoStack.length)return;undoStack.push(JSON.stringify(d.v6objects));restoring=true;d.v6objects=JSON.parse(redoStack.pop());restoring=false;persist();renderV6();buttons()}
+function buildUI(){
+ const host=document.querySelector("#tab-content")||document.querySelector(".tab-content")||document.querySelector(".edit");
+ if(!host||$v("v6Panel"))return;
+ const f=document.createElement("fieldset");f.id="v6Panel";
+ f.innerHTML=`<legend>MISE EN PAGE AVANCÉE V6</legend>
+ <div class="v6bar">
+  <button id="v6Text">+ TEXTE</button><button id="v6Image">+ IMAGE</button><button id="v6LineB">+ LIGNE</button>
+  <button id="v6Rect">+ RECTANGLE</button><button id="v6Table">+ TABLEAU</button>
+ </div>
+ <div class="v6bar">
+  <button id="v6Back">ARRIÈRE</button><button id="v6Front">AVANT</button><button id="v6Lock">VERROUILLER</button>
+  <button id="v6Dup">DUPLIQUER</button><button id="v6Del">SUPPRIMER</button>
+ </div>
+ <div class="v6bar"><button id="v6Undo">↶ ANNULER</button><button id="v6Redo">↷ RÉTABLIR</button></div>
+ <div class="v6row">
+  <div><label>Police</label><select id="v6Font"><option>Courier New</option><option>Georgia</option><option>Arial</option><option>Times New Roman</option></select></div>
+  <div><label>Plan (z-index)</label><input id="v6Z" type="number" min="1" max="99" value="20"></div>
+  <div><label>Interligne</label><input id="v6Line" type="number" min="0.8" max="3" step=".1" value="1.4"></div>
+  <div><label>Espacement lettres (px)</label><input id="v6Letter" type="number" min="-2" max="10" step=".1" value="0"></div>
+ </div>
+ <div class="v6bar"><button data-style="title">STYLE TITRE</button><button data-style="ref">STYLE RÉF.</button><button data-style="meta">STYLE MÉTA</button><button data-style="body">STYLE CORPS</button><button data-style="note">STYLE ANNOTATION</button></div>
+ <input id="v6File" type="file" accept="image/*" hidden>`;
+ host.appendChild(f);
+ $v("v6Text").onclick=()=>add({type:"text",html:"Nouveau texte",w:85,h:18,font:"Courier New",size:10,line:1.4,letter:0});
+ $v("v6Image").onclick=()=>$v("v6File").click();
+ $v("v6File").onchange=e=>{const file=e.target.files[0];if(!file)return;const rd=new FileReader();rd.onload=()=>add({type:"image",src:rd.result,w:55,h:40});rd.readAsDataURL(file);e.target.value=""};
+ $v("v6LineB").onclick=()=>add({type:"line",w:80,h:1,thickness:1});
+ $v("v6Rect").onclick=()=>add({type:"rect",w:60,h:30,thickness:1});
+ $v("v6Table").onclick=()=>{let rows=parseInt(prompt("Nombre de lignes ?","3")||3),cols=parseInt(prompt("Nombre de colonnes ?","2")||2);add({type:"table",rows:Math.max(1,rows),cols:Math.max(1,cols),w:100,h:35})};
+ $v("v6Back").onclick=()=>mutate(o=>o.z=Math.max(1,(o.z||20)-1));
+ $v("v6Front").onclick=()=>mutate(o=>o.z=Math.min(99,(o.z||20)+1));
+ $v("v6Lock").onclick=()=>mutate(o=>o.locked=!o.locked);
+ $v("v6Dup").onclick=()=>{const o=selected();if(!o)return;const c=JSON.parse(JSON.stringify(o));delete c.id;c.x+=5;c.y+=5;add(c)};
+ $v("v6Del").onclick=()=>{const d=ensure(),o=selected();if(!o)return;snapshot();d.v6objects=d.v6objects.filter(x=>x.id!==o.id);v6sel=null;persist();renderV6()};
+ $v("v6Undo").onclick=undo;$v("v6Redo").onclick=redo;
+ $v("v6Font").onchange=e=>mutate(o=>o.font=e.target.value);
+ $v("v6Line").onchange=e=>mutate(o=>o.line=+e.target.value);
+ $v("v6Letter").onchange=e=>mutate(o=>o.letter=+e.target.value);
+ $v("v6Z").onchange=e=>mutate(o=>o.z=+e.target.value);
+ f.querySelectorAll("[data-style]").forEach(b=>b.onclick=()=>mutate(o=>{
+   if(o.type!=="text")return;
+   const st=b.dataset.style;
+   const presets={title:{size:18,font:"Courier New",line:1.15,letter:.5},ref:{size:9,font:"Courier New",line:1.2,letter:.4},meta:{size:8,font:"Courier New",line:1.25,letter:.2},body:{size:10,font:"Courier New",line:1.5,letter:0},note:{size:9,font:"Georgia",line:1.35,letter:0}};
+   Object.assign(o,presets[st]);
+ })) ;
+ buttons();
+}
+function stripFrames(){
+ const p=paper();if(!p)return;
+ p.querySelectorAll(".seal,.stamp,.emblem,.sceau,[class*='seal'],[class*='stamp'],[class*='emblem'],[class*='sceau'],#seal,#stamp,#emblem,#sceau,.logoBox,#logoBox,#plogo").forEach(x=>{
+   x.style.setProperty("border","0","important");x.style.setProperty("outline","0","important");x.style.setProperty("box-shadow","none","important");x.style.setProperty("background","transparent","important");
+ });
+}
+const oldRender=window.render;
+if(typeof oldRender==="function")window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(()=>{renderV6();stripFrames()},0);return r};
+document.addEventListener("DOMContentLoaded",()=>{buildUI();setTimeout(()=>{renderV6();stripFrames()},50)});
+setTimeout(()=>{buildUI();renderV6();stripFrames()},100);
+})();
+</script>
+
+
+<style id="gendoc-v7-css">
+#v7Panel{margin-top:10px;border:1px solid #343936;padding:9px;border-radius:6px}
+#v7Panel legend{padding:0 5px}
+.v7bar{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0}
+.v7bar button,.v7bar select,.v7bar input{font:10px "Courier New",monospace;padding:5px}
+.v7grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.v7grid label{font-size:9px;display:block}
+.v7grid input,.v7grid select{width:100%}
+.v7pill{border:1px solid #555;padding:4px 6px;display:inline-block;margin:2px;font-size:9px;cursor:pointer}
+#v7Inspector{border-top:1px solid #444;margin-top:7px;padding-top:7px}
+#v7Assets{max-height:120px;overflow:auto;border:1px solid #333;padding:5px}
+.v7asset{display:flex;align-items:center;gap:6px;padding:3px;border-bottom:1px dotted #444}
+.v7asset img{width:28px;height:28px;object-fit:contain;background:#fff}
+.v7stamp{position:absolute;z-index:35;border:2px solid currentColor;padding:2mm 4mm;font:bold 12px "Courier New",monospace;letter-spacing:1px;transform:rotate(-7deg);background:transparent;white-space:nowrap}
+.v7redaction{position:absolute;z-index:40;background:#000;min-width:15mm;min-height:4mm}
+.v7annotation{position:absolute;z-index:45;font:italic 12px Georgia,serif;white-space:pre-wrap}
+.v7arrow{position:absolute;z-index:44;height:2px;background:#222;transform-origin:left center}
+.v7arrow:after{content:"";position:absolute;right:-1px;top:-4px;border-left:8px solid #222;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.v7sig{position:absolute;z-index:45;max-width:45mm;max-height:25mm;object-fit:contain}
+.v7-selected{outline:1px dashed #777!important}
+.v7-guide{position:absolute;pointer-events:none;z-index:90;background:rgba(80,80,80,.22)}
+.v7-guide.v{top:0;bottom:0;width:1px}.v7-guide.h{left:0;right:0;height:1px}
+.v7-preview .v6handle,.v7-preview .resize,.v7-preview .guide,.v7-preview .guideV,.v7-preview .v7-guide{display:none!important}
+.v7-preview .selected,.v7-preview .sel,.v7-preview .v7-selected{outline:none!important}
+.v7pageBadge{position:absolute;right:4mm;bottom:3mm;font:7px "Courier New",monospace;z-index:70}
+.v7-history{max-height:110px;overflow:auto;font-size:8px;border:1px solid #333;padding:4px}
+.v7-history button{font-size:8px;margin:2px}
+.v7-hidden{display:none!important}
+</style>
+
+<script id="gendoc-v7-js">
+(()=>{
+const V=id=>document.getElementById(id);
+const LS="gendoc_v7_ext";
+let X={assets:[],history:{},pageMeta:{},clipboard:null,settings:{grid:false,snap:2},versions:{}};
+try{Object.assign(X,JSON.parse(localStorage.getItem(LS)||"{}"))}catch(e){}
+function xs(){localStorage.setItem(LS,JSON.stringify(X))}
+function D(){try{return cur()}catch(e){return null}}
+function PPR(){return V("paper")}
+function refx(d=D()){try{return ref(d)}catch(e){return d?.dossier+"/"+d?.cat+d?.num}}
+function id(){return "x"+Date.now()+Math.random().toString(36).slice(2,6)}
+function ensureD(){
+ const d=D(); if(!d)return;
+ d.pages=d.pages||[{id:id(),name:"Page 1",objects:[]}];
+ d.pageIndex=Math.min(d.pageIndex||0,d.pages.length-1);
+ d.memory=d.memory||{fictionDate:d.date||"",author:d.author||"",origin:"",access:d.access||"",versionType:"RÉELLE",notes:""};
+ d.linkedRefs=d.linkedRefs||[];
+ d.v7objects=d.v7objects||[];
+ return d;
+}
+function hist(action){
+ const d=ensureD();if(!d)return;
+ const k=d.id;X.history[k]=X.history[k]||[];
+ X.history[k].unshift({t:new Date().toISOString(),a:action});
+ X.history[k]=X.history[k].slice(0,80);xs();renderHistory();
+}
+function version(label){
+ const d=ensureD();if(!d)return;
+ const k=d.id;X.versions[k]=X.versions[k]||[];
+ X.versions[k].unshift({id:id(),t:new Date().toISOString(),label:label||"Sauvegarde",doc:JSON.parse(JSON.stringify(d))});
+ X.versions[k]=X.versions[k].slice(0,20);xs();renderVersions();
+}
+function restoreVersion(vid){
+ const d=ensureD(),arr=X.versions[d.id]||[],v=arr.find(q=>q.id===vid);if(!v)return;
+ if(!confirm("Restaurer cette version du document ?"))return;
+ const keep=d.id; P.docs[keep]=JSON.parse(JSON.stringify(v.doc));P.docs[keep].id=keep;save();load();setTimeout(initDoc,30);hist("Version restaurée");
+}
+function renderHistory(){
+ const d=D(),box=V("v7History");if(!d||!box)return;
+ box.innerHTML=(X.history[d.id]||[]).map(h=>`<div>${new Date(h.t).toLocaleString()} — ${esc(h.a)}</div>`).join("")||"Aucune modification enregistrée.";
+}
+function renderVersions(){
+ const d=D(),box=V("v7Versions");if(!d||!box)return;
+ box.innerHTML=(X.versions[d.id]||[]).map(v=>`<div><button data-v="${v.id}">REST.</button> ${esc(v.label)} · ${new Date(v.t).toLocaleString()}</div>`).join("")||"Aucune version.";
+ box.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>restoreVersion(b.dataset.v));
+}
+function esc(x){return String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function mmPx(){return 210/PPR().getBoundingClientRect().width}
+function snap(v){return X.settings.grid?Math.round(v/(X.settings.snap||2))*(X.settings.snap||2):v}
+function currentObjects(){const d=ensureD();return d.pages[d.pageIndex].objects}
+function addObj(o){
+ o.id=id();o.x=o.x??45;o.y=o.y??95;o.w=o.w??50;o.h=o.h??15;o.rot=o.rot||0;o.opacity=o.opacity??1;
+ currentObjects().push(o);save();hist("Élément ajouté : "+o.type);renderObjects();
+}
+function renderObjects(){
+ const p=PPR(),d=ensureD();if(!p||!d)return;
+ p.querySelectorAll(".v7x,.v7pageBadge,.v7-guide").forEach(e=>e.remove());
+ currentObjects().forEach(o=>{
+  let e;
+  if(o.type==="stamp"){e=document.createElement("div");e.className="v7x v7stamp";e.textContent=o.text}
+  else if(o.type==="redaction"){e=document.createElement("div");e.className="v7x v7redaction"}
+  else if(o.type==="annotation"){e=document.createElement("div");e.className="v7x v7annotation";e.contentEditable="true";e.innerHTML=o.html||esc(o.text||"Annotation");e.oninput=()=>{o.html=e.innerHTML;save()}}
+  else if(o.type==="arrow"){e=document.createElement("div");e.className="v7x v7arrow"}
+  else if(o.type==="signature"){e=document.createElement("img");e.className="v7x v7sig";e.src=o.src}
+  else if(o.type==="asset"){e=document.createElement("img");e.className="v7x";e.src=o.src;e.style.objectFit="contain"}
+  else return;
+  e.dataset.xid=o.id;
+  Object.assign(e.style,{left:o.x+"mm",top:o.y+"mm",width:o.w+"mm",height:o.h+"mm",opacity:o.opacity,transform:`rotate(${o.rot}deg)`});
+  e.onclick=ev=>{ev.stopPropagation();selectObj(o.id)};
+  drag(e,o);p.appendChild(e);
+ });
+ if(X.settings.grid){
+   [52.5,105,157.5].forEach(x=>{let g=document.createElement("div");g.className="v7-guide v";g.style.left=x+"mm";p.appendChild(g)});
+   [74.25,148.5,222.75].forEach(y=>{let g=document.createElement("div");g.className="v7-guide h";g.style.top=y+"mm";p.appendChild(g)});
+ }
+ const b=document.createElement("div");b.className="v7pageBadge";b.textContent=`PAGE ${d.pageIndex+1}/${d.pages.length}`;p.appendChild(b);
+ renderPages();
+}
+let selected=null;
+function selectObj(i){
+ selected=i;PPR().querySelectorAll(".v7x").forEach(e=>e.classList.toggle("v7-selected",e.dataset.xid===i));
+ const o=currentObjects().find(q=>q.id===i); if(!o)return;
+ [["v7X","x"],["v7Y","y"],["v7W","w"],["v7H","h"],["v7Rot","rot"],["v7Opacity","opacity"]].forEach(([a,k])=>{if(V(a))V(a).value=o[k]??""});
+}
+function drag(e,o){
+ e.addEventListener("pointerdown",ev=>{
+  if(ev.target.isContentEditable)return;
+  const sx=ev.clientX,sy=ev.clientY,ox=o.x,oy=o.y,m=mmPx();e.setPointerCapture(ev.pointerId);
+  const mv=q=>{o.x=snap(Math.max(0,Math.min(210-o.w,ox+(q.clientX-sx)*m)));o.y=snap(Math.max(0,Math.min(297-o.h,oy+(q.clientY-sy)*m)));e.style.left=o.x+"mm";e.style.top=o.y+"mm"};
+  const up=()=>{e.removeEventListener("pointermove",mv);save();hist("Élément déplacé")};
+  e.addEventListener("pointermove",mv);e.addEventListener("pointerup",up,{once:true});
+ });
+}
+function inspector(k,v){
+ const o=currentObjects().find(q=>q.id===selected);if(!o)return;o[k]=+v;save();renderObjects();selectObj(o.id);
+}
+function renderPages(){
+ const d=ensureD(),sel=V("v7Pages");if(!d||!sel)return;
+ sel.innerHTML=d.pages.map((p,i)=>`<option value="${i}">${i+1} — ${esc(p.name||"Page "+(i+1))}</option>`).join("");sel.value=d.pageIndex;
+}
+function addPage(){const d=ensureD();d.pages.push({id:id(),name:"Page "+(d.pages.length+1),objects:[]});d.pageIndex=d.pages.length-1;save();hist("Page ajoutée");renderObjects()}
+function dupPage(){const d=ensureD(),p=JSON.parse(JSON.stringify(d.pages[d.pageIndex]));p.id=id();p.name+=" copie";p.objects.forEach(o=>o.id=id());d.pages.splice(d.pageIndex+1,0,p);d.pageIndex++;save();hist("Page dupliquée");renderObjects()}
+function delPage(){const d=ensureD();if(d.pages.length===1)return alert("Le document doit conserver au moins une page.");d.pages.splice(d.pageIndex,1);d.pageIndex=Math.max(0,d.pageIndex-1);save();hist("Page supprimée");renderObjects()}
+function movePage(dir){const d=ensureD(),i=d.pageIndex,j=i+dir;if(j<0||j>=d.pages.length)return;[d.pages[i],d.pages[j]]=[d.pages[j],d.pages[i]];d.pageIndex=j;save();hist("Pages réorganisées");renderObjects()}
+const templates={
+ "ORDRE DE MISSION":{title:"ORDRE DE MISSION",cat:"M",body:"OBJECTIF OPÉRATIONNEL\n\nCONTEXTE\n\nINSTRUCTIONS\n\nPIÈCES À CONSULTER\n\nCOMPTE RENDU ATTENDU"},
+ "RAPPORT D’INCIDENT":{title:"RAPPORT D’INCIDENT",body:"SYNTHÈSE\n\nCHRONOLOGIE\n\nCONSTATS\n\nANOMALIES\n\nMESURES PRISES"},
+ "AUDITION":{title:"PROCÈS-VERBAL D’AUDITION",body:"IDENTITÉ\n\nCONTEXTE DE L’AUDITION\n\nTRANSCRIPTION\n\nOBSERVATIONS"},
+ "FICHE D’ARCHIVE":{title:"FICHE D’ARCHIVE",body:"ORIGINE\n\nDATATION\n\nDESCRIPTION\n\nÉTAT\n\nLIENS DOCUMENTAIRES"},
+ "RAPPORT D’ANALYSE":{title:"RAPPORT D’ANALYSE",body:"OBJET\n\nMÉTHODE\n\nOBSERVATIONS\n\nINTERPRÉTATION\n\nLIMITES\n\nCONCLUSION"},
+ "NOTE INTERNE":{title:"NOTE INTERNE",body:"DESTINATAIRE\n\nOBJET\n\nNOTE"},
+ "TRANSCRIPTION":{title:"TRANSCRIPTION",body:"SOURCE\n\nHORODATAGE\n\nTRANSCRIPTION\n\nREMARQUES"},
+ "DOSSIER PERSONNEL":{title:"DOSSIER PERSONNEL",body:"IDENTITÉ\n\nAFFECTATION\n\nHISTORIQUE\n\nOBSERVATIONS\n\nSTATUT"},
+ "DOCUMENT HISTORIQUE":{title:"ARCHIVE HISTORIQUE",body:"PROVENANCE\n\nDATE ESTIMÉE\n\nTRANSCRIPTION / CONTENU\n\nOBSERVATIONS DE CONSERVATION"}
+};
+function applyTemplate(name){
+ const d=ensureD(),t=templates[name];if(!t)return;version("Avant modèle "+name);d.title=t.title;d.body=t.body;d.bodyHtml=esc(t.body).replace(/\n/g,"<br>");if(t.cat)d.cat=t.cat;save();load();setTimeout(initDoc,30);hist("Modèle appliqué : "+name);
+}
+function addAsset(file,name,kind="image"){
+ const rd=new FileReader();rd.onload=()=>{X.assets.push({id:id(),name:name||file.name,kind,src:rd.result});xs();renderAssets();hist("Asset ajouté : "+(name||file.name))};rd.readAsDataURL(file)
+}
+function renderAssets(){
+ const box=V("v7Assets");if(!box)return;
+ box.innerHTML=X.assets.map(a=>`<div class="v7asset"><img src="${a.src}"><span>${esc(a.name)}</span><button data-use="${a.id}">+</button><button data-del="${a.id}">×</button></div>`).join("")||"Médiathèque vide.";
+ box.querySelectorAll("[data-use]").forEach(b=>b.onclick=()=>{const a=X.assets.find(q=>q.id===b.dataset.use);if(a)addObj({type:"asset",src:a.src,w:35,h:25})});
+ box.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{X.assets=X.assets.filter(q=>q.id!==b.dataset.del);xs();renderAssets()});
+}
+function redactSelection(){
+ const sel=window.getSelection();if(sel&&sel.rangeCount&&!sel.isCollapsed){
+  const r=sel.getRangeAt(0),pr=PPR().getBoundingClientRect(),rr=r.getBoundingClientRect(),m=210/pr.width;
+  addObj({type:"redaction",x:(rr.left-pr.left)*m,y:(rr.top-pr.top)*m,w:Math.max(12,rr.width*m),h:Math.max(4,rr.height*m)});
+ }else addObj({type:"redaction",w:35,h:5});
+}
+function validate(){
+ const d=ensureD(),issues=[];
+ if(!/^\d{2}\.\d{2}\.\d{4}$/.test(d.date||""))issues.push("Date : format canon attendu JJ.MM.AAAA.");
+ if(!d.title)issues.push("Titre absent.");
+ if(!d.access)issues.push("Niveau d’accès absent.");
+ const refs=new Map();
+ Object.values(P.docs||{}).forEach(q=>{const r=refx(q);refs.set(r,(refs.get(r)||0)+1)});
+ [...refs].filter(([,n])=>n>1).forEach(([r])=>issues.push("Référence en double : "+r));
+ (d.linkedRefs||[]).forEach(r=>{if(!refs.has(r))issues.push("Pièce liée inexistante : "+r)});
+ V("v7Canon").innerHTML=issues.length?issues.map(x=>`<div class="issue">${esc(x)}</div>`).join(""):"<div class='ok small'>Contrôle V7 : conforme.</div>";
+}
+function saveMemory(){
+ const d=ensureD();["fictionDate","origin","versionType","notes"].forEach(k=>d.memory[k]=V("mem_"+k).value);d.memory.author=V("mem_author").value;d.memory.access=V("mem_access").value;
+ d.linkedRefs=V("v7Links").value.split(",").map(x=>x.trim()).filter(Boolean);save();hist("Mémoire documentaire mise à jour");validate()
+}
+function loadMemory(){
+ const d=ensureD(),m=d.memory;["fictionDate","author","origin","access","versionType","notes"].forEach(k=>{if(V("mem_"+k))V("mem_"+k).value=m[k]||""});V("v7Links").value=(d.linkedRefs||[]).join(", ");
+}
+function copyObj(){const o=currentObjects().find(q=>q.id===selected);if(o){X.clipboard=JSON.parse(JSON.stringify(o));xs()}}
+function pasteObj(){if(!X.clipboard)return;const o=JSON.parse(JSON.stringify(X.clipboard));delete o.id;o.x=(o.x||0)+4;o.y=(o.y||0)+4;addObj(o)}
+function preview(){PPR().classList.toggle("v7-preview");V("v7Preview").textContent=PPR().classList.contains("v7-preview")?"QUITTER APERÇU":"APERÇU FINAL"}
+async function exportMulti(){
+ const d=ensureD();if(!window.jspdf||!window.html2canvas){if(typeof ensurePDFLibs==="function")await ensurePDFLibs()}
+ const old=d.pageIndex, {jsPDF}=window.jspdf;let pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+ for(let i=0;i<d.pages.length;i++){
+   d.pageIndex=i;renderObjects();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+   const source=PPR(),stage=document.createElement("div");stage.style.cssText="position:absolute;left:-300mm;top:0;width:210mm;height:297mm;overflow:hidden;background:#fff";
+   const clone=source.cloneNode(true);clone.style.cssText+=";position:relative!important;left:0!important;top:0!important;width:210mm!important;height:297mm!important;min-height:297mm!important;max-height:297mm!important;margin:0!important;box-sizing:border-box!important;overflow:hidden!important;transform:none!important;box-shadow:none!important;background:#fff!important;background-image:none!important";
+   clone.querySelectorAll(".resize,.guide,.guideV,.v6handle,.v7-guide").forEach(x=>x.remove());clone.querySelectorAll(".selected,.sel,.v7-selected").forEach(x=>x.classList.remove("selected","sel","v7-selected"));
+   stage.appendChild(clone);document.body.appendChild(stage);await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+   const canvas=await html2canvas(clone,{scale:2,backgroundColor:"#fff",useCORS:true,logging:false,scrollX:0,scrollY:0});
+   if(i)pdf.addPage("a4","portrait");pdf.addImage(canvas.toDataURL("image/jpeg",.98),"JPEG",0,0,210,297,undefined,"FAST");stage.remove();
+ }
+ d.pageIndex=old;renderObjects();pdf.save((refx(d)+"_"+(d.title||"DOCUMENT")).replace(/[\\/:*?"<>|]+/g,"-")+"_COMPLET.pdf");hist("PDF multipage exporté");
+}
+function exportDossier(){
+ const ds=D()?.dossier,docs=Object.values(P.docs||{}).filter(q=>q.dossier===ds).sort((a,b)=>refx(a).localeCompare(refx(b)));
+ const data={dossier:ds,exported:new Date().toISOString(),documents:docs};const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));a.download=ds+"_DOSSIER_COMPLET.json";a.click();hist("Dossier complet exporté");
+}
+function historical(){
+ const d=ensureD(),year=parseInt((d.memory.fictionDate||d.date||"").match(/\d{4}/)?.[0]||0);
+ PPR().style.fontFamily=year&&year<1900?"Georgia,serif":"Courier New,monospace";
+ PPR().style.letterSpacing=year&&year<1900?".15px":"normal";hist("Mode historique appliqué");
+}
+function build(){
+ const host=V("v6Panel")?.parentElement||document.querySelector("#text")||document.querySelector(".edit");if(!host||V("v7Panel"))return;
+ const f=document.createElement("fieldset");f.id="v7Panel";f.innerHTML=`<legend>SYSTÈME DOCUMENTAIRE // V7</legend>
+ <div class="v7bar"><select id="v7Template">${Object.keys(templates).map(x=>`<option>${x}</option>`).join("")}</select><button id="v7ApplyTpl">APPLIQUER MODÈLE</button></div>
+ <div class="v7bar"><select id="v7Pages"></select><button id="v7AddPage">+ PAGE</button><button id="v7DupPage">DUP.</button><button id="v7DelPage">− PAGE</button><button id="v7UpPage">←</button><button id="v7DownPage">→</button></div>
+ <div class="v7bar"><button data-stamp="CLASSIFIÉ">CLASSIFIÉ</button><button data-stamp="ARCHIVÉ">ARCHIVÉ</button><button data-stamp="ANNULÉ">ANNULÉ</button><button data-stamp="COPIE">COPIE</button><button data-stamp="ACCÈS REFUSÉ">ACCÈS REFUSÉ</button><button id="v7Redact">████ CENSURER</button></div>
+ <div class="v7bar"><button id="v7Note">+ NOTE</button><button id="v7Arrow">+ FLÈCHE</button><button id="v7Sig">+ SIGNATURE</button><input id="v7SigFile" type="file" accept="image/*" hidden></div>
+ <div class="v7bar"><button id="v7Grid">GRILLE : OFF</button><button id="v7Copy">COPIER OBJET</button><button id="v7Paste">COLLER OBJET</button><button id="v7Preview">APERÇU FINAL</button></div>
+ <div id="v7Inspector"><b>INSPECTEUR D’OBJET</b><div class="v7grid">
+  <label>X mm<input id="v7X" type="number" step=".5"></label><label>Y mm<input id="v7Y" type="number" step=".5"></label>
+  <label>Largeur mm<input id="v7W" type="number" step=".5"></label><label>Hauteur mm<input id="v7H" type="number" step=".5"></label>
+  <label>Rotation °<input id="v7Rot" type="number" step="1"></label><label>Opacité<input id="v7Opacity" type="number" min="0" max="1" step=".05"></label>
+ </div></div>
+ <fieldset><legend>MÉDIATHÈQUE</legend><input id="v7AssetFile" type="file" accept="image/*" multiple><div id="v7Assets"></div></fieldset>
+ <fieldset><legend>MÉMOIRE DU DOCUMENT</legend><div class="v7grid">
+  <label>Date fictive<input id="mem_fictionDate"></label><label>Auteur<input id="mem_author"></label>
+  <label>Origine<input id="mem_origin"></label><label>Accès<input id="mem_access"></label>
+  <label>Version<select id="mem_versionType"><option>RÉELLE</option><option>PUBLIQUE</option><option>CENSURÉE</option><option>FALSIFIÉE</option><option>ARCHIVÉE</option></select></label>
+  <label>Notes<input id="mem_notes"></label></div><label>Pièces liées (références séparées par virgules)</label><input id="v7Links"><button id="v7SaveMem">ENREGISTRER MÉMOIRE</button></fieldset>
+ <div class="v7bar"><button id="v7Historical">MODE HISTORIQUE</button><button id="v7CanonB">CONTRÔLE CANON</button></div><div id="v7Canon"></div>
+ <fieldset><legend>VERSIONS</legend><div class="v7bar"><button id="v7Snapshot">CRÉER UNE VERSION</button></div><div id="v7Versions" class="v7-history"></div></fieldset>
+ <fieldset><legend>HISTORIQUE</legend><div id="v7History" class="v7-history"></div></fieldset>
+ <div class="v7bar"><button id="v7MultiPDF">PDF MULTIPAGE</button><button id="v7ExportDossier">EXPORT DOSSIER</button></div>`;
+ host.appendChild(f);
+ V("v7ApplyTpl").onclick=()=>applyTemplate(V("v7Template").value);
+ V("v7Pages").onchange=()=>{D().pageIndex=+V("v7Pages").value;save();renderObjects()};
+ V("v7AddPage").onclick=addPage;V("v7DupPage").onclick=dupPage;V("v7DelPage").onclick=delPage;V("v7UpPage").onclick=()=>movePage(-1);V("v7DownPage").onclick=()=>movePage(1);
+ f.querySelectorAll("[data-stamp]").forEach(b=>b.onclick=()=>addObj({type:"stamp",text:b.dataset.stamp,w:42,h:9,rot:-7}));
+ V("v7Redact").onclick=redactSelection;V("v7Note").onclick=()=>addObj({type:"annotation",text:"Annotation",w:55,h:12,rot:-2});
+ V("v7Arrow").onclick=()=>addObj({type:"arrow",w:40,h:2,rot:0});
+ V("v7Sig").onclick=()=>V("v7SigFile").click();V("v7SigFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>addObj({type:"signature",src:rd.result,w:35,h:18});rd.readAsDataURL(f);e.target.value=""};
+ V("v7Grid").onclick=()=>{X.settings.grid=!X.settings.grid;xs();V("v7Grid").textContent="GRILLE : "+(X.settings.grid?"ON":"OFF");renderObjects()};
+ V("v7Copy").onclick=copyObj;V("v7Paste").onclick=pasteObj;V("v7Preview").onclick=preview;
+ [["v7X","x"],["v7Y","y"],["v7W","w"],["v7H","h"],["v7Rot","rot"],["v7Opacity","opacity"]].forEach(([a,k])=>V(a).onchange=e=>inspector(k,e.target.value));
+ V("v7AssetFile").onchange=e=>[...e.target.files].forEach(f=>addAsset(f,f.name));V("v7SaveMem").onclick=saveMemory;V("v7Historical").onclick=historical;V("v7CanonB").onclick=validate;
+ V("v7Snapshot").onclick=()=>version(prompt("Nom de cette version ?","Version manuelle")||"Version manuelle");
+ V("v7MultiPDF").onclick=exportMulti;V("v7ExportDossier").onclick=exportDossier;
+}
+function initDoc(){ensureD();build();renderObjects();renderAssets();loadMemory();renderHistory();renderVersions();validate();if(V("v7Grid"))V("v7Grid").textContent="GRILLE : "+(X.settings.grid?"ON":"OFF")}
+const oldLoad=window.load;if(typeof oldLoad==="function")window.load=function(){const r=oldLoad.apply(this,arguments);setTimeout(initDoc,0);return r};
+document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="c"&&selected){e.preventDefault();copyObj()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="v"&&X.clipboard){e.preventDefault();pasteObj()}});
+document.addEventListener("DOMContentLoaded",()=>setTimeout(initDoc,120));setTimeout(initDoc,180);
+})();
+</script>
+
+</body></html>
