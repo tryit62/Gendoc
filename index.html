@@ -1,4 +1,4 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenDoc V7.3</title>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenDoc V7.4</title>
 <style>
 :root{--b:#090b0b;--p:#151817;--l:#38403c;--i:#eceee9;--m:#929a95;--paper:#f2efe5}*{box-sizing:border-box}body{margin:0;background:var(--b);color:var(--i);font-family:Courier,monospace}button,input,select,textarea{font:inherit}button{background:#1c211f;color:var(--i);border:1px solid #4a524e;padding:8px;cursor:pointer}input,select,textarea{width:100%;background:#0e1110;color:var(--i);border:1px solid var(--l);padding:7px}header{height:62px;border-bottom:1px solid var(--l);padding:12px 16px;display:flex;justify-content:space-between}.app{display:grid;grid-template-columns:260px 410px 1fr;height:calc(100vh - 62px)}nav,.edit{overflow:auto;border-right:1px solid var(--l);padding:12px}.view{overflow:auto;padding:20px}label{display:block;font-size:10px;color:var(--m);margin:7px 0 3px}.row{display:grid;grid-template-columns:1fr 1fr;gap:7px}fieldset{border:1px solid var(--l);margin-bottom:11px}legend{font-size:10px}.tree{margin:8px 0;border-top:1px solid var(--l);padding-top:7px}.item{display:block;width:100%;border:0;border-left:2px solid transparent;background:none;text-align:left}.item.on{border-left-color:white;background:#191d1b}.small{font-size:9px;color:var(--m)}.actions{display:flex;gap:5px;flex-wrap:wrap}.paper{width:210mm;min-height:297mm;background:var(--paper);color:#161716;margin:auto;padding:18mm;position:relative;box-shadow:0 10px 35px #000}.head{display:grid;grid-template-columns:23mm 1fr;gap:7mm;border-bottom:1px solid #222;padding-bottom:6mm}.logo{width:21mm;height:21mm;border:1px solid #333;display:flex;align-items:center;justify-content:center;text-align:center;font-size:7px;overflow:hidden}.logo img{max-width:100%;max-height:100%}.ref{font-weight:bold;font-size:12px}.org{font-size:9px;margin-top:4px}.title{font-weight:bold;font-size:17px;margin-top:7px}.meta{width:100%;border-collapse:collapse;font-size:8.5px;margin:7mm 0}.meta td{border-bottom:1px solid #bbb;padding:4px}.meta td:first-child{font-weight:bold;width:38mm}.body{white-space:pre-wrap;font-size:10px;line-height:1.5}.img{text-align:center;margin-top:8mm}.img img{max-width:100%;max-height:90mm}.foot{position:absolute;left:18mm;right:18mm;bottom:10mm;border-top:1px solid #aaa;padding-top:3mm;font-size:7px;display:flex;justify-content:space-between}.issue{font-size:9px;border-left:2px solid #d7c78f;padding:4px;margin:4px 0}.ok{color:#b7c9b8}.seal{position:absolute;right:19mm;top:22mm;border:2px solid #444;border-radius:50%;width:23mm;height:23mm;display:none;align-items:center;justify-content:center;text-align:center;font-size:6px}.tabs{display:flex;gap:4px;margin-bottom:9px}.hide{display:none}.checks{display:grid;grid-template-columns:1fr 1fr}.checks label{margin:2px}.checks input{width:auto}@media(max-width:950px){.app{display:block;height:auto}.paper{transform:scale(.72);transform-origin:top left;margin-right:-58mm;margin-bottom:-80mm}}
 .paper .logo img,
@@ -99,7 +99,7 @@
 #seasonTree> .seasonSection:first-child{border-top:0;margin-top:0}
 #seasonTree h4{margin:8px 0 5px}
 </style></head><body>
-<header><b>GENDOC // V7.3</b><span id="badge" class="small ok">CANON</span></header><div class="app">
+<header><b>GENDOC // V7.4</b><span id="badge" class="small ok">CANON</span></header><div class="app">
 <nav><div class="actions"><button id="add">+ PIÈCE</button><button id="addD">+ DOSSIER</button><button id="addS">+ SAISON</button></div><div id="seasonTree"></div><h4>PROJET</h4><div class="actions"><button id="exp">Exporter</button><button id="impB">Importer</button><input id="imp" type="file" accept=".json" class="hide"></div><p class="small">Sauvegarde locale automatique.</p></nav>
 <section class="edit"><div class="tabs"><button data-t="doc">Document</button><button data-t="text">Contenu</button><button data-t="media">Médias</button><button data-t="check">Contrôle</button></div>
 <div id="doc"><fieldset><legend>IDENTITÉ</legend><div class="row"><div><label>Dossier</label><select id="dossier"></select></div><div><label>N°</label><input id="num"></div></div><div class="row"><div><label>Catégorie</label><select id="cat"></select></div><div><label>Modèle</label><select id="tpl"></select></div></div><label>Titre</label><input id="title"></fieldset>
@@ -495,7 +495,7 @@ if($("pdfB"))$("pdfB").onclick=saveCurrentAsPDF;
 
 </script>
 <style id="gendoc-v6-css">
-/* ===== GenDoc V7.3 — atelier PAO ===== */
+/* ===== GenDoc V7.4 — atelier PAO ===== */
 #v6Panel{margin-top:10px;border:1px solid #343936;padding:9px;border-radius:6px}
 #v6Panel legend{padding:0 5px}
 .v6bar{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0}
@@ -1145,6 +1145,89 @@ setTimeout(install,350);
  document.addEventListener("DOMContentLoaded",()=>setTimeout(()=>cleanEmblem(document),300));
  setTimeout(()=>cleanEmblem(document),450);
  window.__cleanGenDocEmblem=cleanEmblem;
+})();
+</script>
+
+
+<style id="gendoc-v7-4-main-typography-css">
+#bodyEditor{font-family:var(--gd-main-font,"Courier New"),monospace!important;line-height:var(--gd-main-line,1.5)!important;letter-spacing:var(--gd-main-letter,0px)!important}
+#paper #bodyP{font-family:var(--gd-main-font,"Courier New"),monospace!important;line-height:var(--gd-main-line,1.5)!important;letter-spacing:var(--gd-main-letter,0px)!important}
+</style>
+<script id="gendoc-v7-4-main-typography">
+(()=>{
+const Q=id=>document.getElementById(id);
+function cd(){try{return cur()}catch(e){return null}}
+function sv(){try{save()}catch(e){}}
+function ensureTypo(){
+ const d=cd();if(!d)return null;
+ d.mainTypography=d.mainTypography||{font:"Courier New",line:1.5,letter:0};
+ return d;
+}
+function applyMain(){
+ const d=ensureTypo();if(!d)return;
+ const t=d.mainTypography,ed=Q("bodyEditor"),pv=Q("bodyP");
+ [ed,pv].forEach(el=>{if(!el)return;el.style.setProperty("font-family",t.font,"important");el.style.setProperty("line-height",String(t.line),"important");el.style.setProperty("letter-spacing",t.letter+"px","important")});
+}
+function selectionInMain(){
+ const sel=window.getSelection();if(!sel||!sel.rangeCount||sel.isCollapsed)return false;
+ const n=sel.anchorNode;return !!(n&&Q("bodyEditor")&&Q("bodyEditor").contains(n.nodeType===3?n.parentNode:n));
+}
+function wrapSelectionStyle(styles){
+ const sel=window.getSelection();if(!selectionInMain())return false;
+ const r=sel.getRangeAt(0),span=document.createElement("span");
+ Object.entries(styles).forEach(([k,v])=>span.style[k]=v);
+ try{r.surroundContents(span)}catch(e){const frag=r.extractContents();span.appendChild(frag);r.insertNode(span)}
+ sel.removeAllRanges();const nr=document.createRange();nr.selectNodeContents(span);sel.addRange(nr);
+ const ed=Q("bodyEditor"),d=ensureTypo();if(ed&&d){d.bodyHtml=ed.innerHTML;d.body=ed.innerText.replace(/\n+$/,"");if(Q("body"))Q("body").value=d.body;sv();try{render()}catch(e){}}
+ return true;
+}
+function setProp(prop,val){
+ const d=ensureTypo();if(!d)return;
+ const css=prop==="font"?"fontFamily":prop==="line"?"lineHeight":"letterSpacing";
+ const cssVal=prop==="letter"?val+"px":String(val);
+ if(selectionInMain()){wrapSelectionStyle({[css]:cssVal});return}
+ d.mainTypography[prop]=val;sv();applyMain();
+}
+function install(){
+ if(!Q("v6Font")||Q("v6Font").dataset.mainfixed)return;
+ // Existing V6 controls keep their V6-object behavior, but also affect main content
+ // whenever no V6 object is selected / text selection is in main editor.
+ [["v6Font","font"],["v6Line","line"],["v6Letter","letter"]].forEach(([id,prop])=>{
+   const el=Q(id);if(!el)return;el.dataset.mainfixed="1";
+   el.addEventListener("change",()=>{
+     const mainSel=selectionInMain();
+     const hasV6=document.querySelector("#paper .v6obj.selected");
+     if(mainSel||!hasV6){
+       const v=prop==="font"?el.value:parseFloat(el.value);
+       setProp(prop,v);
+     }
+   });
+ });
+ // Add explicit target selector to remove ambiguity.
+ const row=Q("v6Font").closest(".v6row");
+ if(row&&!Q("v74Target")){
+   const box=document.createElement("div");box.innerHTML='<label>Cible typographique</label><select id="v74Target"><option value="auto">AUTO / SÉLECTION</option><option value="main">CONTENU PRINCIPAL</option><option value="object">OBJET PAO</option></select>';row.prepend(box);
+   ["v6Font","v6Line","v6Letter"].forEach(id=>Q(id).addEventListener("change",e=>{
+     if(Q("v74Target").value==="main"){
+       const prop=id==="v6Font"?"font":id==="v6Line"?"line":"letter";
+       setProp(prop,prop==="font"?e.target.value:parseFloat(e.target.value));
+     }
+   }));
+ }
+ applyMain();
+}
+const oldRender=window.render;
+if(typeof oldRender==="function")window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(applyMain,0);return r};
+document.addEventListener("focusin",e=>{
+ if(e.target===Q("bodyEditor")){
+   const d=ensureTypo();if(!d)return;
+   if(Q("v6Font"))Q("v6Font").value=d.mainTypography.font;
+   if(Q("v6Line"))Q("v6Line").value=d.mainTypography.line;
+   if(Q("v6Letter"))Q("v6Letter").value=d.mainTypography.letter;
+ }
+});
+document.addEventListener("DOMContentLoaded",()=>setTimeout(install,450));
+setTimeout(install,550);
 })();
 </script>
 
