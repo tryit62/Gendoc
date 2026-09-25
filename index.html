@@ -1,31 +1,6 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenDoc V4</title>
 <style>
-:root{--b:#090b0b;--p:#151817;--l:#38403c;--i:#eceee9;--m:#929a95;--paper:#f2efe5}*{box-sizing:border-box}body{margin:0;background:var(--b);color:var(--i);font-family:Courier,monospace}button,input,select,textarea{font:inherit}button{background:#1c211f;color:var(--i);border:1px solid #4a524e;padding:8px;cursor:pointer}input,select,textarea{width:100%;background:#0e1110;color:var(--i);border:1px solid var(--l);padding:7px}header{height:62px;border-bottom:1px solid var(--l);padding:12px 16px;display:flex;justify-content:space-between}.app{display:grid;grid-template-columns:260px 410px 1fr;height:calc(100vh - 62px)}nav,.edit{overflow:auto;border-right:1px solid var(--l);padding:12px}.view{overflow:auto;padding:20px}label{display:block;font-size:10px;color:var(--m);margin:7px 0 3px}.row{display:grid;grid-template-columns:1fr 1fr;gap:7px}fieldset{border:1px solid var(--l);margin-bottom:11px}legend{font-size:10px}.tree{margin:8px 0;border-top:1px solid var(--l);padding-top:7px}.item{display:block;width:100%;border:0;border-left:2px solid transparent;background:none;text-align:left}.item.on{border-left-color:white;background:#191d1b}.small{font-size:9px;color:var(--m)}.actions{display:flex;gap:5px;flex-wrap:wrap}.paper{width:210mm;min-height:297mm;background:var(--paper);color:#161716;margin:auto;padding:18mm;position:relative;box-shadow:0 10px 35px #000}.head{display:grid;grid-template-columns:23mm 1fr;gap:7mm;border-bottom:1px solid #222;padding-bottom:6mm}.logo{width:21mm;height:21mm;border:1px solid #333;display:flex;align-items:center;justify-content:center;text-align:center;font-size:7px;overflow:hidden}.logo img{max-width:100%;max-height:100%}.ref{font-weight:bold;font-size:12px}.org{font-size:9px;margin-top:4px}.title{font-weight:bold;font-size:17px;margin-top:7px}.meta{width:100%;border-collapse:collapse;font-size:8.5px;margin:7mm 0}.meta td{border-bottom:1px solid #bbb;padding:4px}.meta td:first-child{font-weight:bold;width:38mm}.body{white-space:pre-wrap;font-size:10px;line-height:1.5}.img{text-align:center;margin-top:8mm}.img img{max-width:100%;max-height:90mm}.foot{position:absolute;left:18mm;right:18mm;bottom:10mm;border-top:1px solid #aaa;padding-top:3mm;font-size:7px;display:flex;justify-content:space-between}.issue{font-size:9px;border-left:2px solid #d7c78f;padding:4px;margin:4px 0}.ok{color:#b7c9b8}.seal{position:absolute;right:19mm;top:22mm;border:2px solid #444;border-radius:50%;width:23mm;height:23mm;display:none;align-items:center;justify-content:center;text-align:center;font-size:6px}.tabs{display:flex;gap:4px;margin-bottom:9px}.hide{display:none}.checks{display:grid;grid-template-columns:1fr 1fr}.checks label{margin:2px}.checks input{width:auto}@media(max-width:950px){.app{display:block;height:auto}.paper{transform:scale(.72);transform-origin:top left;margin-right:-58mm;margin-bottom:-80mm}}@media print{header,nav,.edit{display:none}.app{display:block}.view{padding:0}.paper{box-shadow:none;transform:none;margin:0}}
-
-.formatbar{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}.formatbar button.on{background:#eceee9;color:#090b0b}.freehint{font-size:9px;color:var(--m);margin:5px 0 8px}.freeText{position:absolute;min-width:28mm;min-height:9mm;padding:2mm;border:1px dashed transparent;white-space:pre-wrap;cursor:move;z-index:5}.freeText:hover,.freeText.sel{border-color:#7c847f;background:rgba(255,255,255,.14)}.freeText .resize{position:absolute;width:9px;height:9px;right:-5px;bottom:-5px;background:#222;border:1px solid #eee;cursor:nwse-resize;display:none}.freeText.sel .resize{display:block}.freeTextContent[contenteditable=true]{cursor:text;outline:none;user-select:text;-webkit-user-select:text}.freeTextContent{user-select:text;-webkit-user-select:text}.guideV{position:absolute;top:0;bottom:0;width:1px;left:50%;background:#a88b39;opacity:.65;pointer-events:none;display:none;z-index:20}@media print{.freeText{border-color:transparent!important;background:transparent!important}.resize,.guideV{display:none!important}}
-
-#pbody b,#pbody strong{font-weight:700!important}
-#pbody u{text-decoration:underline!important}
-#pbody div,#pbody p{max-width:100%}
-#pbody [style*="text-align: center"],#pbody [align="center"]{text-align:center!important}
-#pbody [style*="text-align: right"],#pbody [align="right"]{text-align:right!important}
-#pbody [style*="text-align: left"],#pbody [align="left"]{text-align:left!important}
-
-/* V4.5 — logo officiel sans cadre */
-.paper .logo,
-.paper .logoBox,
-.paper .logo-box,
-.paper .emblem,
-.paper .emblemBox,
-.paper .emblem-box,
-.paper #plogo,
-.paper #logoPreview,
-.paper [class*="logo"] {
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
-}
+:root{--b:#090b0b;--p:#151817;--l:#38403c;--i:#eceee9;--m:#929a95;--paper:#f2efe5}*{box-sizing:border-box}body{margin:0;background:var(--b);color:var(--i);font-family:Courier,monospace}button,input,select,textarea{font:inherit}button{background:#1c211f;color:var(--i);border:1px solid #4a524e;padding:8px;cursor:pointer}input,select,textarea{width:100%;background:#0e1110;color:var(--i);border:1px solid var(--l);padding:7px}header{height:62px;border-bottom:1px solid var(--l);padding:12px 16px;display:flex;justify-content:space-between}.app{display:grid;grid-template-columns:260px 410px 1fr;height:calc(100vh - 62px)}nav,.edit{overflow:auto;border-right:1px solid var(--l);padding:12px}.view{overflow:auto;padding:20px}label{display:block;font-size:10px;color:var(--m);margin:7px 0 3px}.row{display:grid;grid-template-columns:1fr 1fr;gap:7px}fieldset{border:1px solid var(--l);margin-bottom:11px}legend{font-size:10px}.tree{margin:8px 0;border-top:1px solid var(--l);padding-top:7px}.item{display:block;width:100%;border:0;border-left:2px solid transparent;background:none;text-align:left}.item.on{border-left-color:white;background:#191d1b}.small{font-size:9px;color:var(--m)}.actions{display:flex;gap:5px;flex-wrap:wrap}.paper{width:210mm;min-height:297mm;background:var(--paper);color:#161716;margin:auto;padding:18mm;position:relative;box-shadow:0 10px 35px #000}.head{display:grid;grid-template-columns:23mm 1fr;gap:7mm;border-bottom:1px solid #222;padding-bottom:6mm}.logo{width:21mm;height:21mm;border:1px solid #333;display:flex;align-items:center;justify-content:center;text-align:center;font-size:7px;overflow:hidden}.logo img{max-width:100%;max-height:100%}.ref{font-weight:bold;font-size:12px}.org{font-size:9px;margin-top:4px}.title{font-weight:bold;font-size:17px;margin-top:7px}.meta{width:100%;border-collapse:collapse;font-size:8.5px;margin:7mm 0}.meta td{border-bottom:1px solid #bbb;padding:4px}.meta td:first-child{font-weight:bold;width:38mm}.body{white-space:pre-wrap;font-size:10px;line-height:1.5}.img{text-align:center;margin-top:8mm}.img img{max-width:100%;max-height:90mm}.foot{position:absolute;left:18mm;right:18mm;bottom:10mm;border-top:1px solid #aaa;padding-top:3mm;font-size:7px;display:flex;justify-content:space-between}.issue{font-size:9px;border-left:2px solid #d7c78f;padding:4px;margin:4px 0}.ok{color:#b7c9b8}.seal{position:absolute;right:19mm;top:22mm;border:2px solid #444;border-radius:50%;width:23mm;height:23mm;display:none;align-items:center;justify-content:center;text-align:center;font-size:6px}.tabs{display:flex;gap:4px;margin-bottom:9px}.hide{display:none}.checks{display:grid;grid-template-columns:1fr 1fr}.checks label{margin:2px}.checks input{width:auto}@media(max-width:950px){.app{display:block;height:auto}.paper{transform:scale(.72);transform-origin:top left;margin-right:-58mm;margin-bottom:-80mm}}
 .paper .logo img,
 .paper .logoBox img,
 .paper .logo-box img,
@@ -44,60 +19,73 @@
 .fontSizeCtl input[type=range]{width:100%;padding:0}
 .fontSizeCtl input[type=number]{width:100%;box-sizing:border-box}
 
-@page{size:A4;margin:0}
-@media print{
-  html,body{margin:0!important;padding:0!important;background:#fff!important}
-  body *{visibility:hidden!important}
-  #paper,#paper *{visibility:visible!important}
-  #paper{
-    position:absolute!important;
-    left:0!important;top:0!important;
-    width:210mm!important;
-    min-height:297mm!important;
-    margin:0!important;
-    box-shadow:none!important;
-    transform:none!important;
-  }
-  #paper .freeText{border-color:transparent!important;background:transparent!important}
-  #paper .resize,.guide{display:none!important}
-}
+
+
 
 
 /* V4.8 — impression strictement sur une seule feuille A4 */
+
+
+
+
+/* V4.9 — export PDF iPad : une seule page A4, document visible */
 @page { size: A4 portrait; margin: 0; }
 @media print {
   html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    overflow: hidden !important;
+    background: white !important;
+  }
+
+  header, nav, .edit { display: none !important; }
+
+  .app {
+    display: block !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .view {
+    display: block !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  #paper {
+    display: block !important;
+    position: relative !important;
     width: 210mm !important;
     height: 297mm !important;
     min-height: 0 !important;
     max-height: 297mm !important;
     margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    background: #fff !important;
-  }
-  body > * { display: none !important; }
-  #paper {
-    display: block !important;
-    visibility: visible !important;
-    position: fixed !important;
-    inset: 0 auto auto 0 !important;
-    width: 210mm !important;
-    height: 297mm !important;
-    min-height: 297mm !important;
-    max-height: 297mm !important;
-    margin: 0 !important;
     padding: 18mm !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
-    box-shadow: none !important;
     transform: none !important;
+    box-shadow: none !important;
+    break-inside: avoid !important;
     break-after: avoid !important;
+    page-break-inside: avoid !important;
     page-break-after: avoid !important;
   }
-  #paper, #paper * { visibility: visible !important; }
-  #paper .resize, .guide { display: none !important; }
-  #paper .freeText { border-color: transparent !important; background: transparent !important; }
+
+  #paper .resize, #paper .guideV, #paper .guide {
+    display: none !important;
+  }
+  #paper .freeText {
+    border-color: transparent !important;
+    background: transparent !important;
+  }
 }
 
 </style></head><body>
