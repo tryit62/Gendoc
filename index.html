@@ -29,63 +29,46 @@
 
 
 /* V4.9 — export PDF iPad : une seule page A4, document visible */
+
+
+
+
+/* V5.0 — export iPad mono-page avec marge de sécurité Safari */
 @page { size: A4 portrait; margin: 0; }
 @media print {
-  html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 210mm !important;
-    height: 297mm !important;
-    overflow: hidden !important;
-    background: white !important;
+  html,body{
+    margin:0!important;padding:0!important;
+    width:210mm!important;height:296mm!important;
+    overflow:hidden!important;background:#fff!important;
   }
-
-  header, nav, .edit { display: none !important; }
-
-  .app {
-    display: block !important;
-    width: 210mm !important;
-    height: 297mm !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
+  header,nav,.edit{display:none!important}
+  .app,.view{
+    display:block!important;
+    margin:0!important;padding:0!important;
+    width:210mm!important;height:296mm!important;
+    min-height:0!important;max-height:296mm!important;
+    overflow:hidden!important;
   }
-
-  .view {
-    display: block !important;
-    width: 210mm !important;
-    height: 297mm !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
+  #paper{
+    display:block!important;
+    position:absolute!important;
+    left:2mm!important;top:2mm!important;
+    width:206mm!important;
+    height:291mm!important;
+    min-height:0!important;max-height:291mm!important;
+    margin:0!important;
+    padding:17.66mm!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    box-shadow:none!important;
+    transform:none!important;
+    page-break-before:avoid!important;
+    page-break-after:avoid!important;
+    break-before:avoid!important;
+    break-after:avoid!important;
   }
-
-  #paper {
-    display: block !important;
-    position: relative !important;
-    width: 210mm !important;
-    height: 297mm !important;
-    min-height: 0 !important;
-    max-height: 297mm !important;
-    margin: 0 !important;
-    padding: 18mm !important;
-    box-sizing: border-box !important;
-    overflow: hidden !important;
-    transform: none !important;
-    box-shadow: none !important;
-    break-inside: avoid !important;
-    break-after: avoid !important;
-    page-break-inside: avoid !important;
-    page-break-after: avoid !important;
-  }
-
-  #paper .resize, #paper .guideV, #paper .guide {
-    display: none !important;
-  }
-  #paper .freeText {
-    border-color: transparent !important;
-    background: transparent !important;
-  }
+  #paper .resize,#paper .guideV,#paper .guide{display:none!important}
+  #paper .freeText{border-color:transparent!important;background:transparent!important}
 }
 
 </style></head><body>
@@ -99,7 +82,7 @@
 <div id="bodyEditor" contenteditable="true" style="min-height:250px;width:100%;box-sizing:border-box;background:#070909;color:#eceee9;border:1px solid #2a2e2c;border-radius:6px;padding:10px;font:11px/1.5 'Courier New',monospace;white-space:pre-wrap;overflow:auto"></div>
 <textarea id="body" style="display:none"></textarea><div class="actions"><button data-ins="[INFORMATION RETIRÉE]">Retirée</button><button data-ins="[ACCÈS OMBRE II REQUIS]">Accès OII</button><button data-ins="████████████">Barre noire</button><button data-ins="[INFORMATION RETIRÉE — MOTIF : ACCRÉDITATION INSUFFISANTE]">Retrait + motif</button></div></fieldset><fieldset><legend>MISE EN PAGE LIBRE</legend><div class="formatbar"><button id="addText">+ TEXTE</button><button id="boldB" title="Gras"><b>G</b></button><button id="italicB" title="Italique"><i>I</i></button><button id="underB" title="Souligné"><u>S</u></button><button id="leftB">Gauche</button><button id="centerB">Centre</button><button id="rightB">Droite</button></div><div class="row"><div><label>Taille</label><div class="fontSizeCtl"><input id="fontSize" type="range" min="8" max="36" step="1" value="10"><input id="fontSizeNum" type="number" min="8" max="72" step="1" value="10"></div></div><div><label>Largeur du bloc (mm)</label><input id="blockW" type="number" min="15" max="190" value="70"></div></div><div class="actions"><button id="dupText">Dupliquer bloc</button><button id="delText">Supprimer bloc</button></div><p class="freehint">Ajoute un bloc puis déplace-le directement sur la feuille. Double-clique pour modifier son texte. Les flèches déplacent le bloc sélectionné ; Maj + flèche = déplacement de 5 mm.</p></fieldset></div>
 <div id="media" class="hide"><fieldset><legend>EMBLÈME EXACT</legend><input id="logoF" type="file" accept="image/*"><p class="small">Importé sans redessin et conservé localement.</p></fieldset><fieldset><legend>IMAGE DE PIÈCE</legend><input id="imgF" type="file" accept="image/*"><label>Légende</label><input id="caption"><button id="rmImg">Retirer</button></fieldset></div>
-<div id="check" class="hide"><fieldset><legend>CONTRÔLE DE CHARTE</legend><div id="issues"></div></fieldset><fieldset><legend>SORTIE</legend><div class="actions"><button id="pdfB" type="button">ENREGISTRER EN PDF</button><button id="dup">Dupliquer</button><button id="del">Supprimer</button></div></fieldset></div>
+<div id="check" class="hide"><fieldset><legend>CONTRÔLE DE CHARTE</legend><div id="issues"></div></fieldset><fieldset><legend>SORTIE</legend><div class="actions"><button id="pdfB" type="button">TÉLÉCHARGER LE PDF</button><button id="dup">Dupliquer</button><button id="del">Supprimer</button></div></fieldset></div>
 </section>
 <main class="view"><article class="paper" id="paper"><div class="guideV" id="guideV"></div><div id="sealP" class="seal"></div><div class="head"><div id="logoP" class="logo">EMBLÈME<br>OFFICIEL</div><div><div id="refP" class="ref"></div><div class="org">ORDRE DES CINQ OMBRES</div><div id="titleP" class="title"></div></div></div><table id="metaP" class="meta"></table><div id="bodyP" class="body"></div><div id="imgP" class="img"></div><div class="foot"><span id="foot"></span><span>1 / 1</span></div></article></main></div>
 <script>
@@ -305,25 +288,71 @@ document.addEventListener("keydown",e=>{let o=getText();if(!o||["INPUT","TEXTARE
 
 
 
-function saveCurrentAsPDF(){
-  const d=cur();
-  if(!d)return;
-  // Commit the active main editor before opening the print dialog.
+
+async function ensurePDFLibs(){
+  function load(src,id){
+    return new Promise((resolve,reject)=>{
+      if(document.getElementById(id)){resolve();return;}
+      const sc=document.createElement("script"); sc.id=id; sc.src=src;
+      sc.onload=resolve; sc.onerror=()=>reject(new Error("Impossible de charger "+src));
+      document.head.appendChild(sc);
+    });
+  }
+  if(!window.html2canvas){
+    await load("https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js","gendoc-html2canvas");
+  }
+  if(!(window.jspdf&&window.jspdf.jsPDF)){
+    await load("https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js","gendoc-jspdf");
+  }
+}
+async function saveCurrentAsPDF(){
+  const d=cur(); if(!d)return;
   if($("bodyEditor")){
     d.bodyHtml=$("bodyEditor").innerHTML;
     d.body=$("bodyEditor").innerText.replace(/\n+$/,"");
   }
-  save();
-  render();
-  // Use the document reference/title as the suggested browser print title.
-  const oldTitle=document.title;
-  const ref=(d.ref||d.code||"DOCUMENT").replace(/[\\/:*?"<>|]+/g,"-");
-  const title=(d.title||"ORDRE_DES_CINQ_OMBRES").replace(/[\\/:*?"<>|]+/g,"-");
-  document.title=ref+"_"+title;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    window.print();
-    setTimeout(()=>{document.title=oldTitle},800);
-  }));
+  save(); render();
+
+  const btn=$("pdfB"), old=btn.textContent;
+  btn.disabled=true; btn.textContent="CRÉATION DU PDF…";
+  try{
+    await ensurePDFLibs();
+    const paper=$("paper");
+
+    // Temporarily hide editing-only marks.
+    const selected=[...paper.querySelectorAll(".freeText.sel")];
+    selected.forEach(x=>x.classList.remove("sel"));
+    const handles=[...paper.querySelectorAll(".resize")];
+    handles.forEach(x=>x.style.visibility="hidden");
+
+    const canvas=await html2canvas(paper,{
+      scale:2.5,
+      backgroundColor:"#ffffff",
+      useCORS:true,
+      logging:false,
+      width:paper.scrollWidth,
+      height:paper.scrollHeight,
+      windowWidth:paper.scrollWidth,
+      windowHeight:paper.scrollHeight
+    });
+
+    selected.forEach(x=>x.classList.add("sel"));
+    handles.forEach(x=>x.style.visibility="");
+
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+    const img=canvas.toDataURL("image/jpeg",0.97);
+    pdf.addImage(img,"JPEG",0,0,210,297,undefined,"FAST");
+
+    const ref=(d.ref||d.code||"DOCUMENT").replace(/[\\/:*?"<>|]+/g,"-");
+    const title=(d.title||"ORDRE_DES_CINQ_OMBRES").replace(/[\\/:*?"<>|]+/g,"-");
+    pdf.save(ref+"_"+title+".pdf");
+  }catch(err){
+    console.error(err);
+    alert("La création directe du PDF a échoué. Vérifie que l’iPad est connecté à Internet puis réessaie.");
+  }finally{
+    btn.disabled=false; btn.textContent=old;
+  }
 }
 if($("pdfB"))$("pdfB").onclick=saveCurrentAsPDF;
 
