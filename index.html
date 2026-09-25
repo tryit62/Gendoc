@@ -10,6 +10,39 @@
 #pbody [style*="text-align: center"],#pbody [align="center"]{text-align:center!important}
 #pbody [style*="text-align: right"],#pbody [align="right"]{text-align:right!important}
 #pbody [style*="text-align: left"],#pbody [align="left"]{text-align:left!important}
+
+/* V4.5 — logo officiel sans cadre */
+.paper .logo,
+.paper .logoBox,
+.paper .logo-box,
+.paper .emblem,
+.paper .emblemBox,
+.paper .emblem-box,
+.paper #plogo,
+.paper #logoPreview,
+.paper [class*="logo"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+.paper .logo img,
+.paper .logoBox img,
+.paper .logo-box img,
+.paper .emblem img,
+.paper #plogo img,
+.paper #logoPreview img,
+.paper [class*="logo"] img {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+
+.fontSizeCtl{display:grid;grid-template-columns:1fr 58px;gap:6px;align-items:center}
+.fontSizeCtl input[type=range]{width:100%;padding:0}
+.fontSizeCtl input[type=number]{width:100%;box-sizing:border-box}
 </style></head><body>
 <header><b>GENDOC // V4</b><span id="badge" class="small ok">CANON</span></header><div class="app">
 <nav><div class="actions"><button id="add">+ PIÈCE</button><button id="addD">+ DOSSIER</button></div><h4>SAISON I</h4><div id="tree"></div><h4>PROJET</h4><div class="actions"><button id="exp">Exporter</button><button id="impB">Importer</button><input id="imp" type="file" accept=".json" class="hide"></div><p class="small">Sauvegarde locale automatique.</p></nav>
@@ -19,7 +52,7 @@
 <fieldset><legend>MÉTADONNÉES</legend><div class="row"><div><label>Date</label><input id="date"></div><div><label>Heure</label><input id="time"></div></div><label>Destinataire</label><input id="recipient"><label>Sujet</label><input id="subject"><label>Lieu</label><input id="place"><label>Auteur / Service</label><input id="author"><label>Pièces associées</label><select id="related" multiple size="4"></select><div id="checks" class="checks"></div></fieldset></div>
 <div id="text" class="hide"><fieldset><legend>CONTENU PRINCIPAL</legend>
 <div id="bodyEditor" contenteditable="true" style="min-height:250px;width:100%;box-sizing:border-box;background:#070909;color:#eceee9;border:1px solid #2a2e2c;border-radius:6px;padding:10px;font:11px/1.5 'Courier New',monospace;white-space:pre-wrap;overflow:auto"></div>
-<textarea id="body" style="display:none"></textarea><div class="actions"><button data-ins="[INFORMATION RETIRÉE]">Retirée</button><button data-ins="[ACCÈS OMBRE II REQUIS]">Accès OII</button><button data-ins="████████████">Barre noire</button><button data-ins="[INFORMATION RETIRÉE — MOTIF : ACCRÉDITATION INSUFFISANTE]">Retrait + motif</button></div></fieldset><fieldset><legend>MISE EN PAGE LIBRE</legend><div class="formatbar"><button id="addText">+ TEXTE</button><button id="boldB"><b>G</b></button><button id="underB"><u>S</u></button><button id="leftB">Gauche</button><button id="centerB">Centre</button><button id="rightB">Droite</button></div><div class="row"><div><label>Taille</label><input id="fontSize" type="number" min="6" max="72" value="10"></div><div><label>Largeur du bloc (mm)</label><input id="blockW" type="number" min="15" max="190" value="70"></div></div><div class="actions"><button id="dupText">Dupliquer bloc</button><button id="delText">Supprimer bloc</button></div><p class="freehint">Ajoute un bloc puis déplace-le directement sur la feuille. Double-clique pour modifier son texte. Les flèches déplacent le bloc sélectionné ; Maj + flèche = déplacement de 5 mm.</p></fieldset></div>
+<textarea id="body" style="display:none"></textarea><div class="actions"><button data-ins="[INFORMATION RETIRÉE]">Retirée</button><button data-ins="[ACCÈS OMBRE II REQUIS]">Accès OII</button><button data-ins="████████████">Barre noire</button><button data-ins="[INFORMATION RETIRÉE — MOTIF : ACCRÉDITATION INSUFFISANTE]">Retrait + motif</button></div></fieldset><fieldset><legend>MISE EN PAGE LIBRE</legend><div class="formatbar"><button id="addText">+ TEXTE</button><button id="boldB" title="Gras"><b>G</b></button><button id="italicB" title="Italique"><i>I</i></button><button id="underB" title="Souligné"><u>S</u></button><button id="leftB">Gauche</button><button id="centerB">Centre</button><button id="rightB">Droite</button></div><div class="row"><div><label>Taille</label><div class="fontSizeCtl"><input id="fontSize" type="range" min="8" max="36" step="1" value="10"><input id="fontSizeNum" type="number" min="8" max="72" step="1" value="10"></div></div><div><label>Largeur du bloc (mm)</label><input id="blockW" type="number" min="15" max="190" value="70"></div></div><div class="actions"><button id="dupText">Dupliquer bloc</button><button id="delText">Supprimer bloc</button></div><p class="freehint">Ajoute un bloc puis déplace-le directement sur la feuille. Double-clique pour modifier son texte. Les flèches déplacent le bloc sélectionné ; Maj + flèche = déplacement de 5 mm.</p></fieldset></div>
 <div id="media" class="hide"><fieldset><legend>EMBLÈME EXACT</legend><input id="logoF" type="file" accept="image/*"><p class="small">Importé sans redessin et conservé localement.</p></fieldset><fieldset><legend>IMAGE DE PIÈCE</legend><input id="imgF" type="file" accept="image/*"><label>Légende</label><input id="caption"><button id="rmImg">Retirer</button></fieldset></div>
 <div id="check" class="hide"><fieldset><legend>CONTRÔLE DE CHARTE</legend><div id="issues"></div></fieldset><fieldset><legend>SORTIE</legend><div class="actions"><button onclick="print()">Imprimer / PDF</button><button id="dup">Dupliquer</button><button id="del">Supprimer</button></div></fieldset></div>
 </section>
@@ -173,6 +206,7 @@ function applyInline(cmd){
   savedRange=null; save(); renderFree();
 }
 $("boldB").onclick=()=>applyInline("bold");
+$("italicB").onclick=()=>applyInline("italic");
 $("underB").onclick=()=>applyInline("underline");
 [["leftB","left"],["centerB","center"],["rightB","right"]].forEach(([id,a])=>$(id).onclick=()=>{
   if(selectedText==="__MAIN__"){
@@ -183,19 +217,44 @@ $("underB").onclick=()=>applyInline("underline");
   }
   let o=getText();if(!o)return;o.align=a;save();renderFree()
 });
-$("fontSize").onchange=()=>{
+function applyFontSize(px){
+  px=Math.max(8,Math.min(72,parseInt(px||10,10)));
+  $("fontSize").value=Math.max(8,Math.min(36,px));
+  $("fontSizeNum").value=px;
+  const sel=window.getSelection();
+
   if(selectedText==="__MAIN__"){
-    const el=$("bodyEditor");el.focus();const sel=window.getSelection();
+    const el=$("bodyEditor"); el.focus();
     if(savedRange){sel.removeAllRanges();sel.addRange(savedRange);}
     if(sel.rangeCount&&!sel.isCollapsed){
       document.execCommand("fontSize",false,"7");
-      el.querySelectorAll('font[size="7"]').forEach(f=>{f.removeAttribute("size");f.style.fontSize=$("fontSize").value+"px"});
-      syncMainBody();
+      el.querySelectorAll('font[size="7"]').forEach(f=>{
+        f.removeAttribute("size"); f.style.fontSize=px+"px";
+      });
+      savedRange=null; syncMainBody();
     }
-    savedRange=null;return;
+    return;
   }
-  let o=getText();if(!o)return;o.size=+$("fontSize").value;save();renderFree()
-};
+
+  let o=getText(); if(!o)return;
+  const wrap=document.querySelector('.freeText[data-id="'+selectedText+'"]');
+  if(savedRange && wrap){
+    const ed=wrap.querySelector(".freeTextContent"); ed.contentEditable="true"; ed.focus();
+    sel.removeAllRanges(); sel.addRange(savedRange);
+    if(!sel.isCollapsed){
+      document.execCommand("fontSize",false,"7");
+      ed.querySelectorAll('font[size="7"]').forEach(f=>{
+        f.removeAttribute("size"); f.style.fontSize=px+"px";
+      });
+      o.html=ed.innerHTML; o.text=ed.innerText; savedRange=null; save(); renderFree(); return;
+    }
+  }
+  // No text range: size applies to the whole selected free block.
+  o.size=px; save(); renderFree();
+}
+$("fontSize").oninput=()=>{$("fontSizeNum").value=$("fontSize").value};
+$("fontSize").onchange=()=>applyFontSize($("fontSize").value);
+$("fontSizeNum").onchange=()=>applyFontSize($("fontSizeNum").value);
 $("blockW").oninput=()=>{let o=getText();if(!o)return;o.w=+$("blockW").value;save();renderFree()};
 document.addEventListener("keydown",e=>{let o=getText();if(!o||["INPUT","TEXTAREA"].includes(document.activeElement.tagName)||document.activeElement.isContentEditable)return;let step=e.shiftKey?5:1;if(e.key=="ArrowLeft")o.x-=step;else if(e.key=="ArrowRight")o.x+=step;else if(e.key=="ArrowUp")o.y-=step;else if(e.key=="ArrowDown")o.y+=step;else return;e.preventDefault();o.x=Math.max(0,Math.min(210-o.w,o.x));o.y=Math.max(0,Math.min(285,o.y));save();renderFree()});
 
