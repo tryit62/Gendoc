@@ -1,4 +1,4 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenDoc V5.3</title>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenDoc V5.4</title>
 <style>
 :root{--b:#090b0b;--p:#151817;--l:#38403c;--i:#eceee9;--m:#929a95;--paper:#f2efe5}*{box-sizing:border-box}body{margin:0;background:var(--b);color:var(--i);font-family:Courier,monospace}button,input,select,textarea{font:inherit}button{background:#1c211f;color:var(--i);border:1px solid #4a524e;padding:8px;cursor:pointer}input,select,textarea{width:100%;background:#0e1110;color:var(--i);border:1px solid var(--l);padding:7px}header{height:62px;border-bottom:1px solid var(--l);padding:12px 16px;display:flex;justify-content:space-between}.app{display:grid;grid-template-columns:260px 410px 1fr;height:calc(100vh - 62px)}nav,.edit{overflow:auto;border-right:1px solid var(--l);padding:12px}.view{overflow:auto;padding:20px}label{display:block;font-size:10px;color:var(--m);margin:7px 0 3px}.row{display:grid;grid-template-columns:1fr 1fr;gap:7px}fieldset{border:1px solid var(--l);margin-bottom:11px}legend{font-size:10px}.tree{margin:8px 0;border-top:1px solid var(--l);padding-top:7px}.item{display:block;width:100%;border:0;border-left:2px solid transparent;background:none;text-align:left}.item.on{border-left-color:white;background:#191d1b}.small{font-size:9px;color:var(--m)}.actions{display:flex;gap:5px;flex-wrap:wrap}.paper{width:210mm;min-height:297mm;background:var(--paper);color:#161716;margin:auto;padding:18mm;position:relative;box-shadow:0 10px 35px #000}.head{display:grid;grid-template-columns:23mm 1fr;gap:7mm;border-bottom:1px solid #222;padding-bottom:6mm}.logo{width:21mm;height:21mm;border:1px solid #333;display:flex;align-items:center;justify-content:center;text-align:center;font-size:7px;overflow:hidden}.logo img{max-width:100%;max-height:100%}.ref{font-weight:bold;font-size:12px}.org{font-size:9px;margin-top:4px}.title{font-weight:bold;font-size:17px;margin-top:7px}.meta{width:100%;border-collapse:collapse;font-size:8.5px;margin:7mm 0}.meta td{border-bottom:1px solid #bbb;padding:4px}.meta td:first-child{font-weight:bold;width:38mm}.body{white-space:pre-wrap;font-size:10px;line-height:1.5}.img{text-align:center;margin-top:8mm}.img img{max-width:100%;max-height:90mm}.foot{position:absolute;left:18mm;right:18mm;bottom:10mm;border-top:1px solid #aaa;padding-top:3mm;font-size:7px;display:flex;justify-content:space-between}.issue{font-size:9px;border-left:2px solid #d7c78f;padding:4px;margin:4px 0}.ok{color:#b7c9b8}.seal{position:absolute;right:19mm;top:22mm;border:2px solid #444;border-radius:50%;width:23mm;height:23mm;display:none;align-items:center;justify-content:center;text-align:center;font-size:6px}.tabs{display:flex;gap:4px;margin-bottom:9px}.hide{display:none}.checks{display:grid;grid-template-columns:1fr 1fr}.checks label{margin:2px}.checks input{width:auto}@media(max-width:950px){.app{display:block;height:auto}.paper{transform:scale(.72);transform-origin:top left;margin-right:-58mm;margin-bottom:-80mm}}
 .paper .logo img,
@@ -82,7 +82,7 @@
 }
 </style>
 </head><body>
-<header><b>GENDOC // V5.3</b><span id="badge" class="small ok">CANON</span></header><div class="app">
+<header><b>GENDOC // V5.4</b><span id="badge" class="small ok">CANON</span></header><div class="app">
 <nav><div class="actions"><button id="add">+ PIÈCE</button><button id="addD">+ DOSSIER</button></div><h4>SAISON I</h4><div id="tree"></div><h4>PROJET</h4><div class="actions"><button id="exp">Exporter</button><button id="impB">Importer</button><input id="imp" type="file" accept=".json" class="hide"></div><p class="small">Sauvegarde locale automatique.</p></nav>
 <section class="edit"><div class="tabs"><button data-t="doc">Document</button><button data-t="text">Contenu</button><button data-t="media">Médias</button><button data-t="check">Contrôle</button></div>
 <div id="doc"><fieldset><legend>IDENTITÉ</legend><div class="row"><div><label>Dossier</label><select id="dossier"></select></div><div><label>N°</label><input id="num"></div></div><div class="row"><div><label>Catégorie</label><select id="cat"></select></div><div><label>Modèle</label><select id="tpl"></select></div></div><label>Titre</label><input id="title"></fieldset>
@@ -325,53 +325,80 @@ async function saveCurrentAsPDF(){
 
   const btn=$("pdfB"), old=btn.textContent;
   btn.disabled=true; btn.textContent="CRÉATION DU PDF…";
+  let stage=null;
   try{
     await ensurePDFLibs();
-    const paper=$("paper");
 
-    // Temporarily hide editing-only marks.
-    const selected=[...paper.querySelectorAll(".freeText.sel")];
-    selected.forEach(x=>x.classList.remove("sel"));
-    const handles=[...paper.querySelectorAll(".resize")];
-    handles.forEach(x=>x.style.visibility="hidden");
+    // Clone the document into a dedicated, exact A4 rendering surface.
+    // This makes PDF generation independent of the iPad screen/preview size.
+    const source=$("paper");
+    stage=document.createElement("div");
+    stage.id="pdfStage";
+    stage.style.cssText=[
+      "position:fixed","left:-10000px","top:0",
+      "width:794px","height:1123px",
+      "background:#fff","overflow:hidden","z-index:-9999"
+    ].join(";");
 
-    // Capture the complete A4 sheet at its actual rendered dimensions.
-    // Do NOT override windowWidth/windowHeight: on iPad that was cropping the canvas.
-    const rect=paper.getBoundingClientRect();
-    const canvas=await html2canvas(paper,{
+    const clone=source.cloneNode(true);
+    clone.id="pdfPaper";
+    clone.classList.remove("sel");
+    clone.style.cssText += [
+      "position:relative!important",
+      "left:0!important","top:0!important",
+      "width:794px!important","height:1123px!important",
+      "min-height:1123px!important","max-height:1123px!important",
+      "margin:0!important","box-sizing:border-box!important",
+      "overflow:hidden!important","transform:none!important","box-shadow:none!important"
+    ].join(";");
+
+    clone.querySelectorAll(".resize,.guide,.guideV").forEach(x=>x.remove());
+    clone.querySelectorAll(".freeText").forEach(x=>{
+      x.classList.remove("sel");
+      x.style.borderColor="transparent";
+      x.style.background="transparent";
+    });
+
+    // No visible box around the emblem/logo in the exported document.
+    clone.querySelectorAll("#logoBox,.logoBox,#plogo,[class*='logo'],[class*='emblem']").forEach(x=>{
+      x.style.border="0";
+      x.style.outline="0";
+      x.style.boxShadow="none";
+      x.style.background="transparent";
+    });
+
+    stage.appendChild(clone);
+    document.body.appendChild(stage);
+
+    // Let Safari finish layout/images before capture.
+    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+    const imgs=[...clone.querySelectorAll("img")];
+    await Promise.all(imgs.map(im=>im.complete?Promise.resolve():new Promise(r=>{im.onload=im.onerror=r})));
+
+    const canvas=await html2canvas(clone,{
       scale:2,
       backgroundColor:"#ffffff",
       useCORS:true,
       logging:false,
+      width:794,
+      height:1123,
       scrollX:0,
-      scrollY:-window.scrollY,
-      width:Math.ceil(rect.width),
-      height:Math.ceil(rect.height),
-      x:0,
-      y:0
+      scrollY:0
     });
-
-    selected.forEach(x=>x.classList.add("sel"));
-    handles.forEach(x=>x.style.visibility="");
 
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
-    const img=canvas.toDataURL("image/jpeg",0.97);
-
-    // Fit the WHOLE captured sheet inside A4 without cropping.
-    const pageW=210, pageH=297;
-    const ratio=Math.min(pageW/canvas.width,pageH/canvas.height);
-    const imgW=canvas.width*ratio, imgH=canvas.height*ratio;
-    const offX=(pageW-imgW)/2, offY=(pageH-imgH)/2;
-    pdf.addImage(img,"JPEG",offX,offY,imgW,imgH,undefined,"FAST");
+    const img=canvas.toDataURL("image/jpeg",0.98);
+    pdf.addImage(img,"JPEG",0,0,210,297,undefined,"FAST");
 
     const ref=(d.ref||d.code||"DOCUMENT").replace(/[\\/:*?"<>|]+/g,"-");
     const title=(d.title||"ORDRE_DES_CINQ_OMBRES").replace(/[\\/:*?"<>|]+/g,"-");
     pdf.save(ref+"_"+title+".pdf");
   }catch(err){
     console.error(err);
-    alert("La création directe du PDF a échoué. Vérifie que l’iPad est connecté à Internet puis réessaie.");
+    alert("La création directe du PDF a échoué. Vérifie la connexion Internet puis réessaie.");
   }finally{
+    if(stage)stage.remove();
     btn.disabled=false; btn.textContent=old;
   }
 }
