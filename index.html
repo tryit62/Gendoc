@@ -1,4 +1,4 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenDoc V7.5</title>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenDoc V8.2</title>
 <style>
 :root{--b:#090b0b;--p:#151817;--l:#38403c;--i:#eceee9;--m:#929a95;--paper:#f2efe5}*{box-sizing:border-box}body{margin:0;background:var(--b);color:var(--i);font-family:Courier,monospace}button,input,select,textarea{font:inherit}button{background:#1c211f;color:var(--i);border:1px solid #4a524e;padding:8px;cursor:pointer}input,select,textarea{width:100%;background:#0e1110;color:var(--i);border:1px solid var(--l);padding:7px}header{height:62px;border-bottom:1px solid var(--l);padding:12px 16px;display:flex;justify-content:space-between}.app{display:grid;grid-template-columns:260px 410px 1fr;height:calc(100vh - 62px)}nav,.edit{overflow:auto;border-right:1px solid var(--l);padding:12px}.view{overflow:auto;padding:20px}label{display:block;font-size:10px;color:var(--m);margin:7px 0 3px}.row{display:grid;grid-template-columns:1fr 1fr;gap:7px}fieldset{border:1px solid var(--l);margin-bottom:11px}legend{font-size:10px}.tree{margin:8px 0;border-top:1px solid var(--l);padding-top:7px}.item{display:block;width:100%;border:0;border-left:2px solid transparent;background:none;text-align:left}.item.on{border-left-color:white;background:#191d1b}.small{font-size:9px;color:var(--m)}.actions{display:flex;gap:5px;flex-wrap:wrap}.paper{width:210mm;min-height:297mm;background:var(--paper);color:#161716;margin:auto;padding:18mm;position:relative;box-shadow:0 10px 35px #000}.head{display:grid;grid-template-columns:23mm 1fr;gap:7mm;border-bottom:1px solid #222;padding-bottom:6mm}.logo{width:21mm;height:21mm;border:1px solid #333;display:flex;align-items:center;justify-content:center;text-align:center;font-size:7px;overflow:hidden}.logo img{max-width:100%;max-height:100%}.ref{font-weight:bold;font-size:12px}.org{font-size:9px;margin-top:4px}.title{font-weight:bold;font-size:17px;margin-top:7px}.meta{width:100%;border-collapse:collapse;font-size:8.5px;margin:7mm 0}.meta td{border-bottom:1px solid #bbb;padding:4px}.meta td:first-child{font-weight:bold;width:38mm}.body{white-space:pre-wrap;font-size:10px;line-height:1.5}.img{text-align:center;margin-top:8mm}.img img{max-width:100%;max-height:90mm}.foot{position:absolute;left:18mm;right:18mm;bottom:10mm;border-top:1px solid #aaa;padding-top:3mm;font-size:7px;display:flex;justify-content:space-between}.issue{font-size:9px;border-left:2px solid #d7c78f;padding:4px;margin:4px 0}.ok{color:#b7c9b8}.seal{position:absolute;right:19mm;top:22mm;border:2px solid #444;border-radius:50%;width:23mm;height:23mm;display:none;align-items:center;justify-content:center;text-align:center;font-size:6px}.tabs{display:flex;gap:4px;margin-bottom:9px}.hide{display:none}.checks{display:grid;grid-template-columns:1fr 1fr}.checks label{margin:2px}.checks input{width:auto}@media(max-width:950px){.app{display:block;height:auto}.paper{transform:scale(.72);transform-origin:top left;margin-right:-58mm;margin-bottom:-80mm}}
 .paper .logo img,
@@ -99,7 +99,7 @@
 #seasonTree> .seasonSection:first-child{border-top:0;margin-top:0}
 #seasonTree h4{margin:8px 0 5px}
 </style></head><body>
-<header><b>GENDOC // V7.5</b><span id="badge" class="small ok">CANON</span></header><div class="app">
+<header><b>GENDOC // V8.2</b><span id="badge" class="small ok">CANON</span></header><div class="app">
 <nav><div class="actions"><button id="add">+ PIÈCE</button><button id="addD">+ DOSSIER</button><button id="addS">+ SAISON</button></div><div id="seasonTree"></div><h4>PROJET</h4><div class="actions"><button id="exp">Exporter</button><button id="impB">Importer</button><input id="imp" type="file" accept=".json" class="hide"></div><p class="small">Sauvegarde locale automatique.</p></nav>
 <section class="edit"><div class="tabs"><button data-t="doc">Document</button><button data-t="text">Contenu</button><button data-t="media">Médias</button><button data-t="check">Contrôle</button></div>
 <div id="doc"><fieldset><legend>IDENTITÉ</legend><div class="row"><div><label>Dossier</label><select id="dossier"></select></div><div><label>N°</label><input id="num"></div></div><div class="row"><div><label>Catégorie</label><select id="cat"></select></div><div><label>Modèle</label><select id="tpl"></select></div></div><label>Titre</label><input id="title"></fieldset>
@@ -495,7 +495,7 @@ if($("pdfB"))$("pdfB").onclick=saveCurrentAsPDF;
 
 </script>
 <style id="gendoc-v6-css">
-/* ===== GenDoc V7.5 — atelier PAO ===== */
+/* ===== GenDoc V8.2 — atelier PAO ===== */
 #v6Panel{margin-top:10px;border:1px solid #343936;padding:9px;border-radius:6px}
 #v6Panel legend{padding:0 5px}
 .v6bar{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0}
@@ -1242,6 +1242,503 @@ setTimeout(install,550);
    ed.querySelectorAll("*").forEach(n=>{ n.style.removeProperty("color"); n.style.removeProperty("-webkit-text-fill-color"); if(n.getAttribute("style")==="")n.removeAttribute("style"); });
    try{ const d=cur(); d.bodyHtml=ed.innerHTML; d.body=ed.innerText.replace(/\n+$/,''); const backing=document.getElementById("body"); if(backing)backing.value=d.body; save(); render(); }catch(e){}
  },0); });
+})();
+</script>
+
+
+<style id="gendoc-v7-6-seals-fix-css">
+.sealGrid label.seal-loaded{
+  outline:1px solid #7f9b7f !important;
+  padding:4px !important;
+}
+.sealGrid label.seal-loaded::after{
+  content:"✓ SCEAU IMPORTÉ";
+  display:block;
+  margin-top:5px;
+  font:9px "Courier New",monospace;
+}
+</style>
+
+<script id="gendoc-v7-6-seals-fix">
+(()=>{
+  function readStore(){
+    try{return JSON.parse(localStorage.getItem("oci_seals")||"{}")}catch(e){return {}}
+  }
+  function refreshSealStatus(){
+    const store=readStore();
+    document.querySelectorAll(".sealFile").forEach(inp=>{
+      const loaded=!!store[inp.dataset.seal];
+      inp.closest("label")?.classList.toggle("seal-loaded",loaded);
+    });
+  }
+  function installSealFix(){
+    document.querySelectorAll(".sealFile").forEach(inp=>{
+      /* IMPORTANT :
+         l'ancien gestionnaire vidait inp.value immédiatement après la sélection.
+         Sur Safari/iPad, le gestionnaire V7.1 recevait donc un input déjà vide.
+         On supprime totalement cet ancien gestionnaire. */
+      inp.onchange=null;
+
+      if(inp.dataset.v76fixed)return;
+      inp.dataset.v76fixed="1";
+
+      inp.addEventListener("change",()=>{
+        const file=inp.files && inp.files[0];
+        if(!file)return;
+
+        const reader=new FileReader();
+        reader.onload=()=>{
+          try{
+            const store=readStore();
+            store[inp.dataset.seal]=reader.result;
+            localStorage.setItem("oci_seals",JSON.stringify(store));
+            try{sealImages=store}catch(e){}
+            refreshSealStatus();
+            try{render()}catch(e){}
+            /* NE PAS vider inp.value :
+               Safari peut ainsi afficher le vrai nom du fichier sélectionné. */
+          }catch(err){
+            alert("Le sceau n'a pas pu être enregistré localement. Le fichier est peut-être trop volumineux.");
+          }
+        };
+        reader.onerror=()=>alert("Impossible de lire l'image du sceau.");
+        reader.readAsDataURL(file);
+      });
+    });
+    refreshSealStatus();
+  }
+
+  document.addEventListener("DOMContentLoaded",()=>setTimeout(installSealFix,500));
+  setTimeout(installSealFix,650);
+
+  /* Si l'interface est reconstruite après changement de pièce, on réinstalle. */
+  const observer=new MutationObserver(()=>installSealFix());
+  document.addEventListener("DOMContentLoaded",()=>{
+    const media=document.getElementById("media");
+    if(media)observer.observe(media,{childList:true,subtree:true});
+  });
+})();
+</script>
+
+
+<style id="gendoc-v8-production-css">
+/* ===== GenDoc V8 — Production ===== */
+#v8Top{position:sticky;top:0;z-index:500;background:#0b0d0c;border:1px solid #343936;padding:6px;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:5px}
+#v8Top button,#v8Top select,#v8Top input{font:10px "Courier New",monospace;padding:5px}
+#v8PageStrip{display:flex;gap:6px;overflow:auto;padding:5px 0}
+.v8thumb{min-width:70px;border:1px solid #444;padding:5px;font:8px "Courier New";cursor:pointer}
+.v8thumb.on{outline:2px solid #888}
+.v8status{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#v8SearchResults{max-height:180px;overflow:auto;border:1px solid #333;padding:4px}
+.v8hit{display:block;width:100%;text-align:left;margin:2px 0;font:9px "Courier New";padding:5px}
+#v8Preflight .bad{color:#d9a3a3} #v8Preflight .good{color:#a8c4a8}
+#v8Context{position:fixed;display:none;z-index:9999;background:#111;border:1px solid #666;padding:5px;gap:4px;box-shadow:0 4px 20px #0008}
+#v8Context button,#v8Context select{font:10px "Courier New";padding:5px}
+#v8ZoomWrap{overflow:auto}
+.v8alignGuide{position:absolute;z-index:200;pointer-events:none;background:#7778}
+.v8alignGuide.v{top:0;bottom:0;width:1px}.v8alignGuide.h{left:0;right:0;height:1px}
+.v8component{border:1px solid #444;padding:4px;margin:3px 0;font-size:9px}
+</style>
+
+<script id="gendoc-v8-production-js">
+(()=>{
+const $8=id=>document.getElementById(id);
+const KEY="gendoc_v8_prod";
+let V8={components:[],customStamps:[],settings:{zoom:100},docState:{}};
+try{Object.assign(V8,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){}
+const save8=()=>localStorage.setItem(KEY,JSON.stringify(V8));
+const d8=()=>{try{return cur()}catch(e){return null}};
+const allDocs=()=>Object.values(P.docs||{});
+const rx=d=>{try{return ref(d)}catch(e){return (d.dossier||"")+"/"+(d.cat||"")+String(d.num||"")}};
+function st(){
+ const d=d8();if(!d)return {};
+ V8.docState[d.id]=V8.docState[d.id]||{status:"BROUILLON",order:0};
+ return V8.docState[d.id];
+}
+function replaceVars(txt,d=d8()){
+ if(!d)return txt;
+ const map={REF:rx(d),DATE:d.date||"",HEURE:d.time||"",DOSSIER:d.dossier||"",SAISON:d.season||P.activeSeason||"S01",ACCES:d.access||"",TITRE:d.title||"",AUTEUR:d.author||""};
+ return String(txt||"").replace(/\{(REF|DATE|HEURE|DOSSIER|SAISON|ACCES|TITRE|AUTEUR)\}/g,(_,k)=>map[k]);
+}
+function renderVars(){
+ const d=d8();if(!d)return;
+ const bp=$8("bodyP");if(bp&&d.bodyHtml){
+   // Render variables in preview without rewriting source text.
+   bp.innerHTML=replaceVars(d.bodyHtml,d);
+ }
+}
+function applyZoom(){
+ const p=$8("paper");if(!p)return;
+ const z=(V8.settings.zoom||100)/100;
+ p.style.transformOrigin="top left";p.style.transform=`scale(${z})`;
+ const main=p.parentElement;if(main){main.style.minWidth=(210*z)+"mm";main.style.minHeight=(297*z)+"mm"}
+}
+function search(){
+ const q=($8("v8Search").value||"").trim().toLowerCase(),box=$8("v8SearchResults");if(!q){box.innerHTML="";return}
+ const hits=allDocs().filter(d=>[rx(d),d.title,d.body,d.subject,d.author,d.dossier,d.season].join(" ").toLowerCase().includes(q));
+ box.innerHTML=hits.map(d=>`<button class="v8hit" data-id="${d.id}">${esc8(rx(d))} — ${esc8(d.title||"")}</button>`).join("")||"Aucun résultat.";
+ box.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>{P.cur=b.dataset.id;P.activeSeason=P.docs[P.cur].season||"S01";save();load();setTimeout(refresh,80)});
+}
+const esc8=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function preflight(){
+ const d=d8(),issues=[];if(!d)return;
+ if(!d.title)issues.push("Titre absent");
+ if(!d.access)issues.push("Accréditation absente");
+ if(d.date&&!/^\d{2}\.\d{2}\.\d{4}$/.test(d.date))issues.push("Date hors format JJ.MM.AAAA");
+ const refs={};allDocs().forEach(x=>refs[rx(x)]=(refs[rx(x)]||0)+1);
+ if(refs[rx(d)]>1)issues.push("Référence dupliquée : "+rx(d));
+ (d.linkedRefs||[]).forEach(r=>{if(!refs[r])issues.push("Pièce liée inexistante : "+r)});
+ if(d.seal){
+   let ss={};try{ss=JSON.parse(localStorage.getItem("oci_seals")||"{}")}catch(e){}
+   if(!ss[d.seal])issues.push("Sceau sélectionné mais image non importée");
+ }
+ const p=$8("paper");if(p)p.querySelectorAll(".v6obj,.v7x").forEach(o=>{
+   const r=o.getBoundingClientRect(),pr=p.getBoundingClientRect();
+   if(r.right>pr.right+2||r.bottom>pr.bottom+2||r.left<pr.left-2||r.top<pr.top-2)issues.push("Objet hors page");
+ });
+ $8("v8Preflight").innerHTML=issues.length?issues.map(x=>`<div class="bad">⚠ ${esc8(x)}</div>`).join(""):`<div class="good">✓ PRÉFLIGHT : prêt pour export.</div>`;
+}
+function stats(){
+ const d=d8();if(!d)return;
+ const ds=d.dossier,docs=allDocs().filter(x=>x.dossier===ds),count={};
+ docs.forEach(x=>{const q=V8.docState[x.id]?.status||"BROUILLON";count[q]=(count[q]||0)+1});
+ $8("v8Stats").textContent=`${ds} — ${docs.length} pièce(s) · `+Object.entries(count).map(([k,v])=>`${v} ${k}`).join(" · ");
+}
+function statusSet(v){st().status=v;save8();stats()}
+function renameSeason(){
+ const sid=d8()?.season||P.activeSeason||"S01";if(!P.seasons?.[sid])return;
+ const n=prompt("Nouveau nom de la saison",P.seasons[sid]);if(n){P.seasons[sid]=n;save();load();setTimeout(refresh,80)}
+}
+function renameDossier(){
+ const d=d8();if(!d)return;const n=prompt("Nouveau titre du dossier",P.dossiers[d.dossier]||"DOSSIER");if(n){P.dossiers[d.dossier]=n;save();load();setTimeout(refresh,80)}
+}
+function moveDossier(){
+ const d=d8();if(!d)return;const opts=Object.keys(P.seasons||{S01:"SAISON I"}),to=prompt("Déplacer "+d.dossier+" vers : "+opts.join(", "),d.season||"S01");if(!opts.includes(to))return;
+ allDocs().filter(x=>x.dossier===d.dossier).forEach(x=>x.season=to);P.activeSeason=to;save();load();setTimeout(refresh,80)
+}
+function duplicateDossier(){
+ const d=d8();if(!d)return;const nid=(prompt("Nouvel identifiant du dossier","D999")||"").toUpperCase();if(!nid)return;
+ P.dossiers[nid]=(P.dossiers[d.dossier]||"DOSSIER")+" — COPIE";
+ const docs=allDocs().filter(x=>x.dossier===d.dossier);let first=null;
+ docs.forEach(x=>{let c=JSON.parse(JSON.stringify(x));c.id=Date.now()+"_"+Math.random().toString(36).slice(2,6);c.dossier=nid;c.season=d.season||"S01";P.docs[c.id]=c;if(!first)first=c.id});
+ if(first)P.cur=first;save();load();setTimeout(refresh,80)
+}
+function pages(){
+ const d=d8(),box=$8("v8PageStrip");if(!d||!box)return;
+ d.pages=d.pages||[{id:"p1",name:"Page 1",objects:[]}];d.pageIndex=d.pageIndex||0;
+ box.innerHTML=d.pages.map((p,i)=>`<div class="v8thumb ${i===d.pageIndex?"on":""}" data-i="${i}">PAGE ${i+1}<br>${esc8(p.name||"")}</div>`).join("");
+ box.querySelectorAll("[data-i]").forEach(x=>x.onclick=()=>{d.pageIndex=+x.dataset.i;save();try{window.__v71_renderObjects()}catch(e){}pages()});
+}
+function headerFooter(){
+ const d=d8();if(!d)return;
+ d.v8hf=d.v8hf||{header:"{REF} // {ACCES}",footer:"{DOSSIER} · {DATE}"};
+ const h=prompt("En-tête automatique",d.v8hf.header);if(h===null)return;const f=prompt("Pied de page automatique",d.v8hf.footer);if(f===null)return;
+ d.v8hf={header:h,footer:f};save();renderHF()
+}
+function renderHF(){
+ const d=d8(),p=$8("paper");if(!d||!p)return;p.querySelectorAll(".v8hf").forEach(x=>x.remove());
+ if(!d.v8hf)return;
+ const h=document.createElement("div");h.className="v8hf";h.style.cssText="position:absolute;left:15mm;right:15mm;top:4mm;font:7px 'Courier New';display:flex;justify-content:space-between";h.textContent=replaceVars(d.v8hf.header,d);p.appendChild(h);
+ const f=document.createElement("div");f.className="v8hf";f.style.cssText="position:absolute;left:15mm;right:15mm;bottom:3mm;font:7px 'Courier New';display:flex;justify-content:space-between";f.textContent=replaceVars(d.v8hf.footer,d);p.appendChild(f);
+}
+function customStamp(){
+ const txt=prompt("Texte du tampon personnalisé","PROJET INTERDIT");if(!txt)return;V8.customStamps.push(txt);save8();
+ try{const d=d8();d.pages=d.pages||[{id:"p1",name:"Page 1",objects:[]}];const a=d.pages[d.pageIndex||0].objects||(d.pages[d.pageIndex||0].objects=[]);a.push({id:"x"+Date.now(),type:"stamp",text:txt,x:55,y:100,w:55,h:9,rot:-7,opacity:.8});save();window.__v71_renderObjects()}catch(e){}
+}
+function saveComponent(){
+ const selected=document.querySelector("#paper .v6obj.selected,#paper .v7x.v7-selected");if(!selected)return alert("Sélectionne d'abord un objet.");
+ const id=selected.dataset.id||selected.dataset.xid,d=d8();let o=(d.v6objects||[]).find(x=>x.id===id);
+ if(!o&&d.pages)o=(d.pages[d.pageIndex||0].objects||[]).find(x=>x.id===id);if(!o)return;
+ const name=prompt("Nom du composant","Composant");if(!name)return;V8.components.push({name,obj:JSON.parse(JSON.stringify(o))});save8();renderComponents()
+}
+function renderComponents(){
+ const box=$8("v8Components");if(!box)return;box.innerHTML=V8.components.map((c,i)=>`<div class="v8component">${esc8(c.name)} <button data-c="${i}">AJOUTER</button></div>`).join("")||"Aucun composant.";
+ box.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{const c=JSON.parse(JSON.stringify(V8.components[+b.dataset.c].obj));delete c.id;c.x=(c.x||40)+4;c.y=(c.y||80)+4;
+   const d=d8();if(c.type&&["stamp","redaction","annotation","arrow","signature","asset"].includes(c.type)){d.pages=d.pages||[{id:"p1",name:"Page 1",objects:[]}];c.id="x"+Date.now();(d.pages[d.pageIndex||0].objects||(d.pages[d.pageIndex||0].objects=[])).push(c);save();window.__v71_renderObjects()}
+   else {c.id="v6_"+Date.now();(d.v6objects||(d.v6objects=[])).push(c);save();try{render()}catch(e){}}
+ })});
+}
+function exportProject(){
+ const payload={format:"GENDOC-V8",exported:new Date().toISOString(),project:P,seals:localStorage.getItem("oci_seals"),logo:localStorage.getItem("oci_logo"),v8:V8};
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(payload)],{type:"application/json"}));a.download="Projet_Ordre_"+new Date().toISOString().slice(0,10)+".gendoc";a.click()
+}
+function importProject(file){
+ const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(x.format!=="GENDOC-V8")throw 0;P=x.project;localStorage.setItem("oci_v3",JSON.stringify(P));if(x.seals)localStorage.setItem("oci_seals",x.seals);if(x.logo)localStorage.setItem("oci_logo",x.logo);V8=x.v8||V8;save8();location.reload()}catch(e){alert("Fichier .gendoc invalide.")}};r.readAsText(file)
+}
+function context(){
+ let c=$8("v8Context");if(c)return;
+ c=document.createElement("div");c.id="v8Context";c.innerHTML='<button data-cmd="bold"><b>B</b></button><button data-cmd="italic"><i>I</i></button><button data-cmd="underline"><u>U</u></button><select id="v8CtxSize"><option>8</option><option>9</option><option selected>10</option><option>12</option><option>14</option><option>18</option><option>24</option></select><button id="v8CtxRedact">████</button>';document.body.appendChild(c);
+ c.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>{try{document.execCommand(b.dataset.cmd,false,null)}catch(e){}});
+ $8("v8CtxSize").onchange=e=>{try{document.execCommand("fontSize",false,"7");document.querySelectorAll('font[size="7"]').forEach(x=>{x.removeAttribute("size");x.style.fontSize=e.target.value+"px"})}catch(e){}};
+ $8("v8CtxRedact").onclick=()=>{const b=$8("v7Redact");if(b)b.click()};
+ document.addEventListener("selectionchange",()=>{const sel=window.getSelection();if(!sel||sel.isCollapsed||!sel.rangeCount){c.style.display="none";return}const ed=$8("bodyEditor");if(!ed||!ed.contains(sel.anchorNode.nodeType===3?sel.anchorNode.parentNode:sel.anchorNode)){c.style.display="none";return}const r=sel.getRangeAt(0).getBoundingClientRect();c.style.display="flex";c.style.left=Math.max(5,r.left)+"px";c.style.top=Math.max(5,r.top-45)+"px"});
+}
+function build(){
+ const edit=document.querySelector(".edit");if(!edit||$8("v8Top"))return;
+ const top=document.createElement("div");top.id="v8Top";top.innerHTML=`
+ <select id="v8Zoom"><option>50</option><option>75</option><option selected>100</option><option>125</option><option>150</option></select><button id="v8Fit">ADAPTER</button>
+ <button id="v8HF">EN-TÊTE / PIED</button><button id="v8Stamp">TAMPON +</button><button id="v8Comp">ENREG. COMPOSANT</button>
+ <select id="v8Status"><option>BROUILLON</option><option>À RELIRE</option><option>CANON VALIDÉ</option><option>PRÊT À IMPRIMER</option><option>IMPRIMÉ</option></select>
+ <button id="v8Pre">PRÉFLIGHT</button><button id="v8Proj">EXPORT .GENDOC</button><button id="v8ImpB">IMPORT .GENDOC</button><input id="v8Imp" type="file" accept=".gendoc,application/json" hidden>`;
+ edit.prepend(top);
+ const panel=document.createElement("fieldset");panel.id="v8Prod";panel.innerHTML=`<legend>PRODUCTION // V8</legend>
+ <div class="v8bar"><input id="v8Search" placeholder="Recherche globale : Lanternum, D001/P03…"><button id="v8SearchB">RECHERCHER</button></div><div id="v8SearchResults"></div>
+ <div id="v8Stats" class="small"></div><div id="v8PageStrip"></div>
+ <div class="v8bar"><button id="v8RenameS">RENOMMER SAISON</button><button id="v8RenameD">RENOMMER DOSSIER</button><button id="v8MoveD">DÉPLACER DOSSIER</button><button id="v8DupD">DUPLIQUER DOSSIER</button></div>
+ <div><b>VARIABLES</b><div class="small">{REF} {DATE} {HEURE} {DOSSIER} {SAISON} {ACCES} {TITRE} {AUTEUR}</div></div>
+ <div><b>COMPOSANTS</b><div id="v8Components"></div></div><div id="v8Preflight"></div>`;
+ const host=$8("v7Panel")?.parentElement||document.querySelector("#text");host.appendChild(panel);
+ $8("v8Zoom").value=String(V8.settings.zoom||100);$8("v8Zoom").onchange=e=>{V8.settings.zoom=+e.target.value;save8();applyZoom()};
+ $8("v8Fit").onclick=()=>{const p=$8("paper"),w=p.parentElement.clientWidth,z=Math.max(40,Math.min(100,w/p.offsetWidth*100));V8.settings.zoom=Math.round(z);$8("v8Zoom").value=String(V8.settings.zoom);save8();applyZoom()};
+ $8("v8HF").onclick=headerFooter;$8("v8Stamp").onclick=customStamp;$8("v8Comp").onclick=saveComponent;
+ $8("v8Status").value=st().status;$8("v8Status").onchange=e=>statusSet(e.target.value);$8("v8Pre").onclick=preflight;
+ $8("v8SearchB").onclick=search;$8("v8Search").onkeydown=e=>{if(e.key==="Enter")search()};
+ $8("v8RenameS").onclick=renameSeason;$8("v8RenameD").onclick=renameDossier;$8("v8MoveD").onclick=moveDossier;$8("v8DupD").onclick=duplicateDossier;
+ $8("v8Proj").onclick=exportProject;$8("v8ImpB").onclick=()=>$8("v8Imp").click();$8("v8Imp").onchange=e=>{if(e.target.files[0])importProject(e.target.files[0])};
+ context();
+}
+function refresh(){build();renderVars();renderHF();applyZoom();pages();stats();renderComponents();if($8("v8Status"))$8("v8Status").value=st().status}
+const oldRender=window.render;if(typeof oldRender==="function")window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(refresh,0);return r};
+document.addEventListener("DOMContentLoaded",()=>setTimeout(refresh,800));setTimeout(refresh,900);
+})();
+</script>
+
+
+<style id="gendoc-v8-1-ux">
+:root{
+ --bg:#0b0d0c;--panel:#111412;--panel2:#171b18;--line:#353b37;
+ --text:#eceee9;--muted:#929a94;--accent:#b9c3bb;--paper:#fff;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);margin:0}
+header{height:44px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);background:#090b0a;position:sticky;top:0;z-index:1000}
+.app{display:grid!important;grid-template-columns:220px minmax(330px,430px) minmax(520px,1fr)!important;gap:0!important;min-height:calc(100vh - 44px)}
+nav{padding:14px!important;border-right:1px solid var(--line)!important;background:#0e110f;overflow:auto;max-height:calc(100vh - 44px);position:sticky;top:44px}
+.edit{padding:14px!important;border-right:1px solid var(--line);overflow:auto;max-height:calc(100vh - 44px)}
+main{padding:18px!important;overflow:auto;max-height:calc(100vh - 44px);background:#151816}
+button,select,input,textarea{border-radius:5px!important}
+button{cursor:pointer}
+.actions{gap:6px!important}
+nav .actions:first-child{display:grid!important;grid-template-columns:1fr 1fr}
+nav .actions:first-child #addS{grid-column:1/-1}
+nav h4{font-size:10px!important;color:var(--muted)!important;letter-spacing:1.2px;margin:16px 0 7px!important}
+.tree{border-left:2px solid #343a36;padding-left:7px;margin:9px 0!important}
+.item{width:100%;text-align:left;border:0!important;border-radius:4px!important;padding:7px!important;background:transparent!important}
+.item.on{background:#252b27!important;box-shadow:inset 2px 0 0 #c2cbc4}
+.tabs{display:grid!important;grid-template-columns:repeat(4,1fr);gap:4px!important;position:sticky;top:0;background:var(--panel);z-index:50;padding-bottom:9px}
+.tabs button{padding:9px 4px!important;border:1px solid var(--line)!important;background:#111412!important}
+.tabs button.on,.tabs button.active{background:#29302b!important}
+fieldset{border:1px solid var(--line)!important;border-radius:7px!important;background:var(--panel)!important;padding:11px!important;margin:10px 0!important}
+legend{color:#c7cec9!important;font-size:9px!important;letter-spacing:.7px}
+label,.small{color:var(--muted)}
+input,select,textarea,#bodyEditor{background:#0a0c0b!important;border:1px solid #343a36!important}
+#bodyEditor{min-height:360px!important;border-radius:7px!important;padding:14px!important}
+#v8Top{position:static!important;border:0!important;background:transparent!important;padding:0 0 10px!important;margin:0!important}
+#v8Top button,#v8Top select{min-height:32px}
+#v8Prod,#v7Panel,#v6Panel{background:#0e110f!important}
+#v8Prod>legend,#v7Panel>legend,#v6Panel>legend{font-weight:bold}
+.gdAccordion{border:1px solid var(--line);border-radius:7px;margin:9px 0;background:#0f1210}
+.gdAccordion>summary{padding:11px;cursor:pointer;list-style:none;font:700 10px "Courier New",monospace;letter-spacing:.6px}
+.gdAccordion>summary::-webkit-details-marker{display:none}
+.gdAccordion>summary:after{content:"＋";float:right;color:var(--muted)}
+.gdAccordion[open]>summary:after{content:"−"}
+.gdAccordion>.gdAccBody{padding:0 10px 10px}
+#gdQuick{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:8px 0 12px}
+#gdQuick button{padding:8px 4px;font-size:9px}
+#gdDocHeader{padding:8px 10px;border:1px solid var(--line);border-radius:6px;margin-bottom:10px;background:#151916}
+#gdDocHeader b{display:block;font-size:12px}#gdDocHeader span{font-size:9px;color:var(--muted)}
+#paper{box-shadow:0 12px 35px #0008!important;margin:0 auto!important}
+#v8PageStrip{padding:7px;background:#0b0d0c;border-radius:6px}
+.v8thumb{border-radius:4px;background:#171b18}
+#v8Search{min-width:180px}
+#v8SearchResults:empty{display:none}
+#v8Preflight:empty{display:none}
+#gdMobileTools{display:none}
+@media(max-width:1050px){
+ .app{grid-template-columns:190px minmax(300px,390px) minmax(480px,1fr)!important}
+}
+@media(max-width:820px){
+ .app{display:block!important}
+ nav,.edit,main{position:static!important;max-height:none!important;border-right:0!important}
+ nav{display:none}
+ nav.gdOpen{display:block}
+ main{min-height:600px}
+ #gdMobileTools{display:flex;gap:5px;padding:7px 12px;background:#0e110f;border-bottom:1px solid var(--line);position:sticky;top:44px;z-index:900}
+}
+</style>
+
+<script id="gendoc-v8-1-ux-js">
+(()=>{
+const q=id=>document.getElementById(id);
+function accordion(el,title,open=false){
+ if(!el||el.closest(".gdAccordion"))return;
+ const det=document.createElement("details");det.className="gdAccordion";det.open=open;
+ const sum=document.createElement("summary");sum.textContent=title;
+ const body=document.createElement("div");body.className="gdAccBody";
+ el.parentNode.insertBefore(det,el);det.append(sum,body);body.appendChild(el);
+}
+function docHeader(){
+ const edit=document.querySelector(".edit");if(!edit||q("gdDocHeader"))return;
+ const h=document.createElement("div");h.id="gdDocHeader";
+ const tabs=edit.querySelector(".tabs");tabs?.after(h);
+}
+function refreshHeader(){
+ const h=q("gdDocHeader");if(!h)return;
+ try{const d=cur();h.innerHTML=`<b>${ref(d)} — ${String(d.title||"SANS TITRE")}</b><span>${d.season||"S01"} · ${d.dossier||""} · ${d.access||""}</span>`}catch(e){}
+}
+function quick(){
+ const text=q("text");if(!text||q("gdQuick"))return;
+ const bar=document.createElement("div");bar.id="gdQuick";
+ bar.innerHTML='<button data-tab="doc">IDENTITÉ</button><button data-tab="media">MÉDIAS</button><button data-go="v6Panel">MISE EN PAGE</button><button data-go="v8Prod">PRODUCTION</button>';
+ text.prepend(bar);
+ bar.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>document.querySelector(`.tabs button[data-t="${b.dataset.tab}"]`)?.click());
+ bar.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{const el=q(b.dataset.go),d=el?.closest(".gdAccordion");if(d)d.open=true;el?.scrollIntoView({behavior:"smooth",block:"start"})});
+}
+function reorganize(){
+ // Keep the frequently used document/content controls visible.
+ accordion(q("v6Panel"),"MISE EN PAGE AVANCÉE",false);
+ accordion(q("v7Panel"),"OUTILS DOCUMENTAIRES",false);
+ accordion(q("v8Prod"),"PRODUCTION & CONTRÔLE",false);
+
+ // Media sections become collapsible to reduce vertical scrolling.
+ const media=q("media");
+ if(media){
+   [...media.children].filter(x=>x.tagName==="FIELDSET").forEach((f,i)=>{
+     const title=f.querySelector("legend")?.textContent?.trim()||"MÉDIAS";
+     accordion(f,title,i===0);
+   });
+ }
+}
+function mobile(){
+ if(q("gdMobileTools"))return;
+ const h=document.createElement("div");h.id="gdMobileTools";
+ h.innerHTML='<button id="gdMenu">☰ DOSSIERS</button><button id="gdEdit">ÉDITEUR</button><button id="gdPaper">PAGE</button>';
+ document.querySelector("header")?.after(h);
+ q("gdMenu").onclick=()=>document.querySelector("nav")?.classList.toggle("gdOpen");
+ q("gdEdit").onclick=()=>document.querySelector(".edit")?.scrollIntoView({behavior:"smooth"});
+ q("gdPaper").onclick=()=>document.querySelector("main")?.scrollIntoView({behavior:"smooth"});
+}
+function cleanLabels(){
+ const p=q("v8Top");if(!p)return;
+ const names={v8Fit:"AJUSTER",v8HF:"EN-TÊTE",v8Stamp:"TAMPON",v8Comp:"COMPOSANT",v8Pre:"VÉRIFIER",v8Proj:"SAUVEGARDER",v8ImpB:"OUVRIR"};
+ Object.entries(names).forEach(([id,t])=>{if(q(id))q(id).textContent=t});
+}
+function init(){docHeader();quick();reorganize();mobile();cleanLabels();refreshHeader()}
+const oldLoad=window.load;if(typeof oldLoad==="function")window.load=function(){const r=oldLoad.apply(this,arguments);setTimeout(()=>{init();refreshHeader()},50);return r};
+const oldRender=window.render;if(typeof oldRender==="function")window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(refreshHeader,0);return r};
+document.addEventListener("DOMContentLoaded",()=>setTimeout(init,1000));setTimeout(init,1100);
+})();
+</script>
+
+
+<style id="gendoc-v8-2-design">
+/* ===== V8.2 — seconde passe design / iPad ===== */
+:root{--gd-radius:8px;--gd-hit:38px}
+body{font-size:12px}
+header b{letter-spacing:1.5px}
+button{min-height:var(--gd-hit);transition:background .12s,border-color .12s,transform .05s}
+button:active{transform:translateY(1px)}
+input,select{min-height:36px}
+.tabs button{font-size:10px;font-weight:700}
+#gdDocHeader{display:flex;justify-content:space-between;align-items:center;gap:10px}
+#gdDocHeader .gdState{font-size:8px;border:1px solid #4a514c;border-radius:20px;padding:4px 7px;white-space:nowrap}
+.gdIconBar{display:flex;flex-wrap:wrap;gap:5px;padding:7px;border:1px solid var(--line);border-radius:8px;background:#0d100e;margin-bottom:9px}
+.gdIconBar button{min-width:38px;padding:5px 8px}
+.gdIconBar .grow{flex:1}
+.gdSectionTitle{font:700 9px "Courier New",monospace;color:var(--muted);letter-spacing:1px;margin:12px 0 5px}
+#gdPageRail{display:flex;gap:7px;overflow-x:auto;padding:7px;border:1px solid var(--line);border-radius:8px;background:#0b0d0c;margin-bottom:10px}
+.gdPageCard{min-width:76px;height:98px;border:1px solid #414743;border-radius:5px;background:#f4f1e8;color:#20231f;padding:5px;position:relative;cursor:pointer;font:7px "Courier New",monospace}
+.gdPageCard.on{outline:2px solid #aab5ad}
+.gdPageCard .n{position:absolute;bottom:4px;right:5px;font-weight:bold}
+.gdPageCard .lines{height:55px;background:repeating-linear-gradient(to bottom,#aaa 0,#aaa 1px,transparent 1px,transparent 7px);opacity:.35;margin-top:8px}
+#gdFloating{position:fixed;z-index:9998;display:none;background:#101310;border:1px solid #626a64;border-radius:8px;padding:5px;gap:4px;box-shadow:0 8px 30px #0009}
+#gdFloating button,#gdFloating select{min-height:34px}
+#gdObjTools{position:fixed;z-index:9997;display:none;background:#101310;border:1px solid #626a64;border-radius:8px;padding:5px;gap:4px;box-shadow:0 8px 30px #0009}
+#gdObjTools button{min-height:34px}
+.gdCorner{position:absolute;width:12px;height:12px;border:1px solid #111;background:#fff;z-index:300;border-radius:50%}
+.gdCorner.br{right:-6px;bottom:-6px;cursor:nwse-resize}
+.gdRotate{position:absolute;width:12px;height:12px;border:1px solid #111;background:#fff;z-index:300;border-radius:50%;left:50%;top:-22px;transform:translateX(-50%);cursor:grab}
+.gdRotate:after{content:"";position:absolute;width:1px;height:10px;background:#333;left:5px;top:11px}
+#paper .v6obj.selected,#paper .v7x.v7-selected{outline:1px dashed #444!important}
+#gdToast{position:fixed;right:18px;bottom:18px;z-index:10000;background:#161a17;border:1px solid #555d57;border-radius:7px;padding:9px 12px;font:9px "Courier New";opacity:0;pointer-events:none;transition:opacity .2s}
+#gdToast.show{opacity:1}
+@media(max-width:820px){
+ :root{--gd-hit:42px}
+ .edit{padding:10px!important}
+ .tabs{top:87px!important}
+ #gdDocHeader{display:block}
+ #gdDocHeader .gdState{display:inline-block;margin-top:5px}
+ .gdIconBar{position:sticky;top:128px;z-index:80}
+ #gdFloating,#gdObjTools{max-width:calc(100vw - 16px);overflow:auto}
+}
+</style>
+
+<script id="gendoc-v8-2-design-js">
+(()=>{
+const G=id=>document.getElementById(id);
+const toast=t=>{let x=G("gdToast");if(!x){x=document.createElement("div");x.id="gdToast";document.body.appendChild(x)}x.textContent=t;x.classList.add("show");clearTimeout(x._t);x._t=setTimeout(()=>x.classList.remove("show"),1500)};
+function d(){try{return cur()}catch(e){return null}}
+function pageObjects(){const q=d();if(!q)return[];q.pages=q.pages||[{id:"p1",name:"Page 1",objects:[]}];return q.pages[q.pageIndex||0].objects||(q.pages[q.pageIndex||0].objects=[])}
+function toolbar(){
+ const edit=document.querySelector(".edit");if(!edit||G("gdMainBar"))return;
+ const b=document.createElement("div");b.id="gdMainBar";b.className="gdIconBar";
+ b.innerHTML='<button title="Document" data-tab="doc">▤</button><button title="Contenu" data-tab="text">T</button><button title="Médias" data-tab="media">▧</button><button title="Contrôle" data-tab="check">✓</button><span class="grow"></span><button title="Annuler" id="gdUndo">↶</button><button title="Rétablir" id="gdRedo">↷</button><button title="Aperçu final" id="gdPreview">◎</button><button title="PDF" id="gdPdf">PDF</button>';
+ const hdr=G("gdDocHeader");hdr?.after(b);
+ b.querySelectorAll("[data-tab]").forEach(x=>x.onclick=()=>document.querySelector(`.tabs button[data-t="${x.dataset.tab}"]`)?.click());
+ G("gdUndo").onclick=()=>G("v6Undo")?.click();G("gdRedo").onclick=()=>G("v6Redo")?.click();
+ G("gdPreview").onclick=()=>G("v7Preview")?.click();
+ G("gdPdf").onclick=()=>{const btn=[...document.querySelectorAll("button")].find(x=>/PDF/.test(x.textContent)&&x.id!=="gdPdf");if(btn)btn.click()};
+}
+function headerState(){
+ const h=G("gdDocHeader");if(!h)return;let state=G("v8Status")?.value||"BROUILLON";
+ let badge=h.querySelector(".gdState");if(!badge){badge=document.createElement("span");badge.className="gdState";h.appendChild(badge)}badge.textContent=state;
+}
+function rail(){
+ const edit=document.querySelector(".edit");if(!edit||G("gdPageRail"))return;
+ const title=document.createElement("div");title.className="gdSectionTitle";title.textContent="PAGES";
+ const r=document.createElement("div");r.id="gdPageRail";const bar=G("gdMainBar");bar?.after(title,r);renderRail()
+}
+function renderRail(){
+ const r=G("gdPageRail"),q=d();if(!r||!q)return;q.pages=q.pages||[{id:"p1",name:"Page 1",objects:[]}];
+ r.innerHTML=q.pages.map((p,i)=>`<div class="gdPageCard ${i===(q.pageIndex||0)?"on":""}" data-p="${i}"><div>${p.name||"PAGE "+(i+1)}</div><div class="lines"></div><span class="n">${i+1}</span></div>`).join("");
+ r.querySelectorAll("[data-p]").forEach(c=>c.onclick=()=>{q.pageIndex=+c.dataset.p;try{save();window.__v71_renderObjects()}catch(e){}renderRail()});
+}
+function floating(){
+ if(G("gdFloating"))return;
+ let f=document.createElement("div");f.id="gdFloating";f.innerHTML='<button data-c="bold"><b>B</b></button><button data-c="italic"><i>I</i></button><button data-c="underline"><u>U</u></button><select id="gdFSize"><option>8</option><option>9</option><option selected>10</option><option>12</option><option>14</option><option>18</option><option>24</option></select><button id="gdLeft">≡←</button><button id="gdCenter">≡</button><button id="gdRight">→≡</button><button id="gdBlack">████</button>';document.body.appendChild(f);
+ f.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>document.execCommand(b.dataset.c,false,null));
+ G("gdFSize").onchange=e=>{document.execCommand("fontSize",false,"7");document.querySelectorAll('font[size="7"]').forEach(x=>{x.removeAttribute("size");x.style.fontSize=e.target.value+"px"})};
+ G("gdLeft").onclick=()=>document.execCommand("justifyLeft");G("gdCenter").onclick=()=>document.execCommand("justifyCenter");G("gdRight").onclick=()=>document.execCommand("justifyRight");G("gdBlack").onclick=()=>G("v7Redact")?.click();
+ document.addEventListener("selectionchange",()=>{const s=window.getSelection(),ed=G("bodyEditor");if(!s||s.isCollapsed||!s.rangeCount||!ed){f.style.display="none";return}let n=s.anchorNode?.nodeType===3?s.anchorNode.parentNode:s.anchorNode;if(!n||!ed.contains(n)){f.style.display="none";return}let r=s.getRangeAt(0).getBoundingClientRect();f.style.display="flex";f.style.left=Math.max(8,Math.min(innerWidth-f.offsetWidth-8,r.left))+"px";f.style.top=Math.max(50,r.top-48)+"px"});
+}
+let sel=null;
+function objTools(){
+ if(G("gdObjTools"))return;let t=document.createElement("div");t.id="gdObjTools";t.innerHTML='<button id="gdFront">AVANT</button><button id="gdBack">ARRIÈRE</button><button id="gdDup">DUP.</button><button id="gdDel">SUPPR.</button>';document.body.appendChild(t);
+ G("gdFront").onclick=()=>G("v6Front")?.click();G("gdBack").onclick=()=>G("v6Back")?.click();G("gdDup").onclick=()=>G("v6Dup")?.click()||G("v7Copy")?.click();G("gdDel").onclick=()=>{if(G("v71Delete")&&!G("v71Delete").disabled)G("v71Delete").click();else G("v6Del")?.click();t.style.display="none"};
+ document.addEventListener("click",e=>{const o=e.target.closest?.("#paper .v6obj,#paper .v7x");if(!o){if(!e.target.closest?.("#gdObjTools"))t.style.display="none";return}sel=o;let r=o.getBoundingClientRect();t.style.display="flex";t.style.left=Math.max(8,Math.min(innerWidth-t.offsetWidth-8,r.left))+"px";t.style.top=Math.max(50,r.top-44)+"px";handles(o)});
+}
+function handles(el){
+ document.querySelectorAll(".gdCorner,.gdRotate").forEach(x=>x.remove());if(!el)return;
+ const br=document.createElement("span");br.className="gdCorner br";const rot=document.createElement("span");rot.className="gdRotate";el.append(br,rot);
+ br.onpointerdown=e=>{e.stopPropagation();e.preventDefault();const p=G("paper"),pr=p.getBoundingClientRect(),mm=210/pr.width,r=el.getBoundingClientRect(),sw=r.width,sh=r.height,sx=e.clientX,sy=e.clientY;try{br.setPointerCapture(e.pointerId)}catch(_){}
+   br.onpointermove=v=>{el.style.width=Math.max(12,sw+v.clientX-sx)*mm+"mm";el.style.height=Math.max(8,sh+v.clientY-sy)*mm+"mm"};
+   br.onpointerup=()=>{syncObject(el);br.onpointermove=null}
+ };
+ rot.onpointerdown=e=>{e.stopPropagation();const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;try{rot.setPointerCapture(e.pointerId)}catch(_){}
+   rot.onpointermove=v=>{let a=Math.atan2(v.clientY-cy,v.clientX-cx)*180/Math.PI+90;el.style.transform=`rotate(${a}deg)`};
+   rot.onpointerup=()=>{syncObject(el);rot.onpointermove=null}
+ };
+}
+function syncObject(el){
+ const q=d(),pr=G("paper").getBoundingClientRect(),r=el.getBoundingClientRect(),mm=210/pr.width,id=el.dataset.id||el.dataset.xid;
+ let o=(q.v6objects||[]).find(x=>x.id===id);if(!o)o=pageObjects().find(x=>x.id===id);if(!o)return;
+ o.w=parseFloat(el.style.width)||o.w;o.h=parseFloat(el.style.height)||o.h;
+ const m=(el.style.transform||"").match(/rotate\(([-\d.]+)deg\)/);if(m)o.rot=+m[1];try{save()}catch(e){}toast("Objet mis à jour");
+}
+function init(){toolbar();headerState();rail();floating();objTools();renderRail()}
+const oldR=window.render;if(typeof oldR==="function")window.render=function(){const x=oldR.apply(this,arguments);setTimeout(()=>{headerState();renderRail()},30);return x};
+document.addEventListener("change",e=>{if(e.target?.id==="v8Status")setTimeout(headerState,0)});
+document.addEventListener("DOMContentLoaded",()=>setTimeout(init,1250));setTimeout(init,1350);
 })();
 </script>
 
