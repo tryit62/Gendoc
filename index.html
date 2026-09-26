@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e0c">
-<title>GenDoc V10 Alpha 4 // PDF HD</title>
+<title>GenDoc V10 Alpha 4.1 // iPad</title>
 <style>
 :root{--bg:#0b0e0c;--p:#121713;--p2:#182019;--line:#39443c;--txt:#edf1ed;--mut:#97a198;--paper:#fff;--ink:#151815;--hit:44px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:12px Courier New,monospace}
@@ -62,7 +62,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 </head>
 <body>
 <header>
- <div class="brand">GENDOC // V10 ALPHA 4</div>
+ <div class="brand">GENDOC // V10 ALPHA 4.1</div>
  <div id="crumb" class="status"></div><div class="spacer"></div>
  <div id="saveState" class="status">● PRÊT</div>
  <button id="homeB">PROJET</button><button id="backupB">SAUVEGARDER</button>
@@ -72,7 +72,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
  <div class="hero"><h1>ATELIER DOCUMENTAIRE</h1><div class="spacer"></div>
  <button id="addSeason">+ SAISON</button><button id="addDossier">+ DOSSIER</button><button id="addDoc" class="primary">+ PIÈCE</button>
  <button id="restoreB">OUVRIR .GENDOC</button><input id="restoreFile" type="file" accept=".gendoc,application/json" hidden></div>
- <div id="projectTree"></div>
+ <div id="startupInfo" class="muted">Initialisation GenDoc…</div><div id="projectTree"></div>
 </section>
 
 <section id="atelier" class="screen">
@@ -170,9 +170,9 @@ const uid=p=>p+"_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function toast(t){$("toast").textContent=t;$("toast").classList.add("on");setTimeout(()=>$("toast").classList.remove("on"),1400)}
 function openDB(){return new Promise((ok,no)=>{const r=indexedDB.open(DBNAME,VER);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains(PROJECT))d.createObjectStore(PROJECT);if(!d.objectStoreNames.contains(MEDIA))d.createObjectStore(MEDIA)};r.onsuccess=()=>{db=r.result;ok()};r.onerror=no})}
-function put(store,key,val){return new Promise((ok,no)=>{const t=db.transaction(store,"readwrite");t.objectStore(store).put(val,key);t.oncomplete=ok;t.onerror=no})}
-function get(store,key){return new Promise(ok=>{const r=db.transaction(store).objectStore(store).get(key);r.onsuccess=()=>ok(r.result);r.onerror=()=>ok(null)})}
-function keys(store){return new Promise(ok=>{const r=db.transaction(store).objectStore(store).getAllKeys();r.onsuccess=()=>ok(r.result||[]);r.onerror=()=>ok([])})}
+function put(store,key,val){if(!db){try{localStorage.setItem("gd10_"+store+"_"+key,JSON.stringify(val));return Promise.resolve()}catch(e){return Promise.resolve()}}return new Promise(ok=>{try{const t=db.transaction(store,"readwrite");t.objectStore(store).put(val,key);t.oncomplete=ok;t.onerror=()=>ok()}catch(e){ok()}})}
+function get(store,key){if(!db){try{return Promise.resolve(JSON.parse(localStorage.getItem("gd10_"+store+"_"+key)||"null"))}catch(e){return Promise.resolve(null)}}return new Promise(ok=>{try{const r=db.transaction(store).objectStore(store).get(key);r.onsuccess=()=>ok(r.result);r.onerror=()=>ok(null)}catch(e){ok(null)}})}
+function keys(store){if(!db){try{return Promise.resolve(Object.keys(localStorage).filter(k=>k.startsWith("gd10_"+store+"_")).map(k=>k.slice(("gd10_"+store+"_").length)))}catch(e){return Promise.resolve([])}}return new Promise(ok=>{try{const r=db.transaction(store).objectStore(store).getAllKeys();r.onsuccess=()=>ok(r.result||[]);r.onerror=()=>ok([])}catch(e){ok([])}})}
 function fresh(){return {version:10,seasons:{S01:{name:"SAISON I",order:1}},dossiers:{},docs:{},active:null}}
 async function saveNow(){if(!P)return;$("saveState").textContent="○ SAUVEGARDE…";await put(PROJECT,"main",P);localStorage.setItem("gendoc_v10_last",new Date().toISOString());$("saveState").textContent="● SAUVEGARDÉ — "+new Date().toLocaleTimeString()}
 function saveSoon(){clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,350)}
@@ -180,7 +180,7 @@ function doc(){return P.docs[P.active]}
 function page(){const d=doc();return d?.pages[d.page||0]}
 function makeDoc(dossier,season){return {id:uid("doc"),season,dossier,ref:dossier+"/D01",title:"NOUVELLE PIÈCE",status:"BROUILLON",access:"OMBRE I",date:"",time:"",seal:"",bodyHtml:"",pages:[{id:uid("page"),name:"PAGE 1",objects:[]}],page:0}}
 function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("on"));$(id).classList.add("on")}
-function projectTree(){
+function projectTree(){$("startupInfo").textContent="GenDoc prêt // stockage "+(db?"IndexedDB":"local de secours");
  const root=$("projectTree");root.innerHTML="";
  Object.entries(P.seasons).sort((a,b)=>a[1].order-b[1].order).forEach(([sid,s])=>{
   const box=document.createElement("div");box.className="card season";box.innerHTML=`<h2>${esc(sid)} // ${esc(s.name)}</h2>`;
@@ -380,6 +380,21 @@ function wire(){
  $("exportManufactureB").onclick=()=>manifest("manufacture");
 
 }
-(async()=>{await openDB();P=await get(PROJECT,"main")||fresh();wire();projectTree();if(P.active&&P.docs[P.active])loadEditor();const t=localStorage.getItem("gendoc_v10_last");if(t)$("saveState").textContent="● SAUVEGARDÉ — "+new Date(t).toLocaleTimeString()})();
+(async()=>{
+  // Wire the UI even if Safari blocks IndexedDB in a temporary/file preview.
+  try{await openDB()}catch(e){db=null}
+  try{P=await get(PROJECT,"main")||fresh()}catch(e){P=fresh()}
+  try{
+    wire(); projectTree();
+    if(P.active&&P.docs[P.active])loadEditor();
+    const t=localStorage.getItem("gendoc_v10_last");
+    if(t)$("saveState").textContent="● SAUVEGARDÉ — "+new Date(t).toLocaleTimeString();
+    if(!db){$("saveState").textContent="● MODE TEST — STOCKAGE LOCAL";toast("GenDoc démarré en mode test")}
+  }catch(e){
+    console.error(e);
+    $("projectTree").innerHTML='<div class="card">⚠ ERREUR DE DÉMARRAGE<br><span class="muted">'+esc(e.message||e)+'</span></div>';
+    $("saveState").textContent="⚠ ERREUR";
+  }
+})();
 </script>
 </body></html>
