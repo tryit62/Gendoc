@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e0c">
-<title>GenDoc V10 Alpha 4.3 // Création pièce</title>
+<title>GenDoc V10 Alpha 5 // Atelier complet</title>
 <style>
 :root{--bg:#0b0e0c;--p:#121713;--p2:#182019;--line:#39443c;--txt:#edf1ed;--mut:#97a198;--paper:#fff;--ink:#151815;--hit:44px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:12px Courier New,monospace}
@@ -62,7 +62,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 </head>
 <body>
 <header>
- <div class="brand">GENDOC // V10 ALPHA 4.3</div>
+ <div class="brand">GENDOC // V10 ALPHA 5</div>
  <div id="crumb" class="status"></div><div class="spacer"></div>
  <div id="saveState" class="status">● PRÊT</div>
  <button id="homeB">PROJET</button><button id="backupB">SAUVEGARDER</button>
@@ -89,11 +89,52 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
    <div class="tabs"><button data-tab="doc" class="on">DOCUMENT</button><button data-tab="text">CONTENU</button><button data-tab="media">BIBLIOTHÈQUE</button><button data-tab="inspect">INSPECTEUR</button></div>
 
    <div id="tab-doc" class="panel on">
-    <fieldset><legend>IDENTITÉ</legend>
-     <label>Référence<input id="refF"></label><label>Titre<input id="titleF"></label>
-     <label>Statut<select id="statusF"><option>BROUILLON</option><option>À RELIRE</option><option>CANON VALIDÉ</option><option>PRÊT À IMPRIMER</option><option>IMPRIMÉ</option></select></label>
-     <label>Accès<input id="accessF" placeholder="OMBRE I"></label><label>Date<input id="dateF" placeholder="03.02.2026"></label><label>Heure<input id="timeF" placeholder="16:47"></label>
-    </fieldset>
+    <fieldset><legend>IDENTITÉ & MÉTADONNÉES</legend>
+ <label>Référence<input id="refF"></label>
+ <label>Titre<input id="titleF"></label>
+ <label>Type de document<select id="typeF">
+  <option>DOCUMENT</option><option>RAPPORT</option><option>NOTE INTERNE</option><option>ARCHIVE</option>
+  <option>AUDITION</option><option>TRANSCRIPTION</option><option>PLAN</option><option>PHOTOGRAPHIE</option>
+  <option>MESSAGE</option><option>OBJET</option><option>PROCÉDURE</option><option>AUTRE</option>
+ </select></label>
+ <label>Statut<select id="statusF"><option>BROUILLON</option><option>À RELIRE</option><option>CANON VALIDÉ</option><option>PRÊT À IMPRIMER</option><option>IMPRIMÉ</option></select></label>
+ <label>Accès / habilitation<select id="accessF">
+  <option>NON CLASSIFIÉ</option><option>OMBRE I</option><option>OMBRE II</option><option>OMBRE III</option><option>OMBRE IV</option><option>OMBRE V</option><option>ACCÈS RESTREINT</option><option>ACCÈS REFUSÉ</option>
+ </select></label>
+ <label>Classification<select id="classF">
+  <option>INTERNE</option><option>CONFIDENTIEL</option><option>RESTREINT</option><option>CLASSIFIÉ</option><option>HAUTEMENT CLASSIFIÉ</option><option>ARCHIVE</option>
+ </select></label>
+ <label>Diffusion<select id="diffF">
+  <option>INTERNE</option><option>INITIÉS AUTORISÉS</option><option>DIVISION CONCERNÉE</option><option>RESPONSABLES UNIQUEMENT</option><option>NON DIFFUSABLE</option>
+ </select></label>
+ <label>Auteur / origine<select id="authorF">
+  <option>L’ORDRE DES CINQ OMBRES</option><option>ADMINISTRATION</option><option>ARCHIVES</option><option>DIVISION</option><option>INITIÉ</option><option>SOURCE EXTERNE</option><option>INCONNU</option>
+ </select></label>
+ <label>Division concernée<select id="divisionF"><option>AUCUNE</option><option>ŒIL FENDU</option><option>FLAMME INVERSÉE</option><option>MAIN CASSÉE</option><option>SPIRALE D’OS</option><option>SABLIER NOIR</option><option>MULTI-DIVISIONS</option></select></label>
+ <label>État documentaire<select id="docStateF"><option>ORIGINAL</option><option>COPIE</option><option>RECONSTITUTION</option><option>EXTRAIT</option><option>RESTAURÉ</option><option>ALTÉRÉ</option><option>INCOMPLET</option></select></label>
+ <label>Période<input id="periodF" placeholder="Ex. 1994 / 1864 / CONTEMPORAIN"></label>
+ <label>Pièces liées<input id="linksF" placeholder="D001/P03, D001/PH04"></label>
+ <label>Profil de métadonnées<select id="profileF"><option value="custom">PERSONNALISÉ</option><option value="report">RAPPORT CONTEMPORAIN</option><option value="archive">ARCHIVE HISTORIQUE</option><option value="audition">AUDITION</option><option value="photo">DOCUMENT PHOTOGRAPHIQUE</option></select></label>
+ <label>Format physique<select id="formatF"><option value="A4">A4 — 210×297</option><option value="A5">A5 — 148×210</option><option value="A6">A6 — 105×148</option><option value="PHOTO">PHOTO — 10×15</option><option value="CARTE">CARTE — 85×54</option><option value="CUSTOM">PERSONNALISÉ</option></select></label>
+ <label>Mode physique<select id="sideF"><option>RECTO</option><option>RECTO/VERSO</option><option>MULTIPAGE</option></select></label>
+ <label>Quantité impression<input id="qtyF" type="number" min="1" value="1"></label>
+ <label>Impression<select id="printModeF"><option>COULEUR</option><option>NOIR & BLANC</option></select></label>
+ <label>Papier / support<input id="paperF" placeholder="Ex. 120 g ivoire"></label>
+ <label>Enveloppe / contenant<input id="containerF" placeholder="Ex. ENVELOPPE E"></label>
+ <div class="toggleLine"><input id="favoriteF" type="checkbox"><span>★ Pièce favorite</span></div>
+<label>Date<input id="dateF" placeholder="03.02.2026"></label>
+ <label>Heure<input id="timeF" placeholder="16:47"></label>
+ <fieldset><legend>AFFICHAGE SUR LE DOCUMENT</legend>
+  <div class="toggleLine"><input id="showTypeF" type="checkbox" checked><span>Type</span></div>
+  <div class="toggleLine"><input id="showStatusF" type="checkbox"><span>Statut</span></div>
+  <div class="toggleLine"><input id="showAccessF" type="checkbox" checked><span>Accès</span></div>
+  <div class="toggleLine"><input id="showClassF" type="checkbox" checked><span>Classification</span></div>
+  <div class="toggleLine"><input id="showDiffF" type="checkbox"><span>Diffusion</span></div>
+  <div class="toggleLine"><input id="showAuthorF" type="checkbox"><span>Auteur / origine</span></div>
+  <div class="toggleLine"><input id="showDateF" type="checkbox" checked><span>Date</span></div>
+  <div class="toggleLine"><input id="showTimeF" type="checkbox" checked><span>Heure</span></div>
+ </fieldset>
+</fieldset>
     <fieldset><legend>MODÈLES</legend><div class="templateGrid"><button class="tpl" data-tpl="standard">ORDRE CONTEMPORAIN</button><button class="tpl" data-tpl="archive">ARCHIVE</button><button class="tpl" data-tpl="audition">AUDITION</button><button class="tpl" data-tpl="photo">PHOTOGRAPHIE</button></div></fieldset>
     
 <fieldset><legend>MISE EN PAGE INTELLIGENTE</legend>
@@ -101,11 +142,14 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
  <div class="toggleLine"><input id="gridF" type="checkbox"><span>Grille 5 mm</span></div>
  <button id="centerObjB">CENTRER L’OBJET</button>
 </fieldset>
-<fieldset><legend>MÉDIAS OFFICIELS</legend>
-     <label>Emblème<input id="emblemF" type="file" accept="image/*"></label>
-     <label>Sceau<select id="sealF"><option value="">AUCUN</option><option>ORDRE</option><option>ŒIL FENDU</option><option>FLAMME INVERSÉE</option><option>MAIN CASSÉE</option><option>SPIRALE D'OS</option><option>SABLIER NOIR</option></select></label>
-     <label>Importer le sceau sélectionné<input id="sealFile" type="file" accept="image/*"></label>
-    </fieldset>
+<fieldset><legend>BIBLIOTHÈQUE OFFICIELLE // IMPORT UNE SEULE FOIS</legend>
+ <label>Emblème du document<select id="emblemSelectF"><option value="ORDRE">ORDRE</option><option>ŒIL FENDU</option><option>FLAMME INVERSÉE</option><option>MAIN CASSÉE</option><option>SPIRALE D’OS</option><option>SABLIER NOIR</option><option value="">AUCUN</option></select></label>
+ <label>Importer/remplacer l’emblème sélectionné<input id="emblemF" type="file" accept="image/*"></label>
+ <label>Sceau du document<select id="sealF"><option value="">AUCUN</option><option>ORDRE</option><option>ŒIL FENDU</option><option>FLAMME INVERSÉE</option><option>MAIN CASSÉE</option><option>SPIRALE D’OS</option><option>SABLIER NOIR</option></select></label>
+ <label>Importer/remplacer le sceau sélectionné<input id="sealFile" type="file" accept="image/*"></label>
+ <div class="muted">Les originaux HD restent dans la bibliothèque et sont réutilisables sur toutes les pièces.</div>
+ </fieldset>
+ <fieldset><legend>OUTILS DE PIÈCE</legend><div class="bar"><button id="similarB">NOUVEAU DOCUMENT SIMILAIRE</button><button id="snapshotB">CRÉER UNE VERSION</button><button id="versionsB">VERSIONS</button></div></fieldset>
    </div>
 
    <div id="tab-text" class="panel">
@@ -178,7 +222,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
    <input id="pieceNum" type="number" min="1" value="1" inputmode="numeric">
   </label>
   <label>Suffixe optionnel
-   <select id="pieceSuffix"><option value="">AUCUN</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select>
+   <select id="pieceSuffix"><option value="">AUCUN</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option><option>H</option><option>I</option><option>J</option><option>K</option><option>L</option><option>M</option><option>N</option><option>O</option><option>P</option><option>Q</option><option>R</option><option>S</option><option>T</option><option>U</option><option>V</option><option>W</option><option>X</option><option>Y</option><option>Z</option><option>AA</option><option>AB</option><option>AC</option><option>AD</option><option>AE</option><option>AF</option><option>AG</option><option>AH</option><option>AI</option><option>AJ</option><option>AK</option><option>AL</option><option>AM</option><option>AN</option><option>AO</option><option>AP</option><option>AQ</option><option>AR</option><option>AS</option><option>AT</option><option>AU</option><option>AV</option><option>AW</option><option>AX</option><option>AY</option><option>AZ</option></select>
   </label>
   <label>Référence générée<input id="pieceRefPreview" readonly></label>
   <label>Titre de la pièce<input id="pieceTitle" placeholder="Ex. Lettre de recrutement"></label>
@@ -209,7 +253,8 @@ async function saveNow(){if(!P)return;$("saveState").textContent="○ SAUVEGARDE
 function saveSoon(){clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,350)}
 function doc(){return P.docs[P.active]}
 function page(){const d=doc();return d?.pages[d.page||0]}
-function makeDoc(dossier,season){return {id:uid("doc"),season,dossier,ref:dossier+"/D01",title:"NOUVELLE PIÈCE",status:"BROUILLON",access:"OMBRE I",date:"",time:"",seal:"",bodyHtml:"",pages:[{id:uid("page"),name:"PAGE 1",objects:[]}],page:0}}
+function makeDoc(dossier,season){return {id:uid("doc"),season,dossier,ref:dossier+"/D01",title:"NOUVELLE PIÈCE",status:"BROUILLON",access:"OMBRE I",type:"DOCUMENT",classification:"INTERNE",diffusion:"INTERNE",author:"L’ORDRE DES CINQ OMBRES",
+date:"",time:"",seal:"",emblem:"ORDRE",division:"AUCUNE",docState:"ORIGINAL",period:"",links:"",format:"A4",side:"RECTO",qty:1,printMode:"COULEUR",paper:"",container:"",favorite:false,versions:[],metaVisible:{type:true,status:false,access:true,classification:true,diffusion:false,author:false,date:true,time:true},bodyHtml:"",pages:[{id:uid("page"),name:"PAGE 1",objects:[]}],page:0}}
 function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("on"));$(id).classList.add("on")}
 function projectTree(){$("startupInfo").textContent="GenDoc prêt // stockage "+(db?"IndexedDB":"local de secours");
  const root=$("projectTree");root.innerHTML="";
@@ -218,7 +263,7 @@ function projectTree(){$("startupInfo").textContent="GenDoc prêt // stockage "+
   Object.entries(P.dossiers).filter(([,d])=>d.season===sid).forEach(([did,di])=>{
    const docs=Object.values(P.docs).filter(x=>x.dossier===did),valid=docs.filter(x=>["CANON VALIDÉ","PRÊT À IMPRIMER","IMPRIMÉ"].includes(x.status)).length;
    const dbox=document.createElement("div");dbox.className="dossier";dbox.innerHTML=`<b>${esc(did)} — ${esc(di.name)}</b><div class="muted">${valid}/${docs.length} validée(s)</div>`;
-   docs.forEach(d=>{const r=document.createElement("div");r.className="docrow";r.innerHTML=`<span>${esc(d.ref)}</span><span>${esc(d.title)}</span><span class="badge">${esc(d.status)}</span><button class="open">OUVRIR</button>`;r.querySelector("button").onclick=()=>openDoc(d.id);dbox.appendChild(r)});
+   docs.forEach(d=>{const r=document.createElement("div");r.className="docrow";r.innerHTML=`<span>${d.favorite?"★ ":""}${esc(d.ref)}</span><span>${esc(d.title)}</span><span class="badge">${esc(d.status)}</span><button class="open">OUVRIR</button>`;r.querySelector("button").onclick=()=>openDoc(d.id);dbox.appendChild(r)});
    box.appendChild(dbox)
   });root.appendChild(box)
  })
@@ -226,7 +271,12 @@ function projectTree(){$("startupInfo").textContent="GenDoc prêt // stockage "+
 function openDoc(id){P.active=id;saveSoon();loadEditor();show("atelier")}
 function loadEditor(){
  const d=doc();if(!d)return;
- $("refF").value=d.ref;$("titleF").value=d.title;$("statusF").value=d.status;$("accessF").value=d.access;$("dateF").value=d.date;$("timeF").value=d.time;$("sealF").value=d.seal||"";
+ $("refF").value=d.ref;$("titleF").value=d.title;$("statusF").value=d.status;$("accessF").value=d.access;
+ $("typeF").value=d.type||"DOCUMENT";$("classF").value=d.classification||"INTERNE";$("diffF").value=d.diffusion||"INTERNE";$("authorF").value=d.author||"L’ORDRE DES CINQ OMBRES";
+ $("dateF").value=d.date;$("timeF").value=d.time;$("sealF").value=d.seal||"";$("emblemSelectF").value=d.emblem===undefined?"ORDRE":d.emblem;
+ $("divisionF").value=d.division||"AUCUNE";$("docStateF").value=d.docState||"ORIGINAL";$("periodF").value=d.period||"";$("linksF").value=d.links||"";$("formatF").value=d.format||"A4";$("sideF").value=d.side||"RECTO";$("qtyF").value=d.qty||1;$("printModeF").value=d.printMode||"COULEUR";$("paperF").value=d.paper||"";$("containerF").value=d.container||"";$("favoriteF").checked=!!d.favorite;
+ d.metaVisible=d.metaVisible||{type:true,status:false,access:true,classification:true,diffusion:false,author:false,date:true,time:true};
+ ["type","status","access","class","diff","author","date","time"].forEach(k=>{const e=$( "show"+k.charAt(0).toUpperCase()+k.slice(1)+"F");if(e)e.checked=d.metaVisible[k==="class"?"classification":k]!==false});
  $("bodyEditor").innerHTML=d.bodyHtml||"";$("crumb").textContent=`${d.season} / ${d.dossier} / ${d.ref}`;renderDocList();renderPages();render()
 }
 function renderDocList(){$("docList").innerHTML=Object.values(P.docs).filter(x=>x.dossier===doc().dossier).map(x=>`<button data-id="${x.id}" style="width:100%;margin:3px 0">${esc(x.ref)} — ${esc(x.title)}</button>`).join("");$("docList").querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>openDoc(b.dataset.id))}
@@ -234,9 +284,18 @@ function renderPages(){const d=doc();$("pageList").innerHTML=d.pages.map((p,i)=>
 function cleanHtml(h){const t=document.createElement("template");t.innerHTML=h;t.content.querySelectorAll("*").forEach(n=>{n.style.removeProperty("background");n.style.removeProperty("background-color");n.style.removeProperty("color");n.removeAttribute("bgcolor")});return t.innerHTML}
 async function render(){
  const d=doc();if(!d)return;$("pTitle").textContent=d.title;$("pBody").innerHTML=cleanHtml(d.bodyHtml||"");
- $("pMeta").innerHTML=`RÉFÉRENCE : ${esc(d.ref)}<br>ACCÈS : ${esc(d.access)}<br>DATE : ${esc(d.date)} ${esc(d.time)}`;
+ const mv=d.metaVisible||{};const ml=[`RÉFÉRENCE : ${esc(d.ref)}`];
+ if(mv.type!==false)ml.push(`TYPE : ${esc(d.type||"DOCUMENT")}`);
+ if(mv.status)ml.push(`STATUT : ${esc(d.status)}`);
+ if(mv.access!==false)ml.push(`ACCÈS : ${esc(d.access)}`);
+ if(mv.classification!==false)ml.push(`CLASSIFICATION : ${esc(d.classification||"INTERNE")}`);
+ if(mv.diffusion)ml.push(`DIFFUSION : ${esc(d.diffusion||"INTERNE")}`);
+ if(mv.author)ml.push(`ORIGINE : ${esc(d.author||"")}`); if(d.division&&d.division!=="AUCUNE")ml.push(`DIVISION : ${esc(d.division)}`); if(d.docState&&d.docState!=="ORIGINAL")ml.push(`ÉTAT : ${esc(d.docState)}`); if(d.period)ml.push(`PÉRIODE : ${esc(d.period)}`);
+ if(mv.date!==false&&d.date)ml.push(`DATE : ${esc(d.date)}`);
+ if(mv.time!==false&&d.time)ml.push(`HEURE : ${esc(d.time)}`);
+ $("pMeta").innerHTML=ml.join("<br>");
  $("pFootL").textContent=d.ref;$("pFootR").textContent=`PAGE ${(d.page||0)+1}/${d.pages.length}`;
- const em=await get(MEDIA,"emblem");$("pEmblem").src=em?.data||"";$("pEmblem").style.visibility=em?"visible":"hidden";
+ const em=d.emblem?await get(MEDIA,"emblem:"+d.emblem):null;$("pEmblem").src=em?.data||"";$("pEmblem").style.visibility=em?"visible":"hidden";
  const se=d.seal?await get(MEDIA,"seal:"+d.seal):null;$("pSeal").src=se?.data||"";$("pSeal").style.visibility=se?"visible":"hidden";
  renderObjects()
 }
@@ -252,14 +311,14 @@ function inspect(o){document.querySelectorAll(".tabs button").forEach(x=>x.class
  if($("ihtml"))$("ihtml").oninput=()=>{o.html=esc($("ihtml").value).replace(/\n/g,"<br>");saveSoon();renderObjects()};["iw","ih","ir","io"].forEach(id=>$(id).onchange=()=>{o.w=+$("iw").value;o.h=+$("ih").value;o.rot=+$("ir").value;o.opacity=+$("io").value;saveSoon();renderObjects()});$("ifront").onclick=()=>{o.z=(o.z||1)+1;saveSoon();renderObjects()};$("iback").onclick=()=>{o.z=Math.max(1,(o.z||1)-1);saveSoon();renderObjects()};$("idup").onclick=()=>{const n=clone(o);n.id=uid("obj");n.x+=4;n.y+=4;page().objects.push(n);saveSoon();renderObjects()};$("idel").onclick=()=>{page().objects=page().objects.filter(x=>x.id!==o.id);selectedId=null;saveSoon();renderObjects();$("inspector").textContent="Sélectionnez un objet sur la page."}}
 async function fileData(f){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(f)})}
 async function library(){const ks=(await keys(MEDIA)).filter(k=>String(k).startsWith("asset:")),vals=await Promise.all(ks.map(k=>get(MEDIA,k)));$("lib").innerHTML=vals.map((a,i)=>`<div class="asset"><img src="${a.data}"><b>${esc(a.name)}</b><br><button data-i="${i}">INSÉRER</button></div>`).join("")||'<span class="muted">Bibliothèque vide.</span>';$("lib").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const a=vals[+b.dataset.i];page().objects.push({id:uid("obj"),type:"image",src:a.data,x:55,y:95,w:45,h:35,rot:0,opacity:1,z:1});saveSoon();renderObjects()})}
-function preflight(){const d=doc(),issues=[];if(!d.ref)issues.push("Référence absente");if(!d.title)issues.push("Titre absent");if(!d.access)issues.push("Accès absent");if(d.date&&!/^\d{2}\.\d{2}\.\d{4}$/.test(d.date))issues.push("Date hors format JJ.MM.AAAA");const refs={};Object.values(P.docs).forEach(x=>refs[x.ref]=(refs[x.ref]||0)+1);if(refs[d.ref]>1)issues.push("Référence dupliquée");if(!d.seal)issues.push("Sceau non renseigné");(page()?.objects||[]).forEach(o=>{if(o.x<0||o.y<0||o.x+o.w>210||o.y+o.h>297)issues.push("Objet hors page : "+o.id)});$("check").innerHTML=issues.length?`<div class="card preflight-warn">${issues.map(x=>"⚠ "+esc(x)).join("<br>")}</div>`:'<div class="card preflight-ok">✓ CONTRÔLE DOCUMENTAIRE : OK</div>'}
-function backup(){const payload={format:"GENDOC-V10",project:P,exported:new Date().toISOString()};const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(payload)],{type:"application/json"}));a.download="Ordre_des_Cinq_Ombres.gendoc";a.click()}
-async function restore(f){try{const x=JSON.parse(await f.text());if(x.format!=="GENDOC-V10")throw 0;P=x.project;await saveNow();projectTree();toast("Projet restauré")}catch(e){alert("Sauvegarde V10 invalide.")}}
+function preflight(){const d=doc(),issues=[];if(!d.ref)issues.push("Référence absente");if(!d.title)issues.push("Titre absent");if(!d.access)issues.push("Accès absent");if(d.date&&!/^\d{2}\.\d{2}\.\d{4}$/.test(d.date))issues.push("Date hors format JJ.MM.AAAA");const refs={};Object.values(P.docs).forEach(x=>refs[x.ref]=(refs[x.ref]||0)+1);if(refs[d.ref]>1)issues.push("Référence dupliquée");if(!d.emblem)issues.push("Emblème non renseigné"); const badLinks=validateLinks(d);if(badLinks.length)issues.push("Pièces liées introuvables : "+badLinks.join(", ")); if((d.qty||1)<1)issues.push("Quantité impression invalide");(page()?.objects||[]).forEach(o=>{if(o.x<0||o.y<0||o.x+o.w>210||o.y+o.h>297)issues.push("Objet hors page : "+o.id)});$("check").innerHTML=issues.length?`<div class="card preflight-warn">${issues.map(x=>"⚠ "+esc(x)).join("<br>")}</div>`:'<div class="card preflight-ok">✓ CONTRÔLE DOCUMENTAIRE : OK</div>'}
+async function backup(){const media={};for(const k of await keys(MEDIA))media[k]=await get(MEDIA,k);const payload={format:"GENDOC-V10",project:P,media,exported:new Date().toISOString()};const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(payload)],{type:"application/json"}));a.download="Ordre_des_Cinq_Ombres.gendoc";a.click()}
+async function restore(f){try{const x=JSON.parse(await f.text());if(x.format!=="GENDOC-V10")throw 0;P=x.project;if(x.media)for(const [k,v] of Object.entries(x.media))await put(MEDIA,k,v);await saveNow();projectTree();toast("Projet + bibliothèque restaurés")}catch(e){alert("Sauvegarde V10 invalide.")}}
 
 function waitFrame(){return new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))}
 function imgFormat(data){return String(data||"").startsWith("data:image/jpeg")||String(data||"").startsWith("data:image/jpg")?"JPEG":"PNG"}
 async function addHiResOfficial(pdf,d){
- const emblem=await get(MEDIA,"emblem");
+ const emblem=d.emblem?await get(MEDIA,"emblem:"+d.emblem):null;
  if(emblem?.data){
    try{pdf.addImage(emblem.data,imgFormat(emblem.data),18,14,22,22,undefined,"FAST")}catch(e){}
  }
@@ -374,7 +433,7 @@ function manifest(scope){
  if(scope==="dossier")docs=Object.values(P.docs).filter(x=>x.dossier===d.dossier);
  if(scope==="season")docs=Object.values(P.docs).filter(x=>x.season===d.season);
  if(scope==="manufacture")docs=Object.values(P.docs).filter(x=>x.dossier===d.dossier);
- const lines=docs.map(x=>`${x.ref} | ${x.title} | ${x.status} | ${x.pages.length} page(s)`);
+ const lines=docs.map(x=>`${x.ref} | ${x.title} | ${x.status} | ${x.pages.length} page(s) | ${x.format||"A4"} | ${x.side||"RECTO"} | x${x.qty||1} | ${x.printMode||"COULEUR"} | ${x.paper||"support non précisé"} | ${x.container||"sans contenant"}`);
  const title=scope==="season"?d.season:scope==="dossier"?d.dossier:"PACK FABRICATION "+d.dossier;
  const txt=[`GENDOC V10 // ${title}`,"",...lines,"",`Généré : ${new Date().toLocaleString()}`].join("\n");
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/plain"}));a.download=title.replace(/[^a-z0-9_-]+/gi,"_")+".txt";a.click()
@@ -456,14 +515,23 @@ function createPieceFromModal(){
  setTimeout(()=>document.querySelector(".canvas")?.scrollIntoView({behavior:"smooth",block:"start"}),80);
 }
 
+
+function applyMetaProfile(v){const d=doc();if(!d)return;const presets={report:{type:"RAPPORT",access:"OMBRE I",classification:"INTERNE",diffusion:"INITIÉS AUTORISÉS"},archive:{type:"ARCHIVE",classification:"CLASSIFIÉ",diffusion:"NON DIFFUSABLE",docState:"ORIGINAL"},audition:{type:"AUDITION",classification:"CONFIDENTIEL"},photo:{type:"PHOTOGRAPHIE",classification:"INTERNE"}};if(presets[v])Object.assign(d,presets[v]);saveSoon();loadEditor();toast("Profil appliqué")}
+function nextSimilar(){const d=doc();if(!d)return;const n=clone(d);n.id=uid("doc");n.title="NOUVELLE PIÈCE";n.bodyHtml="";n.status="BROUILLON";n.versions=[];n.pages=[{id:uid("page"),name:"PAGE 1",objects:[]}];n.page=0;const m=d.ref.match(/^(.*\/)([RMDPTOAX])(\d+)(?:-[A-Z]+)?$/);if(m)n.ref=m[1]+m[2]+String(parseInt(m[3])+1).padStart(m[3].length,"0");P.docs[n.id]=n;P.active=n.id;saveSoon();projectTree();openDoc(n.id)}
+function snapshotVersion(){const d=doc();if(!d)return;d.versions=d.versions||[];d.versions.push({at:new Date().toISOString(),data:clone({...d,versions:[]})});saveSoon();toast("Version "+d.versions.length+" enregistrée")}
+function showVersions(){const d=doc();if(!d?.versions?.length)return alert("Aucune version enregistrée.");const s=d.versions.map((v,i)=>(i+1)+" — "+new Date(v.at).toLocaleString()).join("\n");const n=prompt("VERSIONS\n"+s+"\n\nNuméro à restaurer (laisser vide pour annuler)","");if(!n)return;const v=d.versions[+n-1];if(v&&confirm("Restaurer cette version ?")){const keep=d.versions,id=d.id;P.docs[id]={...clone(v.data),id,versions:keep};saveSoon();loadEditor();toast("Version restaurée")}}
+function validateLinks(d){return String(d.links||"").split(",").map(x=>x.trim()).filter(Boolean).filter(r=>!Object.values(P.docs).some(x=>x.ref===r))}
+function formatDims(f){return {A4:[210,297],A5:[148,210],A6:[105,148],PHOTO:[100,150],CARTE:[85,54]}[f]||[210,297]}
+
 function wire(){
  document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("on",x.id==="tab-"+b.dataset.tab));if(b.dataset.tab==="media"){library();componentList()}});
- ["refF","titleF","statusF","accessF","dateF","timeF","sealF"].forEach(id=>$(id).onchange=()=>{const d=doc(),map={refF:"ref",titleF:"title",statusF:"status",accessF:"access",dateF:"date",timeF:"time",sealF:"seal"};d[map[id]]=$(id).value;saveSoon();render();projectTree()});
- $("bodyEditor").addEventListener("input",()=>{doc().bodyHtml=cleanHtml($("bodyEditor").innerHTML);saveSoon();render()});
+ ["refF","titleF","statusF","accessF","typeF","classF","diffF","authorF","dateF","timeF","sealF","emblemSelectF","divisionF","docStateF","periodF","linksF","formatF","sideF","qtyF","printModeF","paperF","containerF"].forEach(id=>$(id).onchange=()=>{const d=doc(),map={refF:"ref",titleF:"title",statusF:"status",accessF:"access",dateF:"date",timeF:"time",sealF:"seal",typeF:"type",classF:"classification",diffF:"diffusion",authorF:"author",emblemSelectF:"emblem",divisionF:"division",docStateF:"docState",periodF:"period",linksF:"links",formatF:"format",sideF:"side",qtyF:"qty",printModeF:"printMode",paperF:"paper",containerF:"container"};d[map[id]]=$(id).value;saveSoon();render();projectTree()});
+  ["type","status","access","class","diff","author","date","time"].forEach(k=>{const e=$("show"+k.charAt(0).toUpperCase()+k.slice(1)+"F");if(e)e.onchange=()=>{const d=doc();d.metaVisible=d.metaVisible||{};d.metaVisible[k==="class"?"classification":k]=e.checked;saveSoon();render()};});
+ $("bodyEditor").addEventListener("input",()=>{if(doc().status==="CANON VALIDÉ"&&!doc()._canonEditWarned){doc()._canonEditWarned=true;toast("⚠ Modification d’une pièce CANON VALIDÉE")}doc().bodyHtml=cleanHtml($("bodyEditor").innerHTML);saveSoon();render()});
  $("bodyEditor").addEventListener("paste",()=>setTimeout(()=>{$("bodyEditor").innerHTML=cleanHtml($("bodyEditor").innerHTML);doc().bodyHtml=$("bodyEditor").innerHTML;saveSoon();render()},0));
  document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>document.execCommand(b.dataset.cmd,false,null));
  $("fontF").onchange=e=>document.execCommand("fontName",false,e.target.value);$("sizeF").onchange=e=>{document.execCommand("fontSize",false,"7");$("bodyEditor").querySelectorAll('font[size="7"]').forEach(x=>{x.removeAttribute("size");x.style.fontSize=e.target.value+"px"})};
- $("emblemF").onchange=async e=>{const f=e.target.files[0];if(f){await put(MEDIA,"emblem",{name:f.name,data:await fileData(f)});render();toast("Emblème HD enregistré")}};
+ $("emblemF").onchange=async e=>{const f=e.target.files[0];if(f){const name=$("emblemSelectF").value||"ORDRE";await put(MEDIA,"emblem:"+name,{name:f.name,data:await fileData(f)});render();toast("Emblème "+name+" enregistré")}};
  $("sealFile").onchange=async e=>{const f=e.target.files[0],name=$("sealF").value;if(f&&name){await put(MEDIA,"seal:"+name,{name:f.name,data:await fileData(f)});render();toast("Sceau HD enregistré")}};
  $("assetAdd").onclick=async()=>{const f=$("assetFile").files[0];if(!f)return;await put(MEDIA,"asset:"+uid("a"),{name:$("assetName").value||f.name,data:await fileData(f)});$("assetFile").value="";$("assetName").value="";library()};
  $("addPage").onclick=()=>{doc().pages.push({id:uid("page"),name:"PAGE "+(doc().pages.length+1),objects:[]});doc().page=doc().pages.length-1;saveSoon();renderPages();render()};
@@ -481,6 +549,7 @@ function wire(){
  $("pieceCancel").onclick=()=>$("pieceModal").style.display="none";
  $("pieceCreate").onclick=createPieceFromModal;
 
+ $("profileF").onchange=e=>applyMetaProfile(e.target.value);$("favoriteF").onchange=e=>{doc().favorite=e.target.checked;saveSoon();projectTree()};$("similarB").onclick=nextSimilar;$("snapshotB").onclick=snapshotVersion;$("versionsB").onclick=showVersions;
  $("paper").onclick=()=>{selectedId=null;renderObjects()}
 
  $("gridF").onchange=pageGrid;
