@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e0c">
-<title>GenDoc V10 Alpha 4.2 // iPad</title>
+<title>GenDoc V10 Alpha 4.3 // Création pièce</title>
 <style>
 :root{--bg:#0b0e0c;--p:#121713;--p2:#182019;--line:#39443c;--txt:#edf1ed;--mut:#97a198;--paper:#fff;--ink:#151815;--hit:44px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:12px Courier New,monospace}
@@ -62,7 +62,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 </head>
 <body>
 <header>
- <div class="brand">GENDOC // V10 ALPHA 4.2</div>
+ <div class="brand">GENDOC // V10 ALPHA 4.3</div>
  <div id="crumb" class="status"></div><div class="spacer"></div>
  <div id="saveState" class="status">● PRÊT</div>
  <button id="homeB">PROJET</button><button id="backupB">SAUVEGARDER</button>
@@ -157,6 +157,37 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
   </main>
  </div>
 </section>
+
+<div id="pieceModal" style="display:none;position:fixed;inset:0;background:#000b;z-index:5000;align-items:center;justify-content:center;padding:20px">
+ <div class="card" style="width:min(560px,96vw);max-height:90vh;overflow:auto">
+  <h2>NOUVELLE PIÈCE</h2>
+  <div class="muted" id="pieceParentInfo"></div>
+  <label>Catégorie
+   <select id="pieceCat">
+    <option value="R">R — Recrutement / procédure</option>
+    <option value="M">M — Message / communication</option>
+    <option value="D">D — Document</option>
+    <option value="P">P — Plan / photographie / pièce visuelle</option>
+    <option value="T">T — Transcription / témoignage</option>
+    <option value="O">O — Objet / élément opérationnel</option>
+    <option value="A">A — Archive</option>
+    <option value="X">X — Pièce spéciale / exceptionnelle</option>
+   </select>
+  </label>
+  <label>Numéro
+   <input id="pieceNum" type="number" min="1" value="1" inputmode="numeric">
+  </label>
+  <label>Suffixe optionnel
+   <select id="pieceSuffix"><option value="">AUCUN</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select>
+  </label>
+  <label>Référence générée<input id="pieceRefPreview" readonly></label>
+  <label>Titre de la pièce<input id="pieceTitle" placeholder="Ex. Lettre de recrutement"></label>
+  <div class="bar" style="margin-top:12px">
+   <button id="pieceCancel">ANNULER</button>
+   <button id="pieceCreate" class="primary">CRÉER ET OUVRIR LA PAGE</button>
+  </div>
+ </div>
+</div>
 <div id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -374,6 +405,57 @@ function applyTemplate(kind){
  saveSoon(); render(); toast("Modèle appliqué");
 }
 
+
+function activeDossierForCreation(){
+ if(P.active && P.docs[P.active]) return P.docs[P.active].dossier;
+ const ds=Object.keys(P.dossiers);
+ return ds.length===1?ds[0]:null;
+}
+function nextPieceNumber(did,cat){
+ let max=0;
+ Object.values(P.docs).filter(x=>x.dossier===did).forEach(x=>{
+   const m=String(x.ref||"").match(new RegExp("^"+did.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\\\/"+cat+"(\\\\d+)"));
+   if(m)max=Math.max(max,parseInt(m[1],10)||0);
+ });
+ return max+1;
+}
+function updatePieceRefPreview(){
+ const did=$("pieceModal").dataset.dossier||"D000";
+ const cat=$("pieceCat").value, num=String(Math.max(1,parseInt($("pieceNum").value||"1",10))).padStart(2,"0");
+ const suf=$("pieceSuffix").value;
+ $("pieceRefPreview").value=did+"/"+cat+num+(suf?"-"+suf:"");
+}
+function openPieceCreator(){
+ const dossiers=Object.keys(P.dossiers);
+ if(!dossiers.length){alert("Crée d’abord un dossier.");return}
+ let did=activeDossierForCreation();
+ if(!did){
+   did=prompt("Dans quel dossier créer la pièce ?\\n"+dossiers.join(" • "),dossiers[0]);
+   if(!did||!P.dossiers[did])return;
+ }
+ $("pieceModal").dataset.dossier=did;
+ $("pieceParentInfo").textContent=did+" — "+P.dossiers[did].name;
+ $("pieceCat").value="R";
+ $("pieceNum").value=nextPieceNumber(did,"R");
+ $("pieceSuffix").value="";
+ $("pieceTitle").value="";
+ updatePieceRefPreview();
+ $("pieceModal").style.display="flex";
+ setTimeout(()=>$("pieceTitle").focus(),50);
+}
+function createPieceFromModal(){
+ const did=$("pieceModal").dataset.dossier;
+ if(!P.dossiers[did])return;
+ const d=makeDoc(did,P.dossiers[did].season);
+ d.ref=$("pieceRefPreview").value;
+ d.title=$("pieceTitle").value.trim()||("PIÈCE "+d.ref);
+ // New piece opens directly on its first A4 page.
+ P.docs[d.id]=d;P.active=d.id;
+ $("pieceModal").style.display="none";
+ saveSoon();projectTree();openDoc(d.id);
+ setTimeout(()=>document.querySelector(".canvas")?.scrollIntoView({behavior:"smooth",block:"start"}),80);
+}
+
 function wire(){
  document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("on",x.id==="tab-"+b.dataset.tab));if(b.dataset.tab==="media"){library();componentList()}});
  ["refF","titleF","statusF","accessF","dateF","timeF","sealF"].forEach(id=>$(id).onchange=()=>{const d=doc(),map={refF:"ref",titleF:"title",statusF:"status",accessF:"access",dateF:"date",timeF:"time",sealF:"seal"};d[map[id]]=$(id).value;saveSoon();render();projectTree()});
@@ -391,7 +473,14 @@ function wire(){
  $("backupB").onclick=backup;$("restoreB").onclick=()=>$("restoreFile").click();$("restoreFile").onchange=e=>e.target.files[0]&&restore(e.target.files[0]);
  $("addSeason").onclick=()=>{const n=Object.keys(P.seasons).length+1,id="S"+String(n).padStart(2,"0"),name=prompt("Nom de la saison","SAISON "+n);if(name){P.seasons[id]={name,order:n};saveSoon();projectTree()}};
  $("addDossier").onclick=()=>{const sid=prompt("Saison",Object.keys(P.seasons)[0]||"S01");if(!P.seasons[sid])return alert("Saison inconnue.");const id=(prompt("Identifiant du dossier","D000")||"").toUpperCase(),name=prompt("Titre du dossier","DOSSIER");if(id&&name){P.dossiers[id]={name,season:sid};saveSoon();projectTree()}};
- $("addDoc").onclick=()=>{const did=prompt("Dossier",Object.keys(P.dossiers)[0]||"D000");if(!P.dossiers[did])return alert("Crée d'abord le dossier.");const d=makeDoc(did,P.dossiers[did].season);P.docs[d.id]=d;P.active=d.id;saveSoon();projectTree();openDoc(d.id)};
+ $("addDoc").onclick=openPieceCreator;
+ 
+ $("pieceCat").onchange=()=>{const did=$("pieceModal").dataset.dossier;$("pieceNum").value=nextPieceNumber(did,$("pieceCat").value);updatePieceRefPreview()};
+ $("pieceNum").oninput=updatePieceRefPreview;
+ $("pieceSuffix").onchange=updatePieceRefPreview;
+ $("pieceCancel").onclick=()=>$("pieceModal").style.display="none";
+ $("pieceCreate").onclick=createPieceFromModal;
+
  $("paper").onclick=()=>{selectedId=null;renderObjects()}
 
  $("gridF").onchange=pageGrid;
