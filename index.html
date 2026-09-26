@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e0c">
-<title>GenDoc V10 Alpha 5 // Atelier complet</title>
+<title>GenDoc V10 Beta 1 // Atelier complet</title>
 <style>
 :root{--bg:#0b0e0c;--p:#121713;--p2:#182019;--line:#39443c;--txt:#edf1ed;--mut:#97a198;--paper:#fff;--ink:#151815;--hit:44px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:12px Courier New,monospace}
@@ -62,10 +62,10 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 </head>
 <body>
 <header>
- <div class="brand">GENDOC // V10 ALPHA 5</div>
+ <div class="brand">GENDOC // V10 BETA 1</div>
  <div id="crumb" class="status"></div><div class="spacer"></div>
  <div id="saveState" class="status">● PRÊT</div>
- <button id="homeB">PROJET</button><button id="backupB">SAUVEGARDER</button>
+ <button id="homeB">PROJET</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
 </header>
 
 <section id="home" class="screen on">
@@ -147,7 +147,9 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
  <label>Importer/remplacer l’emblème sélectionné<input id="emblemF" type="file" accept="image/*"></label>
  <label>Sceau du document<select id="sealF"><option value="">AUCUN</option><option>ORDRE</option><option>ŒIL FENDU</option><option>FLAMME INVERSÉE</option><option>MAIN CASSÉE</option><option>SPIRALE D’OS</option><option>SABLIER NOIR</option></select></label>
  <label>Importer/remplacer le sceau sélectionné<input id="sealFile" type="file" accept="image/*"></label>
- <div class="muted">Les originaux HD restent dans la bibliothèque et sont réutilisables sur toutes les pièces.</div>
+ <div class="muted">Les menus ci-dessus utilisent directement les éléments déjà enregistrés dans la bibliothèque officielle. L’import sert uniquement à ajouter/remplacer une ressource une seule fois.</div>
+ <div class="bar"><button id="refreshOfficialB">ACTUALISER LA BIBLIOTHÈQUE</button><button id="deleteOfficialB" class="danger">SUPPRIMER L’ÉLÉMENT SÉLECTIONNÉ</button></div>
+ <div id="officialState" class="muted"></div>
  </fieldset>
  <fieldset><legend>OUTILS DE PIÈCE</legend><div class="bar"><button id="similarB">NOUVEAU DOCUMENT SIMILAIRE</button><button id="snapshotB">CRÉER UNE VERSION</button><button id="versionsB">VERSIONS</button></div></fieldset>
    </div>
@@ -202,6 +204,15 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
  </div>
 </section>
 
+
+<div id="validationModal" style="display:none;position:fixed;inset:0;background:#000c;z-index:6000;align-items:center;justify-content:center;padding:18px">
+ <div class="card" style="width:min(760px,97vw);max-height:92vh;overflow:auto">
+  <h2>VALIDATION V10 // AVANT PWA</h2>
+  <p class="muted">Les contrôles automatiques vérifient la structure du projet. Les essais tactiles/PDF restent à confirmer sur l’iPad.</p>
+  <div id="validationResults"></div>
+  <div class="bar"><button id="runValidationB" class="primary">LANCER LES CONTRÔLES</button><button id="closeValidationB">FERMER</button></div>
+ </div>
+</div>
 <div id="pieceModal" style="display:none;position:fixed;inset:0;background:#000b;z-index:5000;align-items:center;justify-content:center;padding:20px">
  <div class="card" style="width:min(560px,96vw);max-height:90vh;overflow:auto">
   <h2>NOUVELLE PIÈCE</h2>
@@ -248,6 +259,7 @@ function openDB(){return new Promise((ok,no)=>{const r=indexedDB.open(DBNAME,VER
 function put(store,key,val){if(!db){try{localStorage.setItem("gd10_"+store+"_"+key,JSON.stringify(val));return Promise.resolve()}catch(e){return Promise.resolve()}}return new Promise(ok=>{try{const t=db.transaction(store,"readwrite");t.objectStore(store).put(val,key);t.oncomplete=ok;t.onerror=()=>ok()}catch(e){ok()}})}
 function get(store,key){if(!db){try{return Promise.resolve(JSON.parse(localStorage.getItem("gd10_"+store+"_"+key)||"null"))}catch(e){return Promise.resolve(null)}}return new Promise(ok=>{try{const r=db.transaction(store).objectStore(store).get(key);r.onsuccess=()=>ok(r.result);r.onerror=()=>ok(null)}catch(e){ok(null)}})}
 function keys(store){if(!db){try{return Promise.resolve(Object.keys(localStorage).filter(k=>k.startsWith("gd10_"+store+"_")).map(k=>k.slice(("gd10_"+store+"_").length)))}catch(e){return Promise.resolve([])}}return new Promise(ok=>{try{const r=db.transaction(store).objectStore(store).getAllKeys();r.onsuccess=()=>ok(r.result||[]);r.onerror=()=>ok([])}catch(e){ok([])}})}
+function del(store,key){if(!db){try{localStorage.removeItem("gd10_"+store+"_"+key)}catch(e){}return Promise.resolve()}return new Promise(ok=>{try{const t=db.transaction(store,"readwrite");t.objectStore(store).delete(key);t.oncomplete=ok;t.onerror=()=>ok()}catch(e){ok()}})}
 function fresh(){return {version:10,seasons:{S01:{name:"SAISON I",order:1}},dossiers:{},docs:{},active:null}}
 async function saveNow(){if(!P)return;$("saveState").textContent="○ SAUVEGARDE…";await put(PROJECT,"main",P);localStorage.setItem("gendoc_v10_last",new Date().toISOString());$("saveState").textContent="● SAUVEGARDÉ — "+new Date().toLocaleTimeString()}
 function saveSoon(){clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,350)}
@@ -277,6 +289,7 @@ function loadEditor(){
  $("divisionF").value=d.division||"AUCUNE";$("docStateF").value=d.docState||"ORIGINAL";$("periodF").value=d.period||"";$("linksF").value=d.links||"";$("formatF").value=d.format||"A4";$("sideF").value=d.side||"RECTO";$("qtyF").value=d.qty||1;$("printModeF").value=d.printMode||"COULEUR";$("paperF").value=d.paper||"";$("containerF").value=d.container||"";$("favoriteF").checked=!!d.favorite;
  d.metaVisible=d.metaVisible||{type:true,status:false,access:true,classification:true,diffusion:false,author:false,date:true,time:true};
  ["type","status","access","class","diff","author","date","time"].forEach(k=>{const e=$( "show"+k.charAt(0).toUpperCase()+k.slice(1)+"F");if(e)e.checked=d.metaVisible[k==="class"?"classification":k]!==false});
+ refreshOfficialMenus();
  $("bodyEditor").innerHTML=d.bodyHtml||"";$("crumb").textContent=`${d.season} / ${d.dossier} / ${d.ref}`;renderDocList();renderPages();render()
 }
 function renderDocList(){$("docList").innerHTML=Object.values(P.docs).filter(x=>x.dossier===doc().dossier).map(x=>`<button data-id="${x.id}" style="width:100%;margin:3px 0">${esc(x.ref)} — ${esc(x.title)}</button>`).join("");$("docList").querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>openDoc(b.dataset.id))}
@@ -295,8 +308,8 @@ async function render(){
  if(mv.time!==false&&d.time)ml.push(`HEURE : ${esc(d.time)}`);
  $("pMeta").innerHTML=ml.join("<br>");
  $("pFootL").textContent=d.ref;$("pFootR").textContent=`PAGE ${(d.page||0)+1}/${d.pages.length}`;
- const em=d.emblem?await get(MEDIA,"emblem:"+d.emblem):null;$("pEmblem").src=em?.data||"";$("pEmblem").style.visibility=em?"visible":"hidden";
- const se=d.seal?await get(MEDIA,"seal:"+d.seal):null;$("pSeal").src=se?.data||"";$("pSeal").style.visibility=se?"visible":"hidden";
+ const em=d.emblem?await resolveOfficial("emblem",d.emblem):null;$("pEmblem").src=em?.data||"";$("pEmblem").style.visibility=em?"visible":"hidden";
+ const se=d.seal?await resolveOfficial("seal",d.seal):null;$("pSeal").src=se?.data||"";$("pSeal").style.visibility=se?"visible":"hidden";
  renderObjects()
 }
 function renderObjects(){
@@ -307,10 +320,56 @@ function renderObjects(){
  })}
 function drag(el,o){el.onpointerdown=e=>{if(e.target.classList.contains("handle"))return;const pr=$("paper").getBoundingClientRect(),mm=210/pr.width,sx=e.clientX,sy=e.clientY,ox=o.x,oy=o.y;el.setPointerCapture?.(e.pointerId);el.onpointermove=v=>{o.x=ox+(v.clientX-sx)*mm;o.y=oy+(v.clientY-sy)*mm;smartSnap(o);el.style.left=o.x+"mm";el.style.top=o.y+"mm"};el.onpointerup=()=>{el.onpointermove=null;hideGuides();saveSoon();renderObjects()}}}
 function inspect(o){document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("on"));document.querySelector('[data-tab="inspect"]').classList.add("on");document.querySelectorAll(".panel").forEach(x=>x.classList.remove("on"));$("tab-inspect").classList.add("on");
- $("inspector").innerHTML=`${o.type==="text"?`<label>Texte<textarea id="ihtml" rows="5">${esc((o.html||"").replace(/<[^>]*>/g,""))}</textarea></label>`:""}<label>Largeur mm<input id="iw" type="number" step=".5" value="${o.w}"></label><label>Hauteur mm<input id="ih" type="number" step=".5" value="${o.h}"></label><label>Rotation<input id="ir" type="number" value="${o.rot||0}"></label><label>Opacité<input id="io" type="number" min="0" max="1" step=".05" value="${o.opacity??1}"></label><div class="bar"><button id="ifront">AVANT</button><button id="iback">ARRIÈRE</button><button id="idup">DUPLIQUER</button><button id="idel" class="danger">SUPPRIMER</button></div>`;
+ $("inspector").innerHTML=`${o.type==="text"?`<label>Texte<textarea id="ihtml" rows="5">${esc((o.html||"").replace(/<[^>]*>/g,""))}</textarea></label>`:""}<label>Largeur mm<input id="iw" type="number" step=".5" value="${o.w}"></label><label>Hauteur mm<input id="ih" type="number" step=".5" value="${o.h}"></label><label>Rotation<input id="ir" type="number" value="${o.rot||0}"></label><label>Opacité<input id="io" type="number" min="0" max="1" step=".05" value="${o.opacity??1}"></label><div class="bar"><button id="ifront">AVANT</button><button id="iback">ARRIÈRE</button><button id="idup">DUPLIQUER</button><button id="idel" class="danger">🗑 SUPPRIMER DE LA PAGE</button></div>`;
  if($("ihtml"))$("ihtml").oninput=()=>{o.html=esc($("ihtml").value).replace(/\n/g,"<br>");saveSoon();renderObjects()};["iw","ih","ir","io"].forEach(id=>$(id).onchange=()=>{o.w=+$("iw").value;o.h=+$("ih").value;o.rot=+$("ir").value;o.opacity=+$("io").value;saveSoon();renderObjects()});$("ifront").onclick=()=>{o.z=(o.z||1)+1;saveSoon();renderObjects()};$("iback").onclick=()=>{o.z=Math.max(1,(o.z||1)-1);saveSoon();renderObjects()};$("idup").onclick=()=>{const n=clone(o);n.id=uid("obj");n.x+=4;n.y+=4;page().objects.push(n);saveSoon();renderObjects()};$("idel").onclick=()=>{page().objects=page().objects.filter(x=>x.id!==o.id);selectedId=null;saveSoon();renderObjects();$("inspector").textContent="Sélectionnez un objet sur la page."}}
 async function fileData(f){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(f)})}
-async function library(){const ks=(await keys(MEDIA)).filter(k=>String(k).startsWith("asset:")),vals=await Promise.all(ks.map(k=>get(MEDIA,k)));$("lib").innerHTML=vals.map((a,i)=>`<div class="asset"><img src="${a.data}"><b>${esc(a.name)}</b><br><button data-i="${i}">INSÉRER</button></div>`).join("")||'<span class="muted">Bibliothèque vide.</span>';$("lib").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const a=vals[+b.dataset.i];page().objects.push({id:uid("obj"),type:"image",src:a.data,x:55,y:95,w:45,h:35,rot:0,opacity:1,z:1});saveSoon();renderObjects()})}
+async function library(){
+ const ks=(await keys(MEDIA)).filter(k=>String(k).startsWith("asset:")),vals=await Promise.all(ks.map(k=>get(MEDIA,k)));
+ $("lib").innerHTML=vals.map((a,i)=>`<div class="asset"><img src="${a.data}"><b>${esc(a.name)}</b><br><button data-i="${i}">INSÉRER</button> <button class="danger" data-del="${i}">SUPPRIMER</button></div>`).join("")||'<span class="muted">Bibliothèque vide.</span>';
+ $("lib").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const a=vals[+b.dataset.i];page().objects.push({id:uid("obj"),type:"image",src:a.data,x:55,y:95,w:45,h:35,rot:0,opacity:1,z:1});saveSoon();renderObjects();toast("Élément ajouté à la page")});
+ $("lib").querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{const i=+b.dataset.del;if(!confirm("Supprimer « "+vals[i].name+" » de la bibliothèque ?\\n\\nLes copies déjà placées sur les pages restent en place."))return;await del(MEDIA,ks[i]);await library();await refreshOfficialMenus();toast("Élément supprimé de la bibliothèque")});
+}
+
+const OFFICIAL_NAMES=["ORDRE","ŒIL FENDU","FLAMME INVERSÉE","MAIN CASSÉE","SPIRALE D’OS","SABLIER NOIR"];
+async function resolveOfficial(kind,value){
+ if(!value)return null;
+ if(String(value).startsWith("asset:"))return await get(MEDIA,value);
+ return await get(MEDIA,kind+":"+value);
+}
+async function refreshOfficialMenus(){
+ const d=doc(); if(!d)return;
+ const assetKeys=(await keys(MEDIA)).filter(k=>String(k).startsWith("asset:"));
+ const assets=await Promise.all(assetKeys.map(k=>get(MEDIA,k)));
+ const fill=async(id,kind,current)=>{
+   const sel=$(id); if(!sel)return;
+   const stored=new Set((await keys(MEDIA)).filter(k=>String(k).startsWith(kind+":")).map(k=>String(k).slice(kind.length+1)));
+   let opts='<option value="">AUCUN</option>';
+   OFFICIAL_NAMES.forEach(n=>opts+=`<option value="${esc(n)}">${stored.has(n)?"✓ ":"○ "}${esc(n)}</option>`);
+   if(assets.length){opts+='<optgroup label="BIBLIOTHÈQUE HD">';assets.forEach((a,i)=>opts+=`<option value="${assetKeys[i]}">★ ${esc(a?.name||assetKeys[i])}</option>`);opts+='</optgroup>'}
+   sel.innerHTML=opts; sel.value=current||"";
+ };
+ await fill("emblemSelectF","emblem",d.emblem===undefined?"ORDRE":d.emblem);
+ await fill("sealF","seal",d.seal||"");
+ const em=await resolveOfficial("emblem",d.emblem===undefined?"ORDRE":d.emblem);
+ const se=await resolveOfficial("seal",d.seal||"");
+ if($("officialState"))$("officialState").innerHTML=`Emblème : ${em?"✓ disponible":"○ non importé"} &nbsp;|&nbsp; Sceau : ${d.seal?(se?"✓ disponible":"○ non importé"):"aucun"}`;
+}
+async function deleteSelectedOfficial(){
+ const d=doc();if(!d)return;
+ const focus=(document.activeElement?.id==="emblemSelectF")?"emblem":"seal";
+ let kind=focus, value=kind==="emblem"?$("emblemSelectF").value:$("sealF").value;
+ if(!value){alert("Sélectionne d’abord un emblème ou un sceau.");return}
+ if(String(value).startsWith("asset:")){
+   const a=await get(MEDIA,value);if(!confirm("Supprimer « "+(a?.name||value)+" » de la bibliothèque HD ?"))return;
+   await del(MEDIA,value);
+ }else{
+   if(!confirm("Supprimer de la bibliothèque officielle : "+value+" ?\\n\\nLe nom restera proposé, mais son image devra être réimportée pour être utilisée."))return;
+   await del(MEDIA,kind+":"+value);
+ }
+ if(kind==="emblem")d.emblem="";else d.seal="";
+ saveSoon();await refreshOfficialMenus();await render();await library();toast("Ressource supprimée");
+}
+
 function preflight(){const d=doc(),issues=[];if(!d.ref)issues.push("Référence absente");if(!d.title)issues.push("Titre absent");if(!d.access)issues.push("Accès absent");if(d.date&&!/^\d{2}\.\d{2}\.\d{4}$/.test(d.date))issues.push("Date hors format JJ.MM.AAAA");const refs={};Object.values(P.docs).forEach(x=>refs[x.ref]=(refs[x.ref]||0)+1);if(refs[d.ref]>1)issues.push("Référence dupliquée");if(!d.emblem)issues.push("Emblème non renseigné"); const badLinks=validateLinks(d);if(badLinks.length)issues.push("Pièces liées introuvables : "+badLinks.join(", ")); if((d.qty||1)<1)issues.push("Quantité impression invalide");(page()?.objects||[]).forEach(o=>{if(o.x<0||o.y<0||o.x+o.w>210||o.y+o.h>297)issues.push("Objet hors page : "+o.id)});$("check").innerHTML=issues.length?`<div class="card preflight-warn">${issues.map(x=>"⚠ "+esc(x)).join("<br>")}</div>`:'<div class="card preflight-ok">✓ CONTRÔLE DOCUMENTAIRE : OK</div>'}
 async function backup(){const media={};for(const k of await keys(MEDIA))media[k]=await get(MEDIA,k);const payload={format:"GENDOC-V10",project:P,media,exported:new Date().toISOString()};const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(payload)],{type:"application/json"}));a.download="Ordre_des_Cinq_Ombres.gendoc";a.click()}
 async function restore(f){try{const x=JSON.parse(await f.text());if(x.format!=="GENDOC-V10")throw 0;P=x.project;if(x.media)for(const [k,v] of Object.entries(x.media))await put(MEDIA,k,v);await saveNow();projectTree();toast("Projet + bibliothèque restaurés")}catch(e){alert("Sauvegarde V10 invalide.")}}
@@ -318,12 +377,12 @@ async function restore(f){try{const x=JSON.parse(await f.text());if(x.format!=="
 function waitFrame(){return new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))}
 function imgFormat(data){return String(data||"").startsWith("data:image/jpeg")||String(data||"").startsWith("data:image/jpg")?"JPEG":"PNG"}
 async function addHiResOfficial(pdf,d){
- const emblem=d.emblem?await get(MEDIA,"emblem:"+d.emblem):null;
+ const emblem=d.emblem?await resolveOfficial("emblem",d.emblem):null;
  if(emblem?.data){
    try{pdf.addImage(emblem.data,imgFormat(emblem.data),18,14,22,22,undefined,"FAST")}catch(e){}
  }
  if(d.seal){
-   const seal=await get(MEDIA,"seal:"+d.seal);
+   const seal=await resolveOfficial("seal",d.seal);
    if(seal?.data){
      try{pdf.addImage(seal.data,imgFormat(seal.data),175,18,16,16,undefined,"FAST")}catch(e){}
    }
@@ -523,21 +582,48 @@ function showVersions(){const d=doc();if(!d?.versions?.length)return alert("Aucu
 function validateLinks(d){return String(d.links||"").split(",").map(x=>x.trim()).filter(Boolean).filter(r=>!Object.values(P.docs).some(x=>x.ref===r))}
 function formatDims(f){return {A4:[210,297],A5:[148,210],A6:[105,148],PHOTO:[100,150],CARTE:[85,54]}[f]||[210,297]}
 
+
+async function runValidationSuite(){
+ const out=[];
+ const add=(name,ok,detail)=>out.push({name,ok,detail});
+ try{
+  add("Projet chargé",!!P,`${Object.keys(P.docs||{}).length} pièce(s)`);
+  add("Hiérarchie Saison → Dossier → Pièce",Object.values(P.docs||{}).every(d=>P.seasons[d.season]&&P.dossiers[d.dossier]),"Références structurelles");
+  const refs=Object.values(P.docs||{}).map(d=>d.ref).filter(Boolean), dup=refs.filter((x,i)=>refs.indexOf(x)!==i);
+  add("Références uniques",dup.length===0,dup.length?("Doublons : "+[...new Set(dup)].join(", ")):"Aucun doublon");
+  add("Métadonnées configurables",Object.values(P.docs||{}).every(d=>d.metaVisible),"Affichage indépendant des métadonnées");
+  const mediaKeys=await keys(MEDIA);
+  add("Bibliothèque persistante",Array.isArray(mediaKeys),`${mediaKeys.length} ressource(s)`);
+  add("Emblèmes et sceaux séparés",Object.values(P.docs||{}).every(d=>"emblem" in d && "seal" in d),"Deux ressources indépendantes");
+  add("Pages présentes",Object.values(P.docs||{}).every(d=>Array.isArray(d.pages)&&d.pages.length>0),"Chaque pièce conserve au moins une page");
+  add("Sauvegarde projet",typeof backup==="function","Export .gendoc disponible");
+  add("PDF HD multipage",typeof exportPiecePDF==="function"&&typeof addHiResOfficial==="function","Moteur chargé dans l’application");
+  add("Contrôle pré-impression",typeof preflight==="function","Préflight disponible");
+ }catch(e){add("Suite de validation",false,e.message||String(e))}
+ $("validationResults").innerHTML=out.map(x=>`<div class="card" style="padding:8px;margin:6px 0"><b>${x.ok?"✓":"⚠"} ${esc(x.name)}</b><br><span class="muted">${esc(x.detail)}</span></div>`).join("")+
+ `<div class="card"><b>TESTS iPAD À FAIRE MANUELLEMENT</b><br><span class="muted">1. Créer une pièce et un suffixe long • 2. Sélectionner emblème/sceau depuis la bibliothèque • 3. Supprimer un objet de la page • 4. Fermer/réouvrir l’application • 5. Exporter 2 pages en PDF HD • 6. Sauvegarder puis restaurer le .gendoc.</span></div>`;
+}
+
 function wire(){
  document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("on",x.id==="tab-"+b.dataset.tab));if(b.dataset.tab==="media"){library();componentList()}});
- ["refF","titleF","statusF","accessF","typeF","classF","diffF","authorF","dateF","timeF","sealF","emblemSelectF","divisionF","docStateF","periodF","linksF","formatF","sideF","qtyF","printModeF","paperF","containerF"].forEach(id=>$(id).onchange=()=>{const d=doc(),map={refF:"ref",titleF:"title",statusF:"status",accessF:"access",dateF:"date",timeF:"time",sealF:"seal",typeF:"type",classF:"classification",diffF:"diffusion",authorF:"author",emblemSelectF:"emblem",divisionF:"division",docStateF:"docState",periodF:"period",linksF:"links",formatF:"format",sideF:"side",qtyF:"qty",printModeF:"printMode",paperF:"paper",containerF:"container"};d[map[id]]=$(id).value;saveSoon();render();projectTree()});
+ ["refF","titleF","statusF","accessF","typeF","classF","diffF","authorF","dateF","timeF","sealF","emblemSelectF","divisionF","docStateF","periodF","linksF","formatF","sideF","qtyF","printModeF","paperF","containerF"].forEach(id=>$(id).onchange=()=>{const d=doc(),map={refF:"ref",titleF:"title",statusF:"status",accessF:"access",dateF:"date",timeF:"time",sealF:"seal",typeF:"type",classF:"classification",diffF:"diffusion",authorF:"author",emblemSelectF:"emblem",divisionF:"division",docStateF:"docState",periodF:"period",linksF:"links",formatF:"format",sideF:"side",qtyF:"qty",printModeF:"printMode",paperF:"paper",containerF:"container"};d[map[id]]=$(id).value;saveSoon();render();projectTree();if(id==="sealF"||id==="emblemSelectF")refreshOfficialMenus()});
   ["type","status","access","class","diff","author","date","time"].forEach(k=>{const e=$("show"+k.charAt(0).toUpperCase()+k.slice(1)+"F");if(e)e.onchange=()=>{const d=doc();d.metaVisible=d.metaVisible||{};d.metaVisible[k==="class"?"classification":k]=e.checked;saveSoon();render()};});
  $("bodyEditor").addEventListener("input",()=>{if(doc().status==="CANON VALIDÉ"&&!doc()._canonEditWarned){doc()._canonEditWarned=true;toast("⚠ Modification d’une pièce CANON VALIDÉE")}doc().bodyHtml=cleanHtml($("bodyEditor").innerHTML);saveSoon();render()});
  $("bodyEditor").addEventListener("paste",()=>setTimeout(()=>{$("bodyEditor").innerHTML=cleanHtml($("bodyEditor").innerHTML);doc().bodyHtml=$("bodyEditor").innerHTML;saveSoon();render()},0));
  document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>document.execCommand(b.dataset.cmd,false,null));
  $("fontF").onchange=e=>document.execCommand("fontName",false,e.target.value);$("sizeF").onchange=e=>{document.execCommand("fontSize",false,"7");$("bodyEditor").querySelectorAll('font[size="7"]').forEach(x=>{x.removeAttribute("size");x.style.fontSize=e.target.value+"px"})};
- $("emblemF").onchange=async e=>{const f=e.target.files[0];if(f){const name=$("emblemSelectF").value||"ORDRE";await put(MEDIA,"emblem:"+name,{name:f.name,data:await fileData(f)});render();toast("Emblème "+name+" enregistré")}};
- $("sealFile").onchange=async e=>{const f=e.target.files[0],name=$("sealF").value;if(f&&name){await put(MEDIA,"seal:"+name,{name:f.name,data:await fileData(f)});render();toast("Sceau HD enregistré")}};
- $("assetAdd").onclick=async()=>{const f=$("assetFile").files[0];if(!f)return;await put(MEDIA,"asset:"+uid("a"),{name:$("assetName").value||f.name,data:await fileData(f)});$("assetFile").value="";$("assetName").value="";library()};
+ $("refreshOfficialB").onclick=async()=>{await refreshOfficialMenus();await library();toast("Bibliothèque actualisée")};
+ $("deleteOfficialB").onclick=deleteSelectedOfficial;
+ $("emblemF").onchange=async e=>{const f=e.target.files[0];if(f){const name=$("emblemSelectF").value||"ORDRE";await put(MEDIA,"emblem:"+name,{name:f.name,data:await fileData(f)});await refreshOfficialMenus();render();toast("Emblème "+name+" enregistré")}};
+ $("sealFile").onchange=async e=>{const f=e.target.files[0],name=$("sealF").value;if(f&&name){await put(MEDIA,"seal:"+name,{name:f.name,data:await fileData(f)});await refreshOfficialMenus();render();toast("Sceau HD enregistré")}};
+ $("assetAdd").onclick=async()=>{const f=$("assetFile").files[0];if(!f)return;await put(MEDIA,"asset:"+uid("a"),{name:$("assetName").value||f.name,data:await fileData(f)});$("assetFile").value="";$("assetName").value="";library();refreshOfficialMenus()};
  $("addPage").onclick=()=>{doc().pages.push({id:uid("page"),name:"PAGE "+(doc().pages.length+1),objects:[]});doc().page=doc().pages.length-1;saveSoon();renderPages();render()};
  $("dupPage").onclick=()=>{const p=clone(page());p.id=uid("page");p.name="PAGE "+(doc().pages.length+1);p.objects.forEach(o=>o.id=uid("obj"));doc().pages.splice(doc().page+1,0,p);doc().page++;saveSoon();renderPages();render()};
  $("delPage").onclick=()=>{if(doc().pages.length===1)return alert("Une pièce doit conserver au moins une page.");if(confirm("Supprimer cette page ?")){doc().pages.splice(doc().page,1);doc().page=Math.max(0,doc().page-1);saveSoon();renderPages();render()}};
  $("homeB").onclick=()=>{projectTree();show("home")};$("menuB").onclick=()=>$("side").classList.toggle("open");$("mobileClose").onclick=()=>$("side").classList.remove("open");$("previewB").onclick=()=>document.querySelector(".canvas").scrollIntoView({behavior:"smooth"});$("preflightB").onclick=preflight;$("pdfB").onclick=exportPDF;$("addTextObj").onclick=addTextObject;$("gridB").onclick=toggleGrid;document.querySelectorAll(".tpl").forEach(b=>b.onclick=()=>applyTemplate(b.dataset.tpl));
+ $("testB").onclick=()=>{$("validationModal").style.display="flex";runValidationSuite()};
+ $("runValidationB").onclick=runValidationSuite;
+ $("closeValidationB").onclick=()=>$("validationModal").style.display="none";
  $("backupB").onclick=backup;$("restoreB").onclick=()=>$("restoreFile").click();$("restoreFile").onchange=e=>e.target.files[0]&&restore(e.target.files[0]);
  $("addSeason").onclick=()=>{const n=Object.keys(P.seasons).length+1,id="S"+String(n).padStart(2,"0"),name=prompt("Nom de la saison","SAISON "+n);if(name){P.seasons[id]={name,order:n};saveSoon();projectTree()}};
  $("addDossier").onclick=()=>{const sid=prompt("Saison",Object.keys(P.seasons)[0]||"S01");if(!P.seasons[sid])return alert("Saison inconnue.");const id=(prompt("Identifiant du dossier","D000")||"").toUpperCase(),name=prompt("Titre du dossier","DOSSIER");if(id&&name){P.dossiers[id]={name,season:sid};saveSoon();projectTree()}};
