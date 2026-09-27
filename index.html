@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e0c">
-<title>GenDoc V10 RC1 // Atelier complet</title>
+<title>GenDoc V10 Stable 1.0 // Atelier complet</title>
 <style>
 :root{--bg:#0b0e0c;--p:#121713;--p2:#182019;--line:#39443c;--txt:#edf1ed;--mut:#97a198;--paper:#fff;--ink:#151815;--hit:44px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:12px Courier New,monospace}
@@ -70,20 +70,20 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 .rotate:after{content:"↻";position:absolute;inset:0;display:grid;place-items:center;color:#111;font:20px Arial}
 .resize:after{content:"↘";position:absolute;inset:0;display:grid;place-items:center;color:#111;font:16px Arial}
 </style>
-</head>
+<link rel="manifest" href="./manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="GenDoc"></head>
 <body>
 <header>
- <div class="brand">GENDOC // V10 RC1</div>
+ <div class="brand">GENDOC // V10 STABLE 1.0</div>
  <div id="crumb" class="status"></div><div class="spacer"></div>
  <div id="saveState" class="status">● PRÊT</div>
- <button id="homeB">PROJET</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
+ <button id="homeB">PROJET</button><button id="versionB">V10.0.0</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
 </header>
 
 <section id="home" class="screen on">
  <div class="hero"><h1>ATELIER DOCUMENTAIRE</h1><div class="spacer"></div>
  <button id="addSeason">+ SAISON</button><button id="addDossier">+ DOSSIER</button><button id="addDoc" class="primary">+ PIÈCE</button>
  <button id="restoreB">OUVRIR .GENDOC</button><input id="restoreFile" type="file" accept=".gendoc,application/json" hidden></div>
- <div class="card"><b>RELEASE CANDIDATE 1</b><br><span class="muted">Version de validation avant V10 Stable. Ne reconstruis pas encore tout D000 avant validation du PDF THD et d’une restauration .gendoc.</span></div><div id="startupInfo" class="muted">Initialisation GenDoc…</div><div id="projectTree"></div>
+ <div class="card"><b>VERSION STABLE 1.0</b><br><span class="muted">Branche stable validée sur iPad. Les projets et la bibliothèque restent stockés séparément du code de l’application.</span></div><div id="startupInfo" class="muted">Initialisation GenDoc…</div><div id="projectTree"></div>
 </section>
 
 <section id="atelier" class="screen">
@@ -254,6 +254,14 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
   </div>
  </div>
 </div>
+<div id="updateModal" style="display:none;position:fixed;inset:0;background:#000c;z-index:7000;align-items:center;justify-content:center;padding:20px">
+<div class="card" style="width:min(620px,96vw)">
+<h2>GENDOC // MISE À JOUR</h2>
+<p><b>Version installée :</b> 10.0.0</p>
+<p class="muted">Le moteur V10 sépare les données du projet du code de l’application. Les futures mises à jour 10.0.x pourront donc remplacer l’interface sans effacer saisons, dossiers, pièces ou bibliothèque IndexedDB.</p>
+<p class="muted">Pour la PWA hébergée, le service worker vérifiera une nouvelle version au démarrage et l’activera après rechargement.</p>
+<div class="bar"><button id="closeUpdateB">FERMER</button></div>
+</div></div>
 <div id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -783,6 +791,7 @@ function wire(){
  $("dupPage").onclick=()=>{const p=clone(page());p.id=uid("page");p.name="PAGE "+(doc().pages.length+1);p.objects.forEach(o=>o.id=uid("obj"));doc().pages.splice(doc().page+1,0,p);doc().page++;saveSoon();renderPages();render()};
  $("delPage").onclick=()=>{if(doc().pages.length===1)return alert("Une pièce doit conserver au moins une page.");if(confirm("Supprimer cette page ?")){doc().pages.splice(doc().page,1);doc().page=Math.max(0,doc().page-1);saveSoon();renderPages();render()}};
  $("homeB").onclick=()=>{projectTree();show("home")};$("menuB").onclick=()=>$("side").classList.toggle("open");$("mobileClose").onclick=()=>$("side").classList.remove("open");$("previewB").onclick=()=>document.querySelector(".canvas").scrollIntoView({behavior:"smooth"});$("preflightB").onclick=preflight;$("auditProjectB").onclick=auditProject;$("pdfB").onclick=exportPDF;$("addTextObj").onclick=addTextObject;$("gridB").onclick=toggleGrid;document.querySelectorAll(".tpl").forEach(b=>b.onclick=()=>applyTemplate(b.dataset.tpl));
+ $("versionB").onclick=()=>{$("updateModal").style.display="flex"};$("closeUpdateB").onclick=()=>{$("updateModal").style.display="none"};
  $("testB").onclick=()=>{$("validationModal").style.display="flex";runValidationSuite()};
  $("runValidationB").onclick=runValidationSuite;
  $("closeValidationB").onclick=()=>$("validationModal").style.display="none";
@@ -826,4 +835,8 @@ function wire(){
   }
 })();
 </script>
-</body></html>
+<script>
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+ window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.error));
+}
+</script></body></html>

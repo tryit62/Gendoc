@@ -1,0 +1,11 @@
+{
+  "name": "GenDoc — L’Ordre des Cinq Ombres",
+  "short_name": "GenDoc",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#101310",
+  "theme_color": "#101310",
+  "description": "Atelier de gestion et production documentaire de L’Ordre des Cinq Ombres",
+  "icons": []
+}
