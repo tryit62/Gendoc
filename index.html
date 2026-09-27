@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e0c">
-<title>GenDoc V10.1.2 // Atelier complet</title>
+<title>GenDoc V10.1.3 // Atelier complet</title>
 <style>
 :root{--bg:#0b0e0c;--p:#121713;--p2:#182019;--line:#39443c;--txt:#edf1ed;--mut:#97a198;--paper:#fff;--ink:#151815;--hit:44px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:12px Courier New,monospace}
@@ -81,10 +81,10 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 <link rel="manifest" href="./manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="GenDoc"></head>
 <body>
 <header>
- <div class="brand">GENDOC // V10.1.2</div>
+ <div class="brand">GENDOC // V10.1.3</div>
  <div id="crumb" class="status"></div><div class="spacer"></div>
  <div id="saveState" class="status">● PRÊT</div>
- <button id="homeB">PROJET</button><button id="versionB">V10.1.2</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
+ <button id="homeB">PROJET</button><button id="versionB">V10.1.3</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
 </header>
 
 <section id="home" class="screen on">
@@ -278,7 +278,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 <div id="updateModal" style="display:none;position:fixed;inset:0;background:#000c;z-index:7000;align-items:center;justify-content:center;padding:20px">
 <div class="card" style="width:min(620px,96vw)">
 <h2>GENDOC // MISE À JOUR</h2>
-<p><b>Version installée :</b> 10.1.2</p>
+<p><b>Version installée :</b> 10.1.3</p>
 <p class="muted">Le moteur V10 sépare les données du projet du code de l’application. Les futures mises à jour 10.0.x pourront donc remplacer l’interface sans effacer saisons, dossiers, pièces ou bibliothèque IndexedDB.</p>
 <p class="muted">Pour la PWA hébergée, le service worker vérifiera une nouvelle version au démarrage et l’activera après rechargement.</p>
 <div class="bar"><button id="closeUpdateB">FERMER</button></div>
@@ -415,7 +415,7 @@ function renderObjects(){
  else e.innerHTML=`<div class="objtext" contenteditable="false" style="width:100%;height:100%;overflow:hidden;font-family:${o.fontFamily||"Courier New"};font-size:${o.fontSize||12}pt;line-height:${o.lineHeight||1.25};letter-spacing:${o.letterSpacing||0}px;font-weight:${o.bold?"700":"400"};font-style:${o.italic?"italic":"normal"};text-decoration:${o.underline?"underline":"none"};text-align:${o.textAlign||"left"}">${o.html||""}</div>`;
  e.insertAdjacentHTML("beforeend",'<span class="resize"></span><span class="rotate"></span><button class="objDelete" type="button">✕</button>');
  e.querySelector(".objDelete").onclick=ev=>{ev.stopPropagation();page().objects=page().objects.filter(x=>x.id!==o.id);selectedId=null;saveSoon();renderObjects();$("inspector").textContent="Sélectionnez un objet sur la page.";toast("Objet supprimé de la page")};
- e.onclick=ev=>{ev.stopPropagation();selectedId=o.id;renderObjects();inspect(o)};lay.appendChild(e);
+ e.onclick=ev=>{ev.stopPropagation();selectedId=o.id;document.querySelectorAll(".obj.sel").forEach(x=>x.classList.remove("sel"));e.classList.add("sel");inspect(o)};lay.appendChild(e);
  if(o.type==="text"){const tx=e.querySelector(".objtext");
  tx.oninput=()=>{o.html=tx.innerHTML;saveSoon()};
  // Default mode = manipulation: pointer events reach the object so drag works on iPad.
@@ -429,12 +429,30 @@ function renderObjects(){
 function drag(el,o){
  el.onpointerdown=e=>{
    if(e.target.classList.contains("resize")||e.target.classList.contains("rotate")||e.target.classList.contains("objDelete"))return;
-   e.stopPropagation();
-   if(selectedId!==o.id){selectedId=o.id;renderObjects();inspect(o);return}
+   if(e.target.closest?.(".objDelete,.resize,.rotate"))return;
+   e.preventDefault();e.stopPropagation();
+   // Select without rebuilding the DOM: rebuilding here cancelled the same touch gesture on iPad.
+   selectedId=o.id;
+   document.querySelectorAll(".obj.sel").forEach(x=>x.classList.remove("sel"));
+   el.classList.add("sel");
+   inspect(o);
    const pr=$("paper").getBoundingClientRect(),mm=210/pr.width,sx=e.clientX,sy=e.clientY,ox=o.x,oy=o.y;
-   el.setPointerCapture?.(e.pointerId);
-   el.onpointermove=v=>{o.x=ox+(v.clientX-sx)*mm;o.y=oy+(v.clientY-sy)*mm;smartSnap(o);el.style.left=o.x+"mm";el.style.top=o.y+"mm"};
-   el.onpointerup=()=>{el.onpointermove=null;hideGuides();saveSoon();renderObjects()}
+   try{el.setPointerCapture(e.pointerId)}catch(_){}
+   const move=v=>{
+     v.preventDefault?.();
+     o.x=ox+(v.clientX-sx)*mm;o.y=oy+(v.clientY-sy)*mm;
+     smartSnap(o);el.style.left=o.x+"mm";el.style.top=o.y+"mm";
+   };
+   const end=v=>{
+     try{el.releasePointerCapture?.(e.pointerId)}catch(_){}
+     el.removeEventListener("pointermove",move);
+     el.removeEventListener("pointerup",end);
+     el.removeEventListener("pointercancel",end);
+     hideGuides();saveSoon();renderObjects();inspect(o);
+   };
+   el.addEventListener("pointermove",move,{passive:false});
+   el.addEventListener("pointerup",end,{once:true});
+   el.addEventListener("pointercancel",end,{once:true});
  }
 }
 
