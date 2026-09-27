@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e0c">
-<title>GenDoc V10 Beta 1.4 // Atelier complet</title>
+<title>GenDoc V10 RC1 // Atelier complet</title>
 <style>
 :root{--bg:#0b0e0c;--p:#121713;--p2:#182019;--line:#39443c;--txt:#edf1ed;--mut:#97a198;--paper:#fff;--ink:#151815;--hit:44px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:12px Courier New,monospace}
@@ -73,7 +73,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 </head>
 <body>
 <header>
- <div class="brand">GENDOC // V10 BETA 1.4</div>
+ <div class="brand">GENDOC // V10 RC1</div>
  <div id="crumb" class="status"></div><div class="spacer"></div>
  <div id="saveState" class="status">● PRÊT</div>
  <button id="homeB">PROJET</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
@@ -83,7 +83,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
  <div class="hero"><h1>ATELIER DOCUMENTAIRE</h1><div class="spacer"></div>
  <button id="addSeason">+ SAISON</button><button id="addDossier">+ DOSSIER</button><button id="addDoc" class="primary">+ PIÈCE</button>
  <button id="restoreB">OUVRIR .GENDOC</button><input id="restoreFile" type="file" accept=".gendoc,application/json" hidden></div>
- <div id="startupInfo" class="muted">Initialisation GenDoc…</div><div id="projectTree"></div>
+ <div class="card"><b>RELEASE CANDIDATE 1</b><br><span class="muted">Version de validation avant V10 Stable. Ne reconstruis pas encore tout D000 avant validation du PDF THD et d’une restauration .gendoc.</span></div><div id="startupInfo" class="muted">Initialisation GenDoc…</div><div id="projectTree"></div>
 </section>
 
 <section id="atelier" class="screen">
@@ -96,7 +96,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
   </aside>
 
   <section class="editor">
-   <div class="bar"><button id="menuB">☰</button><button id="previewB">PAGE</button><button id="pdfB">PDF</button><button id="preflightB">VÉRIFIER</button><button id="addTextObj">+ TEXTE LIBRE</button><button id="gridB">GRILLE</button></div>
+   <div class="bar"><button id="menuB">☰</button><button id="previewB">PAGE</button><button id="pdfB">PDF</button><button id="preflightB">VÉRIFIER</button><button id="auditProjectB">AUDIT PROJET</button><button id="addTextObj">+ TEXTE LIBRE</button><button id="gridB">GRILLE</button></div>
    <div class="tabs"><button data-tab="doc" class="on">DOCUMENT</button><button data-tab="text">CONTENU</button><button data-tab="media">BIBLIOTHÈQUE</button><button data-tab="inspect">INSPECTEUR</button></div>
 
    <div id="tab-doc" class="panel on">
@@ -312,17 +312,40 @@ function deletePiece(id){
  toast("Pièce supprimée");
 }
 
-function projectTree(){$("startupInfo").textContent="GenDoc prêt // stockage "+(db?"IndexedDB":"local de secours");
+
+function renameSeason(sid){const s=P.seasons[sid];if(!s)return;const n=prompt("Nouveau nom de la saison",s.name);if(n&&n.trim()){s.name=n.trim();saveSoon();projectTree()}}
+function deleteSeason(sid){
+ const dossiers=Object.keys(P.dossiers).filter(id=>P.dossiers[id].season===sid),count=Object.values(P.docs).filter(d=>d.season===sid).length;
+ if(dossiers.length||count)return alert("Cette saison contient encore des dossiers/pièces. Supprime ou déplace d’abord leur contenu.");
+ if(confirm("Supprimer la saison "+sid+" ?")){delete P.seasons[sid];saveSoon();projectTree()}
+}
+function renameDossier(did){const d=P.dossiers[did];if(!d)return;const n=prompt("Nouveau titre du dossier",d.name);if(n&&n.trim()){d.name=n.trim();saveSoon();projectTree()}}
+function deleteDossier(did){
+ const count=Object.values(P.docs).filter(d=>d.dossier===did).length;
+ if(count)return alert("Ce dossier contient encore "+count+" pièce(s). Supprime ou déplace d’abord les pièces.");
+ if(confirm("Supprimer le dossier "+did+" ?")){delete P.dossiers[did];saveSoon();projectTree()}
+}
+
+function projectTree(){$("startupInfo").textContent="GenDoc RC1 prêt // stockage "+(db?"IndexedDB":"local de secours");
  const root=$("projectTree");root.innerHTML="";
  Object.entries(P.seasons).sort((a,b)=>a[1].order-b[1].order).forEach(([sid,s])=>{
-  const box=document.createElement("div");box.className="card season";box.innerHTML=`<h2>${esc(sid)} // ${esc(s.name)}</h2>`;
+  const box=document.createElement("div");box.className="card season";
+  box.innerHTML=`<div class="bar"><h2 style="flex:1">${esc(sid)} // ${esc(s.name)}</h2><button data-rs="${sid}">RENOMMER</button><button class="danger" data-ds="${sid}">SUPPRIMER</button></div>`;
   Object.entries(P.dossiers).filter(([,d])=>d.season===sid).forEach(([did,di])=>{
    const docs=Object.values(P.docs).filter(x=>x.dossier===did),valid=docs.filter(x=>["CANON VALIDÉ","PRÊT À IMPRIMER","IMPRIMÉ"].includes(x.status)).length;
-   const dbox=document.createElement("div");dbox.className="dossier";dbox.innerHTML=`<b>${esc(did)} — ${esc(di.name)}</b><div class="muted">${valid}/${docs.length} validée(s)</div>`;
-   docs.forEach(d=>{const r=document.createElement("div");r.className="docrow";r.innerHTML=`<span>${d.favorite?"★ ":""}${esc(d.ref)}</span><span>${esc(d.title)}</span><span class="badge">${esc(d.status)}</span><button class="open">OUVRIR</button>`;r.querySelector("button").onclick=()=>openDoc(d.id);dbox.appendChild(r)});
+   const dbox=document.createElement("div");dbox.className="dossier";
+   dbox.innerHTML=`<div class="bar"><b style="flex:1">${esc(did)} — ${esc(di.name)}</b><span class="muted">${valid}/${docs.length} validée(s)</span><button data-rd="${did}">RENOMMER</button><button class="danger" data-dd="${did}">SUPPRIMER</button></div>`;
+   docs.forEach(d=>{const r=document.createElement("div");r.className="docrow";r.innerHTML=`<span>${d.favorite?"★ ":""}${esc(d.ref)}</span><span>${esc(d.title)}</span><span class="badge">${esc(d.status)}</span><button data-open="${d.id}">OUVRIR</button><button data-dup="${d.id}">DUPLIQUER</button><button class="danger" data-del="${d.id}">SUPPRIMER</button>`;dbox.appendChild(r)});
    box.appendChild(dbox)
   });root.appendChild(box)
- })
+ });
+ root.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>openDoc(b.dataset.open));
+ root.querySelectorAll("[data-dup]").forEach(b=>b.onclick=()=>duplicatePiece(b.dataset.dup));
+ root.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>deletePiece(b.dataset.del));
+ root.querySelectorAll("[data-rs]").forEach(b=>b.onclick=()=>renameSeason(b.dataset.rs));
+ root.querySelectorAll("[data-ds]").forEach(b=>b.onclick=()=>deleteSeason(b.dataset.ds));
+ root.querySelectorAll("[data-rd]").forEach(b=>b.onclick=()=>renameDossier(b.dataset.rd));
+ root.querySelectorAll("[data-dd]").forEach(b=>b.onclick=()=>deleteDossier(b.dataset.dd));
 }
 function openDoc(id){P.active=id;saveSoon();loadEditor();show("atelier")}
 function loadEditor(){
@@ -728,6 +751,21 @@ async function runValidationSuite(){
  `<div class="card"><b>TESTS iPAD À FAIRE MANUELLEMENT</b><br><span class="muted">1. Créer une pièce et un suffixe long • 2. Sélectionner emblème/sceau depuis la bibliothèque • 3. Supprimer un objet de la page • 4. Fermer/réouvrir l’application • 5. Exporter 2 pages en PDF HD • 6. Sauvegarder puis restaurer le .gendoc.</span></div>`;
 }
 
+
+async function auditProject(){
+ const issues=[],refs={};
+ Object.values(P.docs).forEach(d=>refs[d.ref]=(refs[d.ref]||0)+1);
+ Object.values(P.docs).forEach(d=>{
+   if(!d.ref)issues.push((d.title||d.id)+" : référence absente");
+   if(refs[d.ref]>1)issues.push(d.ref+" : référence dupliquée");
+   if(!d.title)issues.push(d.ref+" : titre absent");
+   if(!d.pages?.length)issues.push(d.ref+" : aucune page");
+   const bad=validateLinks(d);if(bad.length)issues.push(d.ref+" : liens introuvables → "+bad.join(", "));
+   (d.pages||[]).forEach((p,pi)=>(p.objects||[]).forEach(o=>{if(o.x<0||o.y<0||o.x+o.w>210||o.y+o.h>297)issues.push(d.ref+" p."+(pi+1)+" : objet hors page")}));
+ });
+ alert(issues.length?"AUDIT PROJET\\n\\n"+issues.slice(0,30).join("\\n")+(issues.length>30?"\\n… "+(issues.length-30)+" autre(s)":""):"AUDIT PROJET : OK\\nAucune incohérence structurelle détectée.");
+}
+
 function wire(){
  document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("on",x.id==="tab-"+b.dataset.tab));if(b.dataset.tab==="media"){library();componentList()}});
  ["refF","titleF","statusF","accessF","typeF","classF","diffF","authorF","dateF","timeF","sealF","emblemSelectF","divisionF","docStateF","periodF","linksF","formatF","sideF","qtyF","printModeF","paperF","containerF"].forEach(id=>$(id).onchange=()=>{const d=doc(),map={refF:"ref",titleF:"title",statusF:"status",accessF:"access",dateF:"date",timeF:"time",sealF:"seal",typeF:"type",classF:"classification",diffF:"diffusion",authorF:"author",emblemSelectF:"emblem",divisionF:"division",docStateF:"docState",periodF:"period",linksF:"links",formatF:"format",sideF:"side",qtyF:"qty",printModeF:"printMode",paperF:"paper",containerF:"container"};d[map[id]]=$(id).value;saveSoon();render();projectTree();if(id==="sealF"||id==="emblemSelectF")refreshOfficialMenus()});
@@ -744,7 +782,7 @@ function wire(){
  $("addPage").onclick=()=>{doc().pages.push({id:uid("page"),name:"PAGE "+(doc().pages.length+1),objects:[]});doc().page=doc().pages.length-1;saveSoon();renderPages();render()};
  $("dupPage").onclick=()=>{const p=clone(page());p.id=uid("page");p.name="PAGE "+(doc().pages.length+1);p.objects.forEach(o=>o.id=uid("obj"));doc().pages.splice(doc().page+1,0,p);doc().page++;saveSoon();renderPages();render()};
  $("delPage").onclick=()=>{if(doc().pages.length===1)return alert("Une pièce doit conserver au moins une page.");if(confirm("Supprimer cette page ?")){doc().pages.splice(doc().page,1);doc().page=Math.max(0,doc().page-1);saveSoon();renderPages();render()}};
- $("homeB").onclick=()=>{projectTree();show("home")};$("menuB").onclick=()=>$("side").classList.toggle("open");$("mobileClose").onclick=()=>$("side").classList.remove("open");$("previewB").onclick=()=>document.querySelector(".canvas").scrollIntoView({behavior:"smooth"});$("preflightB").onclick=preflight;$("pdfB").onclick=exportPDF;$("addTextObj").onclick=addTextObject;$("gridB").onclick=toggleGrid;document.querySelectorAll(".tpl").forEach(b=>b.onclick=()=>applyTemplate(b.dataset.tpl));
+ $("homeB").onclick=()=>{projectTree();show("home")};$("menuB").onclick=()=>$("side").classList.toggle("open");$("mobileClose").onclick=()=>$("side").classList.remove("open");$("previewB").onclick=()=>document.querySelector(".canvas").scrollIntoView({behavior:"smooth"});$("preflightB").onclick=preflight;$("auditProjectB").onclick=auditProject;$("pdfB").onclick=exportPDF;$("addTextObj").onclick=addTextObject;$("gridB").onclick=toggleGrid;document.querySelectorAll(".tpl").forEach(b=>b.onclick=()=>applyTemplate(b.dataset.tpl));
  $("testB").onclick=()=>{$("validationModal").style.display="flex";runValidationSuite()};
  $("runValidationB").onclick=runValidationSuite;
  $("closeValidationB").onclick=()=>$("validationModal").style.display="none";
