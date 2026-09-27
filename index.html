@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e0c">
-<title>GenDoc V10 Beta 1 // Atelier complet</title>
+<title>GenDoc V10 Beta 1.1 // Atelier complet</title>
 <style>
 :root{--bg:#0b0e0c;--p:#121713;--p2:#182019;--line:#39443c;--txt:#edf1ed;--mut:#97a198;--paper:#fff;--ink:#151815;--hit:44px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:12px Courier New,monospace}
@@ -58,11 +58,15 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 .exportGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .toggleLine{display:flex;gap:7px;align-items:center;margin:7px 0}.toggleLine input{min-height:auto;width:auto}
 
+
+.objDelete{display:none;position:absolute;right:-7px;top:-7px;z-index:30;min-height:34px!important;height:34px;padding:3px 8px;border-radius:17px;background:#241414!important;border:1px solid #a76b6b!important;color:#fff!important;font-size:10px}
+.obj.sel .objDelete{display:block}
+.exporting .resize,.exporting .rotate,.exporting .objDelete,.exporting .guideV,.exporting .guideH{display:none!important}
 </style>
 </head>
 <body>
 <header>
- <div class="brand">GENDOC // V10 BETA 1</div>
+ <div class="brand">GENDOC // V10 BETA 1.1</div>
  <div id="crumb" class="status"></div><div class="spacer"></div>
  <div id="saveState" class="status">● PRÊT</div>
  <button id="homeB">PROJET</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
@@ -172,7 +176,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
  <div id="components"></div>
 </div>
 <div class="librarySection"><h4>CENTRE D’EXPORT // PDF HD</h4>
- <label>Qualité PDF<select id="pdfQuality"><option value="2">STANDARD HD — iPad</option><option value="2.5" selected>HAUTE — recommandée</option><option value="3">TRÈS HAUTE — mémoire élevée</option></select></label>
+ <label>Qualité PDF<select id="pdfQuality"><option value="1.35" selected>IPAD SÛR — recommandé</option><option value="1.7">HAUTE — documents légers</option><option value="2">TRÈS HAUTE — mémoire élevée</option></select></label>
  <div class="muted">A4 exact 210 × 297 mm. Emblème et sceau sont réinjectés depuis leurs originaux HD.</div>
  <div class="exportGrid">
   <button id="exportCurrentB">PIÈCE COURANTE</button>
@@ -315,10 +319,21 @@ async function render(){
 function renderObjects(){
  const lay=$("objectLayer");lay.innerHTML="";(page()?.objects||[]).forEach(o=>{const e=document.createElement("div");e.className="obj"+(o.id===selectedId?" sel":"");e.dataset.id=o.id;e.style.cssText=`left:${o.x}mm;top:${o.y}mm;width:${o.w}mm;height:${o.h}mm;opacity:${o.opacity??1};transform:rotate(${o.rot||0}deg);z-index:${o.z||1}`;
  if(o.type==="image")e.innerHTML=`<img src="${o.src}" style="width:100%;height:100%;object-fit:contain;pointer-events:none">`;else e.innerHTML=`<div class="objtext" style="width:100%;height:100%;overflow:hidden">${o.html||""}</div>`;
- e.insertAdjacentHTML("beforeend",'<span class="resize"></span><span class="rotate"></span>');
+ e.insertAdjacentHTML("beforeend",'<span class="resize"></span><span class="rotate"></span><button class="objDelete" type="button">✕</button>');
+ e.querySelector(".objDelete").onclick=ev=>{ev.stopPropagation();page().objects=page().objects.filter(x=>x.id!==o.id);selectedId=null;saveSoon();renderObjects();$("inspector").textContent="Sélectionnez un objet sur la page.";toast("Objet supprimé de la page")};
  e.onclick=ev=>{ev.stopPropagation();selectedId=o.id;renderObjects();inspect(o)};lay.appendChild(e);drag(e,o);resizeObj(e,o);rotateObj(e,o)
  })}
-function drag(el,o){el.onpointerdown=e=>{if(e.target.classList.contains("handle"))return;const pr=$("paper").getBoundingClientRect(),mm=210/pr.width,sx=e.clientX,sy=e.clientY,ox=o.x,oy=o.y;el.setPointerCapture?.(e.pointerId);el.onpointermove=v=>{o.x=ox+(v.clientX-sx)*mm;o.y=oy+(v.clientY-sy)*mm;smartSnap(o);el.style.left=o.x+"mm";el.style.top=o.y+"mm"};el.onpointerup=()=>{el.onpointermove=null;hideGuides();saveSoon();renderObjects()}}}
+function drag(el,o){
+ el.onpointerdown=e=>{
+   if(e.target.classList.contains("resize")||e.target.classList.contains("rotate")||e.target.classList.contains("objDelete"))return;
+   e.stopPropagation();
+   if(selectedId!==o.id){selectedId=o.id;renderObjects();inspect(o);return}
+   const pr=$("paper").getBoundingClientRect(),mm=210/pr.width,sx=e.clientX,sy=e.clientY,ox=o.x,oy=o.y;
+   el.setPointerCapture?.(e.pointerId);
+   el.onpointermove=v=>{o.x=ox+(v.clientX-sx)*mm;o.y=oy+(v.clientY-sy)*mm;smartSnap(o);el.style.left=o.x+"mm";el.style.top=o.y+"mm"};
+   el.onpointerup=()=>{el.onpointermove=null;hideGuides();saveSoon();renderObjects()}
+ }
+}
 function inspect(o){document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("on"));document.querySelector('[data-tab="inspect"]').classList.add("on");document.querySelectorAll(".panel").forEach(x=>x.classList.remove("on"));$("tab-inspect").classList.add("on");
  $("inspector").innerHTML=`${o.type==="text"?`<label>Texte<textarea id="ihtml" rows="5">${esc((o.html||"").replace(/<[^>]*>/g,""))}</textarea></label>`:""}<label>Largeur mm<input id="iw" type="number" step=".5" value="${o.w}"></label><label>Hauteur mm<input id="ih" type="number" step=".5" value="${o.h}"></label><label>Rotation<input id="ir" type="number" value="${o.rot||0}"></label><label>Opacité<input id="io" type="number" min="0" max="1" step=".05" value="${o.opacity??1}"></label><div class="bar"><button id="ifront">AVANT</button><button id="iback">ARRIÈRE</button><button id="idup">DUPLIQUER</button><button id="idel" class="danger">🗑 SUPPRIMER DE LA PAGE</button></div>`;
  if($("ihtml"))$("ihtml").oninput=()=>{o.html=esc($("ihtml").value).replace(/\n/g,"<br>");saveSoon();renderObjects()};["iw","ih","ir","io"].forEach(id=>$(id).onchange=()=>{o.w=+$("iw").value;o.h=+$("ih").value;o.rot=+$("ir").value;o.opacity=+$("io").value;saveSoon();renderObjects()});$("ifront").onclick=()=>{o.z=(o.z||1)+1;saveSoon();renderObjects()};$("iback").onclick=()=>{o.z=Math.max(1,(o.z||1)-1);saveSoon();renderObjects()};$("idup").onclick=()=>{const n=clone(o);n.id=uid("obj");n.x+=4;n.y+=4;page().objects.push(n);saveSoon();renderObjects()};$("idel").onclick=()=>{page().objects=page().objects.filter(x=>x.id!==o.id);selectedId=null;saveSoon();renderObjects();$("inspector").textContent="Sélectionnez un objet sur la page."}}
@@ -388,6 +403,29 @@ async function addHiResOfficial(pdf,d){
    }
  }
 }
+
+function pageImageCount(){return (page()?.objects||[]).filter(o=>o.type==="image").length}
+function safePdfScale(requested){
+ const n=pageImageCount();
+ if(n>=6)return Math.min(requested,1.15);
+ if(n>=3)return Math.min(requested,1.35);
+ return requested;
+}
+async function capturePaperForPDF(requested){
+ const q=safePdfScale(requested);
+ const paper=$("paper");
+ paper.classList.add("exporting");
+ try{
+   await waitFrame();
+   return await html2canvas(paper,{
+     scale:q,useCORS:true,backgroundColor:"#ffffff",logging:false,
+     imageTimeout:12000,
+     width:paper.scrollWidth,height:paper.scrollHeight,
+     windowWidth:paper.scrollWidth,windowHeight:paper.scrollHeight
+   });
+ }finally{paper.classList.remove("exporting")}
+}
+
 async function exportPiecePDF(){
  const d=doc(); if(!d)return;
  if(!window.html2canvas||!window.jspdf?.jsPDF){
@@ -405,11 +443,7 @@ async function exportPiecePDF(){
      const ev=pe.style.visibility, sv=ps.style.visibility;
      // Official media are excluded from raster capture and overlaid from originals.
      pe.style.visibility="hidden"; ps.style.visibility="hidden";
-     const canvas=await html2canvas($("paper"),{
-       scale:q,useCORS:true,backgroundColor:"#ffffff",logging:false,
-       width:$("paper").scrollWidth,height:$("paper").scrollHeight,
-       windowWidth:$("paper").scrollWidth,windowHeight:$("paper").scrollHeight
-     });
+     const canvas=await capturePaperForPDF(q);
      pe.style.visibility=ev; ps.style.visibility=sv;
      if(i>0)pdf.addPage("a4","portrait");
      pdf.addImage(canvas.toDataURL("image/jpeg",0.94),"JPEG",0,0,210,297,undefined,"FAST");
@@ -419,7 +453,7 @@ async function exportPiecePDF(){
    pdf.save((safe||"GenDoc")+".pdf");
    toast("PDF HD généré");
  }catch(e){
-   console.error(e); alert("Export PDF interrompu. Sur iPad, essaie la qualité STANDARD HD si le document contient beaucoup d’images.");
+   console.error(e); alert("Export PDF interrompu. GenDoc a déjà réduit automatiquement la résolution pour les pages chargées en images. Ferme cette fenêtre puis réessaie une fois ; si cela persiste, envoie-moi cette page précise.");
  }finally{
    d.page=originalPage; renderPages(); await render(); saveSoon();
  }
@@ -437,14 +471,14 @@ async function exportDossierPDF(){
    for(let i=0;i<d.pages.length;i++){
     d.page=i; loadEditor(); await render(); await waitFrame();
     const pe=$("pEmblem"),ps=$("pSeal"),ev=pe.style.visibility,sv=ps.style.visibility;pe.style.visibility="hidden";ps.style.visibility="hidden";
-    const c=await html2canvas($("paper"),{scale:q,useCORS:true,backgroundColor:"#fff",logging:false});
+    const c=await capturePaperForPDF(q);
     pe.style.visibility=ev;ps.style.visibility=sv;
     if(!first)pdf.addPage("a4","portrait");first=false;
     pdf.addImage(c.toDataURL("image/jpeg",.94),"JPEG",0,0,210,297,undefined,"FAST");await addHiResOfficial(pdf,d);
    }
   }
   pdf.save((docs[0].dossier+"_DOSSIER_COMPLET").replace(/[^\w\-]+/g,"_")+".pdf");toast("Dossier PDF généré");
- }catch(e){console.error(e);alert("Export dossier interrompu. Essaie STANDARD HD sur iPad.")}
+ }catch(e){console.error(e);alert("Export dossier interrompu. Essaie d’abord l’export de la pièce seule afin d’identifier la page concernée.")}
  finally{P.active=current;loadEditor();saveSoon()}
 }
 function exportPDF(){return exportPiecePDF()}
