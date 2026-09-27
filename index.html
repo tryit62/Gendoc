@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e0c">
-<title>GenDoc V10 Beta 1.1 // Atelier complet</title>
+<title>GenDoc V10 Beta 1.2 // Atelier complet</title>
 <style>
 :root{--bg:#0b0e0c;--p:#121713;--p2:#182019;--line:#39443c;--txt:#edf1ed;--mut:#97a198;--paper:#fff;--ink:#151815;--hit:44px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:12px Courier New,monospace}
@@ -62,11 +62,18 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 .objDelete{display:none;position:absolute;right:-7px;top:-7px;z-index:30;min-height:34px!important;height:34px;padding:3px 8px;border-radius:17px;background:#241414!important;border:1px solid #a76b6b!important;color:#fff!important;font-size:10px}
 .obj.sel .objDelete{display:block}
 .exporting .resize,.exporting .rotate,.exporting .objDelete,.exporting .guideV,.exporting .guideH{display:none!important}
+
+.resize,.rotate{position:absolute;z-index:25;display:none;touch-action:none}
+.obj.sel .resize,.obj.sel .rotate{display:block}
+.resize{width:28px;height:28px;right:-14px;bottom:-14px;border-radius:50%;background:#fff;border:2px solid #111;box-shadow:0 1px 5px #0008}
+.rotate{width:28px;height:28px;left:50%;top:-40px;transform:translateX(-50%);border-radius:50%;background:#fff;border:2px solid #111;box-shadow:0 1px 5px #0008}
+.rotate:after{content:"↻";position:absolute;inset:0;display:grid;place-items:center;color:#111;font:20px Arial}
+.resize:after{content:"↘";position:absolute;inset:0;display:grid;place-items:center;color:#111;font:16px Arial}
 </style>
 </head>
 <body>
 <header>
- <div class="brand">GENDOC // V10 BETA 1.1</div>
+ <div class="brand">GENDOC // V10 BETA 1.2</div>
  <div id="crumb" class="status"></div><div class="spacer"></div>
  <div id="saveState" class="status">● PRÊT</div>
  <button id="homeB">PROJET</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
@@ -176,7 +183,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
  <div id="components"></div>
 </div>
 <div class="librarySection"><h4>CENTRE D’EXPORT // PDF HD</h4>
- <label>Qualité PDF<select id="pdfQuality"><option value="1.35" selected>IPAD SÛR — recommandé</option><option value="1.7">HAUTE — documents légers</option><option value="2">TRÈS HAUTE — mémoire élevée</option></select></label>
+ <label>Qualité PDF<select id="pdfQuality"><option value="1.0" selected>IPAD — STABLE</option><option value="1.15">IPAD — NET</option><option value="1.35">HAUTE — documents légers</option></select></label>
  <div class="muted">A4 exact 210 × 297 mm. Emblème et sceau sont réinjectés depuis leurs originaux HD.</div>
  <div class="exportGrid">
   <button id="exportCurrentB">PIÈCE COURANTE</button>
@@ -334,9 +341,40 @@ function drag(el,o){
    el.onpointerup=()=>{el.onpointermove=null;hideGuides();saveSoon();renderObjects()}
  }
 }
+
+function resizeObj(el,o){
+ const handle=el.querySelector(".resize"); if(!handle)return;
+ handle.onpointerdown=e=>{
+   e.preventDefault();e.stopPropagation();
+   const pr=$("paper").getBoundingClientRect(),mm=210/pr.width,sx=e.clientX,sy=e.clientY,ow=o.w,oh=o.h;
+   handle.setPointerCapture?.(e.pointerId);
+   handle.onpointermove=v=>{
+     o.w=Math.max(8,ow+(v.clientX-sx)*mm);
+     o.h=Math.max(8,oh+(v.clientY-sy)*mm);
+     el.style.width=o.w+"mm";el.style.height=o.h+"mm";
+   };
+   handle.onpointerup=()=>{handle.onpointermove=null;saveSoon();renderObjects();inspect(o)}
+ }
+}
+function rotateObj(el,o){
+ const handle=el.querySelector(".rotate"); if(!handle)return;
+ handle.onpointerdown=e=>{
+   e.preventDefault();e.stopPropagation();
+   const r=$("paper").getBoundingClientRect(),cx=r.left+(o.x+o.w/2)*(r.width/210),cy=r.top+(o.y+o.h/2)*(r.width/210);
+   const start=Math.atan2(e.clientY-cy,e.clientX-cx)*180/Math.PI,base=o.rot||0;
+   handle.setPointerCapture?.(e.pointerId);
+   handle.onpointermove=v=>{
+     let a=base+(Math.atan2(v.clientY-cy,v.clientX-cx)*180/Math.PI-start);
+     if(v.shiftKey)a=Math.round(a/15)*15;
+     o.rot=Math.round(a*10)/10;el.style.transform=`rotate(${o.rot}deg)`;
+   };
+   handle.onpointerup=()=>{handle.onpointermove=null;saveSoon();renderObjects();inspect(o)}
+ }
+}
+
 function inspect(o){document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("on"));document.querySelector('[data-tab="inspect"]').classList.add("on");document.querySelectorAll(".panel").forEach(x=>x.classList.remove("on"));$("tab-inspect").classList.add("on");
- $("inspector").innerHTML=`${o.type==="text"?`<label>Texte<textarea id="ihtml" rows="5">${esc((o.html||"").replace(/<[^>]*>/g,""))}</textarea></label>`:""}<label>Largeur mm<input id="iw" type="number" step=".5" value="${o.w}"></label><label>Hauteur mm<input id="ih" type="number" step=".5" value="${o.h}"></label><label>Rotation<input id="ir" type="number" value="${o.rot||0}"></label><label>Opacité<input id="io" type="number" min="0" max="1" step=".05" value="${o.opacity??1}"></label><div class="bar"><button id="ifront">AVANT</button><button id="iback">ARRIÈRE</button><button id="idup">DUPLIQUER</button><button id="idel" class="danger">🗑 SUPPRIMER DE LA PAGE</button></div>`;
- if($("ihtml"))$("ihtml").oninput=()=>{o.html=esc($("ihtml").value).replace(/\n/g,"<br>");saveSoon();renderObjects()};["iw","ih","ir","io"].forEach(id=>$(id).onchange=()=>{o.w=+$("iw").value;o.h=+$("ih").value;o.rot=+$("ir").value;o.opacity=+$("io").value;saveSoon();renderObjects()});$("ifront").onclick=()=>{o.z=(o.z||1)+1;saveSoon();renderObjects()};$("iback").onclick=()=>{o.z=Math.max(1,(o.z||1)-1);saveSoon();renderObjects()};$("idup").onclick=()=>{const n=clone(o);n.id=uid("obj");n.x+=4;n.y+=4;page().objects.push(n);saveSoon();renderObjects()};$("idel").onclick=()=>{page().objects=page().objects.filter(x=>x.id!==o.id);selectedId=null;saveSoon();renderObjects();$("inspector").textContent="Sélectionnez un objet sur la page."}}
+ $("inspector").innerHTML=`${o.type==="text"?`<label>Texte<textarea id="ihtml" rows="5">${esc((o.html||"").replace(/<[^>]*>/g,""))}</textarea></label>`:""}<label>Largeur mm<input id="iw" type="number" step=".5" value="${o.w}"></label><label>Hauteur mm<input id="ih" type="number" step=".5" value="${o.h}"></label><label>Rotation °<input id="ir" type="number" step="1" value="${o.rot||0}"></label><div class="bar"><button id="rotL">↺ -90°</button><button id="rotR">↻ +90°</button><button id="rot0">0°</button></div><label>Opacité<input id="io" type="number" min="0" max="1" step=".05" value="${o.opacity??1}"></label><div class="bar"><button id="ifront">AVANT</button><button id="iback">ARRIÈRE</button><button id="idup">DUPLIQUER</button><button id="idel" class="danger">🗑 SUPPRIMER DE LA PAGE</button></div>`;
+ if($("ihtml"))$("ihtml").oninput=()=>{o.html=esc($("ihtml").value).replace(/\n/g,"<br>");saveSoon();renderObjects()};["iw","ih","ir","io"].forEach(id=>$(id).onchange=()=>{o.w=+$("iw").value;o.h=+$("ih").value;o.rot=+$("ir").value;o.opacity=+$("io").value;saveSoon();renderObjects()});$("ifront").onclick=()=>{o.z=(o.z||1)+1;saveSoon();renderObjects()};$("iback").onclick=()=>{o.z=Math.max(1,(o.z||1)-1);saveSoon();renderObjects()};$("idup").onclick=()=>{const n=clone(o);n.id=uid("obj");n.x+=4;n.y+=4;page().objects.push(n);saveSoon();renderObjects()};$("idel").onclick=()=>{page().objects=page().objects.filter(x=>x.id!==o.id);selectedId=null;saveSoon();renderObjects();$("inspector").textContent="Sélectionnez un objet sur la page."};["rotL","rotR","rot0"].forEach(id=>$(id).onclick=()=>{o.rot=id==="rotL"?(o.rot||0)-90:id==="rotR"?(o.rot||0)+90:0;saveSoon();renderObjects();inspect(o)});}
 async function fileData(f){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(f)})}
 async function library(){
  const ks=(await keys(MEDIA)).filter(k=>String(k).startsWith("asset:")),vals=await Promise.all(ks.map(k=>get(MEDIA,k)));
@@ -413,17 +451,22 @@ function safePdfScale(requested){
 }
 async function capturePaperForPDF(requested){
  const q=safePdfScale(requested);
- const paper=$("paper");
- paper.classList.add("exporting");
+ const source=$("paper");
+ const clone=source.cloneNode(true);
+ clone.id="pdfPaperClone";
+ clone.classList.add("exporting");
+ clone.style.cssText+=";position:fixed;left:-10000px;top:0;width:210mm;height:297mm;transform:none;box-shadow:none;background:#fff;z-index:-1;";
+ clone.querySelectorAll(".resize,.rotate,.objDelete,.guide,.snapNote").forEach(x=>x.remove());
+ document.body.appendChild(clone);
  try{
-   await waitFrame();
-   return await html2canvas(paper,{
-     scale:q,useCORS:true,backgroundColor:"#ffffff",logging:false,
-     imageTimeout:12000,
-     width:paper.scrollWidth,height:paper.scrollHeight,
-     windowWidth:paper.scrollWidth,windowHeight:paper.scrollHeight
+   // Safari is more stable when the export tree is isolated from the live editor.
+   await new Promise(r=>setTimeout(r,80));
+   const scale=Math.min(q,1.15); // A4 ~ 912x1291 CSS px on iPad; enough for a clean working PDF.
+   return await html2canvas(clone,{
+     scale,backgroundColor:"#ffffff",logging:false,useCORS:true,allowTaint:false,
+     imageTimeout:15000,removeContainer:true
    });
- }finally{paper.classList.remove("exporting")}
+ }finally{clone.remove()}
 }
 
 async function exportPiecePDF(){
@@ -446,7 +489,7 @@ async function exportPiecePDF(){
      const canvas=await capturePaperForPDF(q);
      pe.style.visibility=ev; ps.style.visibility=sv;
      if(i>0)pdf.addPage("a4","portrait");
-     pdf.addImage(canvas.toDataURL("image/jpeg",0.94),"JPEG",0,0,210,297,undefined,"FAST");
+     pdf.addImage(canvas.toDataURL("image/jpeg",0.88),"JPEG",0,0,210,297,undefined,"FAST");
      await addHiResOfficial(pdf,d);
    }
    const safe=(d.ref+"_"+d.title).replace(/[^\w\-]+/g,"_").replace(/^_+|_+$/g,"");
@@ -474,7 +517,7 @@ async function exportDossierPDF(){
     const c=await capturePaperForPDF(q);
     pe.style.visibility=ev;ps.style.visibility=sv;
     if(!first)pdf.addPage("a4","portrait");first=false;
-    pdf.addImage(c.toDataURL("image/jpeg",.94),"JPEG",0,0,210,297,undefined,"FAST");await addHiResOfficial(pdf,d);
+    pdf.addImage(c.toDataURL("image/jpeg",.88),"JPEG",0,0,210,297,undefined,"FAST");await addHiResOfficial(pdf,d);
    }
   }
   pdf.save((docs[0].dossier+"_DOSSIER_COMPLET").replace(/[^\w\-]+/g,"_")+".pdf");toast("Dossier PDF généré");
