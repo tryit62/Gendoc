@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e0c">
-<title>GenDoc V10 Beta 1.2 // Atelier complet</title>
+<title>GenDoc V10 Beta 1.4 // Atelier complet</title>
 <style>
 :root{--bg:#0b0e0c;--p:#121713;--p2:#182019;--line:#39443c;--txt:#edf1ed;--mut:#97a198;--paper:#fff;--ink:#151815;--hit:44px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:12px Courier New,monospace}
@@ -73,7 +73,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 </head>
 <body>
 <header>
- <div class="brand">GENDOC // V10 BETA 1.2</div>
+ <div class="brand">GENDOC // V10 BETA 1.4</div>
  <div id="crumb" class="status"></div><div class="spacer"></div>
  <div id="saveState" class="status">● PRÊT</div>
  <button id="homeB">PROJET</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
@@ -183,8 +183,8 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
  <div id="components"></div>
 </div>
 <div class="librarySection"><h4>CENTRE D’EXPORT // PDF HD</h4>
- <label>Qualité PDF<select id="pdfQuality"><option value="1.0" selected>IPAD — STABLE</option><option value="1.15">IPAD — NET</option><option value="1.35">HAUTE — documents légers</option></select></label>
- <div class="muted">A4 exact 210 × 297 mm. Emblème et sceau sont réinjectés depuis leurs originaux HD.</div>
+ <label>Qualité PDF<select id="pdfQuality"><option value="1.5">IPAD — NET</option><option value="2">HAUTE FIDÉLITÉ</option><option value="3" selected>TRÈS HAUTE DÉFINITION — impression</option></select></label>
+ <div class="muted">A4 exact 210 × 297 mm. En Très Haute Définition, la page est rendue jusqu’à ~2382 × 3369 px et intégrée sans perte en PNG. Emblème et sceau sont réinjectés depuis leurs originaux HD.</div>
  <div class="exportGrid">
   <button id="exportCurrentB">PIÈCE COURANTE</button>
   <button id="exportDossierB">DOSSIER // MANIFESTE</button>
@@ -279,6 +279,39 @@ function page(){const d=doc();return d?.pages[d.page||0]}
 function makeDoc(dossier,season){return {id:uid("doc"),season,dossier,ref:dossier+"/D01",title:"NOUVELLE PIÈCE",status:"BROUILLON",access:"OMBRE I",type:"DOCUMENT",classification:"INTERNE",diffusion:"INTERNE",author:"L’ORDRE DES CINQ OMBRES",
 date:"",time:"",seal:"",emblem:"ORDRE",division:"AUCUNE",docState:"ORIGINAL",period:"",links:"",format:"A4",side:"RECTO",qty:1,printMode:"COULEUR",paper:"",container:"",favorite:false,versions:[],metaVisible:{type:true,status:false,access:true,classification:true,diffusion:false,author:false,date:true,time:true},bodyHtml:"",pages:[{id:uid("page"),name:"PAGE 1",objects:[]}],page:0}}
 function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("on"));$(id).classList.add("on")}
+
+function duplicatePiece(id){
+ const src=P.docs[id]; if(!src)return;
+ const d=JSON.parse(JSON.stringify(src));
+ d.id=uid("doc");
+ d.title=(src.title||"PIÈCE")+" — COPIE";
+ d.status="BROUILLON";
+ d.favorite=false;
+ // Keep the category but choose the next free number; never renumber existing pieces.
+ const m=String(src.ref||"").match(/^(.*\/)([RMDPTOAX])(\d+)(?:-[A-Z]+)?$/);
+ if(m){
+   const did=src.dossier,cat=m[2],n=nextPieceNumber(did,cat);
+   d.ref=did+"/"+cat+String(n).padStart(2,"0");
+ }
+ P.docs[d.id]=d;P.active=d.id;saveSoon();projectTree();openDoc(d.id);toast("Pièce dupliquée");
+}
+function deletePiece(id){
+ const d=P.docs[id];if(!d)return;
+ const refs=[];
+ Object.values(P.docs).forEach(x=>{
+   if(x.id!==id && Array.isArray(x.links) && x.links.includes(d.ref))refs.push(x.ref);
+ });
+ let msg="Supprimer définitivement "+d.ref+" — "+d.title+" ?\\n\\nCette action supprime la pièce du projet. Les autres références ne seront PAS renumérotées.";
+ if(refs.length)msg+="\\n\\n⚠ Cette pièce est liée depuis : "+refs.join(", ");
+ if(!confirm(msg))return;
+ delete P.docs[id];
+ if(P.active===id)P.active=Object.keys(P.docs)[0]||null;
+ saveSoon();projectTree();
+ if(P.active&&P.docs[P.active])openDoc(P.active);
+ else{$("crumb").textContent="Aucune pièce ouverte";$("paper").style.visibility="hidden"}
+ toast("Pièce supprimée");
+}
+
 function projectTree(){$("startupInfo").textContent="GenDoc prêt // stockage "+(db?"IndexedDB":"local de secours");
  const root=$("projectTree");root.innerHTML="";
  Object.entries(P.seasons).sort((a,b)=>a[1].order-b[1].order).forEach(([sid,s])=>{
@@ -429,16 +462,26 @@ async function restore(f){try{const x=JSON.parse(await f.text());if(x.format!=="
 
 function waitFrame(){return new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))}
 function imgFormat(data){return String(data||"").startsWith("data:image/jpeg")||String(data||"").startsWith("data:image/jpg")?"JPEG":"PNG"}
+function imageRatio(data){
+ return new Promise(resolve=>{
+   const im=new Image();
+   im.onload=()=>resolve((im.naturalWidth&&im.naturalHeight)?im.naturalWidth/im.naturalHeight:1);
+   im.onerror=()=>resolve(1); im.src=data;
+ });
+}
+async function addImageContained(pdf,data,x,y,maxW,maxH){
+ const ratio=await imageRatio(data);
+ let w=maxW,h=w/ratio;
+ if(h>maxH){h=maxH;w=h*ratio}
+ const xx=x+(maxW-w)/2, yy=y+(maxH-h)/2;
+ pdf.addImage(data,imgFormat(data),xx,yy,w,h,undefined,"FAST");
+}
 async function addHiResOfficial(pdf,d){
  const emblem=d.emblem?await resolveOfficial("emblem",d.emblem):null;
- if(emblem?.data){
-   try{pdf.addImage(emblem.data,imgFormat(emblem.data),18,14,22,22,undefined,"FAST")}catch(e){}
- }
+ if(emblem?.data){try{await addImageContained(pdf,emblem.data,18,14,22,22)}catch(e){}}
  if(d.seal){
    const seal=await resolveOfficial("seal",d.seal);
-   if(seal?.data){
-     try{pdf.addImage(seal.data,imgFormat(seal.data),175,18,16,16,undefined,"FAST")}catch(e){}
-   }
+   if(seal?.data){try{await addImageContained(pdf,seal.data,175,18,16,16)}catch(e){}}
  }
 }
 
@@ -450,21 +493,20 @@ function safePdfScale(requested){
  return requested;
 }
 async function capturePaperForPDF(requested){
- const q=safePdfScale(requested);
- const source=$("paper");
+ const source=$("paper"), requestedScale=Math.max(1.5,parseFloat(requested)||3);
  const clone=source.cloneNode(true);
- clone.id="pdfPaperClone";
- clone.classList.add("exporting");
- clone.style.cssText+=";position:fixed;left:-10000px;top:0;width:210mm;height:297mm;transform:none;box-shadow:none;background:#fff;z-index:-1;";
+ clone.id="pdfPaperClone"; clone.classList.add("exporting");
+ // Exact ISO A4 aspect ratio. Keep layout in CSS pixels; resolution comes from html2canvas scale.
+ clone.style.cssText+=";position:fixed;left:-10000px;top:0;width:794px;height:1123px;min-width:794px;min-height:1123px;max-width:794px;max-height:1123px;transform:none;box-shadow:none;background:#fff;z-index:-1;overflow:hidden;";
  clone.querySelectorAll(".resize,.rotate,.objDelete,.guide,.snapNote").forEach(x=>x.remove());
+ clone.querySelectorAll("#pEmblem,#pSeal").forEach(x=>x.style.visibility="hidden");
  document.body.appendChild(clone);
  try{
-   // Safari is more stable when the export tree is isolated from the live editor.
-   await new Promise(r=>setTimeout(r,80));
-   const scale=Math.min(q,1.15); // A4 ~ 912x1291 CSS px on iPad; enough for a clean working PDF.
+   await new Promise(r=>setTimeout(r,150));
    return await html2canvas(clone,{
-     scale,backgroundColor:"#ffffff",logging:false,useCORS:true,allowTaint:false,
-     imageTimeout:15000,removeContainer:true
+     scale:Math.min(requestedScale,3),backgroundColor:"#ffffff",logging:false,useCORS:true,allowTaint:false,
+     imageTimeout:20000,removeContainer:true,width:794,height:1123,
+     windowWidth:794,windowHeight:1123,scrollX:0,scrollY:0
    });
  }finally{clone.remove()}
 }
@@ -489,7 +531,12 @@ async function exportPiecePDF(){
      const canvas=await capturePaperForPDF(q);
      pe.style.visibility=ev; ps.style.visibility=sv;
      if(i>0)pdf.addPage("a4","portrait");
-     pdf.addImage(canvas.toDataURL("image/jpeg",0.88),"JPEG",0,0,210,297,undefined,"FAST");
+     const pageData=q>=2?canvas.toDataURL("image/png"):canvas.toDataURL("image/jpeg",0.97);
+     const pageFmt=q>=2?"PNG":"JPEG";
+     const cr=canvas.width/canvas.height, ar=210/297;
+     let pw=210,ph=297,px=0,py=0;
+     if(cr>ar){ph=210/cr;py=(297-ph)/2}else if(cr<ar){pw=297*cr;px=(210-pw)/2}
+     pdf.addImage(pageData,pageFmt,px,py,pw,ph,undefined,"FAST");
      await addHiResOfficial(pdf,d);
    }
    const safe=(d.ref+"_"+d.title).replace(/[^\w\-]+/g,"_").replace(/^_+|_+$/g,"");
@@ -517,7 +564,7 @@ async function exportDossierPDF(){
     const c=await capturePaperForPDF(q);
     pe.style.visibility=ev;ps.style.visibility=sv;
     if(!first)pdf.addPage("a4","portrait");first=false;
-    pdf.addImage(c.toDataURL("image/jpeg",.88),"JPEG",0,0,210,297,undefined,"FAST");await addHiResOfficial(pdf,d);
+    const pageData=q>=2?c.toDataURL("image/png"):c.toDataURL("image/jpeg",.97),pageFmt=q>=2?"PNG":"JPEG",cr=c.width/c.height,ar=210/297;let pw=210,ph=297,px=0,py=0;if(cr>ar){ph=210/cr;py=(297-ph)/2}else if(cr<ar){pw=297*cr;px=(210-pw)/2}pdf.addImage(pageData,pageFmt,px,py,pw,ph,undefined,"FAST");await addHiResOfficial(pdf,d);
    }
   }
   pdf.save((docs[0].dossier+"_DOSSIER_COMPLET").replace(/[^\w\-]+/g,"_")+".pdf");toast("Dossier PDF généré");
