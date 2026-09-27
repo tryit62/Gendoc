@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e0c">
-<title>GenDoc V10 Stable 1.0 // Atelier complet</title>
+<title>GenDoc V10.1 // Atelier complet</title>
 <style>
 :root{--bg:#0b0e0c;--p:#121713;--p2:#182019;--line:#39443c;--txt:#edf1ed;--mut:#97a198;--paper:#fff;--ink:#151815;--hit:44px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:12px Courier New,monospace}
@@ -69,14 +69,22 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 .rotate{width:28px;height:28px;left:50%;top:-40px;transform:translateX(-50%);border-radius:50%;background:#fff;border:2px solid #111;box-shadow:0 1px 5px #0008}
 .rotate:after{content:"↻";position:absolute;inset:0;display:grid;place-items:center;color:#111;font:20px Arial}
 .resize:after{content:"↘";position:absolute;inset:0;display:grid;place-items:center;color:#111;font:16px Arial}
+
+.shapeCore{width:100%;height:100%;box-sizing:border-box;pointer-events:none}
+.obj[data-shape="rect"] .shapeCore{border:var(--sw,1px) var(--ss,solid) #111;background:var(--fill,transparent)}
+.obj[data-shape="roundrect"] .shapeCore{border:var(--sw,1px) var(--ss,solid) #111;background:var(--fill,transparent);border-radius:var(--rad,8px)}
+.obj[data-shape="ellipse"] .shapeCore{border:var(--sw,1px) var(--ss,solid) #111;background:var(--fill,transparent);border-radius:50%}
+.obj[data-shape="line"] .shapeCore,.obj[data-shape="separator"] .shapeCore{height:0;border-top:var(--sw,1px) var(--ss,solid) #111;position:absolute;top:50%;left:0;right:0}
+.obj[data-shape="arrow"] .shapeCore{height:0;border-top:var(--sw,2px) var(--ss,solid) #111;position:absolute;top:50%;left:0;right:0}
+.obj[data-shape="arrow"] .shapeCore:after{content:"";position:absolute;right:0;top:-5px;width:8px;height:8px;border-top:2px solid #111;border-right:2px solid #111;transform:rotate(45deg)}
 </style>
-<link rel="manifest" href="./manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="GenDoc"></head>
+<link rel="manifest" href="./manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="GenDoc"></head>
 <body>
 <header>
- <div class="brand">GENDOC // V10 STABLE 1.0</div>
+ <div class="brand">GENDOC // V10.1</div>
  <div id="crumb" class="status"></div><div class="spacer"></div>
  <div id="saveState" class="status">● PRÊT</div>
- <button id="homeB">PROJET</button><button id="versionB">V10.0.0</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
+ <button id="homeB">PROJET</button><button id="versionB">V10.1.0</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
 </header>
 
 <section id="home" class="screen on">
@@ -96,7 +104,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
   </aside>
 
   <section class="editor">
-   <div class="bar"><button id="menuB">☰</button><button id="previewB">PAGE</button><button id="pdfB">PDF</button><button id="preflightB">VÉRIFIER</button><button id="auditProjectB">AUDIT PROJET</button><button id="addTextObj">+ TEXTE LIBRE</button><button id="gridB">GRILLE</button></div>
+   <div class="bar"><button id="menuB">☰</button><button id="previewB">PAGE</button><button id="pdfB">PDF</button><button id="preflightB">VÉRIFIER</button><button id="auditProjectB">AUDIT PROJET</button><button id="addTextObj">+ TEXTE LIBRE</button><button id="shapeB">+ FORMES</button><button id="gridB">GRILLE</button></div>
    <div class="tabs"><button data-tab="doc" class="on">DOCUMENT</button><button data-tab="text">CONTENU</button><button data-tab="media">BIBLIOTHÈQUE</button><button data-tab="inspect">INSPECTEUR</button></div>
 
    <div id="tab-doc" class="panel on">
@@ -216,6 +224,19 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 </section>
 
 
+
+<div id="shapeModal" style="display:none;position:fixed;inset:0;background:#000b;z-index:6800;align-items:center;justify-content:center;padding:18px">
+ <div class="card" style="width:min(620px,96vw)">
+  <h2>FORMES</h2>
+  <div class="templateGrid">
+   <button data-shape="rect">▭ RECTANGLE</button><button data-shape="roundrect">▢ RECTANGLE ARRONDI</button>
+   <button data-shape="ellipse">◯ CERCLE / ELLIPSE</button><button data-shape="line">━ LIGNE</button>
+   <button data-shape="arrow">→ FLÈCHE</button><button data-shape="separator">─ SÉPARATEUR</button>
+  </div>
+  <div class="bar"><button id="closeShapeB">FERMER</button></div>
+ </div>
+</div>
+
 <div id="validationModal" style="display:none;position:fixed;inset:0;background:#000c;z-index:6000;align-items:center;justify-content:center;padding:18px">
  <div class="card" style="width:min(760px,97vw);max-height:92vh;overflow:auto">
   <h2>VALIDATION V10 // AVANT PWA</h2>
@@ -257,7 +278,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 <div id="updateModal" style="display:none;position:fixed;inset:0;background:#000c;z-index:7000;align-items:center;justify-content:center;padding:20px">
 <div class="card" style="width:min(620px,96vw)">
 <h2>GENDOC // MISE À JOUR</h2>
-<p><b>Version installée :</b> 10.0.0</p>
+<p><b>Version installée :</b> 10.1.0</p>
 <p class="muted">Le moteur V10 sépare les données du projet du code de l’application. Les futures mises à jour 10.0.x pourront donc remplacer l’interface sans effacer saisons, dossiers, pièces ou bibliothèque IndexedDB.</p>
 <p class="muted">Pour la PWA hébergée, le service worker vérifiera une nouvelle version au démarrage et l’activera après rechargement.</p>
 <div class="bar"><button id="closeUpdateB">FERMER</button></div>
@@ -389,7 +410,9 @@ async function render(){
 }
 function renderObjects(){
  const lay=$("objectLayer");lay.innerHTML="";(page()?.objects||[]).forEach(o=>{const e=document.createElement("div");e.className="obj"+(o.id===selectedId?" sel":"");e.dataset.id=o.id;e.style.cssText=`left:${o.x}mm;top:${o.y}mm;width:${o.w}mm;height:${o.h}mm;opacity:${o.opacity??1};transform:rotate(${o.rot||0}deg);z-index:${o.z||1}`;
- if(o.type==="image")e.innerHTML=`<img src="${o.src}" style="width:100%;height:100%;object-fit:contain;pointer-events:none">`;else e.innerHTML=`<div class="objtext" style="width:100%;height:100%;overflow:hidden">${o.html||""}</div>`;
+ if(o.type==="image")e.innerHTML=`<img src="${o.src}" style="width:100%;height:100%;object-fit:contain;pointer-events:none">`;
+ else if(o.type==="shape"){e.dataset.shape=o.shape||"rect";e.style.setProperty("--sw",(o.stroke||1)+"px");e.style.setProperty("--ss",o.strokeStyle||"solid");e.style.setProperty("--fill",o.fill||"transparent");e.style.setProperty("--rad",(o.radius||8)+"px");e.innerHTML='<div class="shapeCore"></div>';}
+ else e.innerHTML=`<div class="objtext" style="width:100%;height:100%;overflow:hidden">${o.html||""}</div>`;
  e.insertAdjacentHTML("beforeend",'<span class="resize"></span><span class="rotate"></span><button class="objDelete" type="button">✕</button>');
  e.querySelector(".objDelete").onclick=ev=>{ev.stopPropagation();page().objects=page().objects.filter(x=>x.id!==o.id);selectedId=null;saveSoon();renderObjects();$("inspector").textContent="Sélectionnez un objet sur la page.";toast("Objet supprimé de la page")};
  e.onclick=ev=>{ev.stopPropagation();selectedId=o.id;renderObjects();inspect(o)};lay.appendChild(e);drag(e,o);resizeObj(e,o);rotateObj(e,o)
@@ -437,8 +460,10 @@ function rotateObj(el,o){
 }
 
 function inspect(o){document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("on"));document.querySelector('[data-tab="inspect"]').classList.add("on");document.querySelectorAll(".panel").forEach(x=>x.classList.remove("on"));$("tab-inspect").classList.add("on");
- $("inspector").innerHTML=`${o.type==="text"?`<label>Texte<textarea id="ihtml" rows="5">${esc((o.html||"").replace(/<[^>]*>/g,""))}</textarea></label>`:""}<label>Largeur mm<input id="iw" type="number" step=".5" value="${o.w}"></label><label>Hauteur mm<input id="ih" type="number" step=".5" value="${o.h}"></label><label>Rotation °<input id="ir" type="number" step="1" value="${o.rot||0}"></label><div class="bar"><button id="rotL">↺ -90°</button><button id="rotR">↻ +90°</button><button id="rot0">0°</button></div><label>Opacité<input id="io" type="number" min="0" max="1" step=".05" value="${o.opacity??1}"></label><div class="bar"><button id="ifront">AVANT</button><button id="iback">ARRIÈRE</button><button id="idup">DUPLIQUER</button><button id="idel" class="danger">🗑 SUPPRIMER DE LA PAGE</button></div>`;
- if($("ihtml"))$("ihtml").oninput=()=>{o.html=esc($("ihtml").value).replace(/\n/g,"<br>");saveSoon();renderObjects()};["iw","ih","ir","io"].forEach(id=>$(id).onchange=()=>{o.w=+$("iw").value;o.h=+$("ih").value;o.rot=+$("ir").value;o.opacity=+$("io").value;saveSoon();renderObjects()});$("ifront").onclick=()=>{o.z=(o.z||1)+1;saveSoon();renderObjects()};$("iback").onclick=()=>{o.z=Math.max(1,(o.z||1)-1);saveSoon();renderObjects()};$("idup").onclick=()=>{const n=clone(o);n.id=uid("obj");n.x+=4;n.y+=4;page().objects.push(n);saveSoon();renderObjects()};$("idel").onclick=()=>{page().objects=page().objects.filter(x=>x.id!==o.id);selectedId=null;saveSoon();renderObjects();$("inspector").textContent="Sélectionnez un objet sur la page."};["rotL","rotR","rot0"].forEach(id=>$(id).onclick=()=>{o.rot=id==="rotL"?(o.rot||0)-90:id==="rotR"?(o.rot||0)+90:0;saveSoon();renderObjects();inspect(o)});}
+ $("inspector").innerHTML=`${o.type==="text"?`<label>Texte<textarea id="ihtml" rows="5">${esc((o.html||"").replace(/<[^>]*>/g,""))}</textarea></label>`:""}<label>Largeur mm<input id="iw" type="number" step=".5" value="${o.w}"></label><label>Hauteur mm<input id="ih" type="number" step=".5" value="${o.h}"></label><label>Rotation °<input id="ir" type="number" step="1" value="${o.rot||0}"></label><div class="bar"><button id="rotL">↺ -90°</button><button id="rotR">↻ +90°</button><button id="rot0">0°</button></div><label>Opacité<input id="io" type="number" min="0" max="1" step=".05" value="${o.opacity??1}"></label>${o.type==="shape"?`<label>Épaisseur du trait<input id="isw" type="number" min=".5" max="12" step=".5" value="${o.stroke||1}"></label><label>Style du trait<select id="iss"><option value="solid">CONTINU</option><option value="dashed">POINTILLÉ</option><option value="dotted">POINTS</option></select></label><label>Remplissage<select id="ifill"><option value="transparent">TRANSPARENT</option><option value="#fff">BLANC</option><option value="#111">NOIR</option><option value="#ddd">GRIS CLAIR</option></select></label>${o.shape==="roundrect"?`<label>Arrondi<input id="irad" type="number" min="0" max="40" value="${o.radius||8}"></label>`:""}`:""}<div class="bar"><button id="al">GAUCHE</button><button id="ac">CENTRE</button><button id="ar">DROITE</button></div><div class="bar"><button id="at">HAUT</button><button id="am">MILIEU</button><button id="ab">BAS</button></div><div class="bar"><button id="ifront">AVANT</button><button id="iback">ARRIÈRE</button><button id="idup">DUPLIQUER</button><button id="idel" class="danger">🗑 SUPPRIMER DE LA PAGE</button></div>`;
+ if($("ihtml"))$("ihtml").oninput=()=>{o.html=esc($("ihtml").value).replace(/\n/g,"<br>");saveSoon();renderObjects()};if($("isw")){$("iss").value=o.strokeStyle||"solid";$("ifill").value=o.fill||"transparent";$("isw").onchange=()=>{o.stroke=+$("isw").value;saveSoon();renderObjects()};$("iss").onchange=()=>{o.strokeStyle=$("iss").value;saveSoon();renderObjects()};$("ifill").onchange=()=>{o.fill=$("ifill").value;saveSoon();renderObjects()};if($("irad"))$("irad").onchange=()=>{o.radius=+$("irad").value;saveSoon();renderObjects()}}
+ ["al","ac","ar","at","am","ab"].forEach(id=>$(id).onclick=()=>alignSelected({al:"left",ac:"center",ar:"right",at:"top",am:"middle",ab:"bottom"}[id]));
+ ["iw","ih","ir","io"].forEach(id=>$(id).onchange=()=>{o.w=+$("iw").value;o.h=+$("ih").value;o.rot=+$("ir").value;o.opacity=+$("io").value;saveSoon();renderObjects()});$("ifront").onclick=()=>{o.z=(o.z||1)+1;saveSoon();renderObjects()};$("iback").onclick=()=>{o.z=Math.max(1,(o.z||1)-1);saveSoon();renderObjects()};$("idup").onclick=()=>{const n=clone(o);n.id=uid("obj");n.x+=4;n.y+=4;page().objects.push(n);saveSoon();renderObjects()};$("idel").onclick=()=>{page().objects=page().objects.filter(x=>x.id!==o.id);selectedId=null;saveSoon();renderObjects();$("inspector").textContent="Sélectionnez un objet sur la page."};["rotL","rotR","rot0"].forEach(id=>$(id).onclick=()=>{o.rot=id==="rotL"?(o.rot||0)-90:id==="rotR"?(o.rot||0)+90:0;saveSoon();renderObjects();inspect(o)});}
 async function fileData(f){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(f)})}
 async function library(){
  const ks=(await keys(MEDIA)).filter(k=>String(k).startsWith("asset:")),vals=await Promise.all(ks.map(k=>get(MEDIA,k)));
@@ -656,6 +681,20 @@ function manifest(scope){
 
 
 
+
+function addShape(kind){
+ const p=page();if(!p)return;
+ const thin=kind==="line"||kind==="separator"||kind==="arrow";
+ const o={id:uid("obj"),type:"shape",shape:kind,x:55,y:95,w:thin?80:45,h:thin?8:30,rot:0,opacity:1,z:1,stroke:kind==="arrow"?2:1,strokeStyle:"solid",fill:"transparent",radius:8};
+ p.objects.push(o);selectedId=o.id;saveSoon();renderObjects();inspect(o);$("shapeModal").style.display="none";toast("Forme ajoutée");
+}
+function alignSelected(mode){
+ const o=(page()?.objects||[]).find(x=>x.id===selectedId);if(!o)return;
+ if(mode==="left")o.x=10;if(mode==="center")o.x=(210-o.w)/2;if(mode==="right")o.x=200-o.w;
+ if(mode==="top")o.y=10;if(mode==="middle")o.y=(297-o.h)/2;if(mode==="bottom")o.y=287-o.h;
+ saveSoon();renderObjects();inspect(o);
+}
+
 function addTextObject(){
  const p=page(); if(!p)return;
  const o={id:uid("obj"),type:"text",html:"DOUBLE-TOUCHEZ POUR MODIFIER",x:35,y:90,w:70,h:18,rot:0,opacity:1,z:2};
@@ -790,7 +829,7 @@ function wire(){
  $("addPage").onclick=()=>{doc().pages.push({id:uid("page"),name:"PAGE "+(doc().pages.length+1),objects:[]});doc().page=doc().pages.length-1;saveSoon();renderPages();render()};
  $("dupPage").onclick=()=>{const p=clone(page());p.id=uid("page");p.name="PAGE "+(doc().pages.length+1);p.objects.forEach(o=>o.id=uid("obj"));doc().pages.splice(doc().page+1,0,p);doc().page++;saveSoon();renderPages();render()};
  $("delPage").onclick=()=>{if(doc().pages.length===1)return alert("Une pièce doit conserver au moins une page.");if(confirm("Supprimer cette page ?")){doc().pages.splice(doc().page,1);doc().page=Math.max(0,doc().page-1);saveSoon();renderPages();render()}};
- $("homeB").onclick=()=>{projectTree();show("home")};$("menuB").onclick=()=>$("side").classList.toggle("open");$("mobileClose").onclick=()=>$("side").classList.remove("open");$("previewB").onclick=()=>document.querySelector(".canvas").scrollIntoView({behavior:"smooth"});$("preflightB").onclick=preflight;$("auditProjectB").onclick=auditProject;$("pdfB").onclick=exportPDF;$("addTextObj").onclick=addTextObject;$("gridB").onclick=toggleGrid;document.querySelectorAll(".tpl").forEach(b=>b.onclick=()=>applyTemplate(b.dataset.tpl));
+ $("homeB").onclick=()=>{projectTree();show("home")};$("menuB").onclick=()=>$("side").classList.toggle("open");$("mobileClose").onclick=()=>$("side").classList.remove("open");$("previewB").onclick=()=>document.querySelector(".canvas").scrollIntoView({behavior:"smooth"});$("preflightB").onclick=preflight;$("auditProjectB").onclick=auditProject;$("pdfB").onclick=exportPDF;$("addTextObj").onclick=addTextObject;$("shapeB").onclick=()=>{$("shapeModal").style.display="flex"};$("closeShapeB").onclick=()=>{$("shapeModal").style.display="none"};document.querySelectorAll("[data-shape]").forEach(b=>b.onclick=()=>addShape(b.dataset.shape));$("gridB").onclick=toggleGrid;document.querySelectorAll(".tpl").forEach(b=>b.onclick=()=>applyTemplate(b.dataset.tpl));
  $("versionB").onclick=()=>{$("updateModal").style.display="flex"};$("closeUpdateB").onclick=()=>{$("updateModal").style.display="none"};
  $("testB").onclick=()=>{$("validationModal").style.display="flex";runValidationSuite()};
  $("runValidationB").onclick=runValidationSuite;
@@ -835,8 +874,4 @@ function wire(){
   }
 })();
 </script>
-<script>
-if("serviceWorker" in navigator && location.protocol.startsWith("http")){
- window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.error));
-}
-</script></body></html>
+<script>if("serviceWorker" in navigator&&location.protocol.startsWith("http"))window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.error));</script></body></html>
