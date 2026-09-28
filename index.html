@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e0c">
-<title>GenDoc V10.1.4 // Atelier complet</title>
+<title>GenDoc V10.1.5 // Atelier complet</title>
 <style>
 :root{--bg:#0b0e0c;--p:#121713;--p2:#182019;--line:#39443c;--txt:#edf1ed;--mut:#97a198;--paper:#fff;--ink:#151815;--hit:44px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:12px Courier New,monospace}
@@ -81,10 +81,10 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 <link rel="manifest" href="./manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="GenDoc"></head>
 <body>
 <header>
- <div class="brand">GENDOC // V10.1.4</div>
+ <div class="brand">GENDOC // V10.1.5</div>
  <div id="crumb" class="status"></div><div class="spacer"></div>
  <div id="saveState" class="status">● PRÊT</div>
- <button id="homeB">PROJET</button><button id="versionB">V10.1.4</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
+ <button id="homeB">PROJET</button><button id="versionB">V10.1.5</button><button id="testB">VALIDATION</button><button id="backupB">SAUVEGARDER</button>
 </header>
 
 <section id="home" class="screen on">
@@ -279,7 +279,7 @@ label{display:block;color:var(--mut);font-size:9px;margin:6px 0}label input,labe
 <div id="updateModal" style="display:none;position:fixed;inset:0;background:#000c;z-index:7000;align-items:center;justify-content:center;padding:20px">
 <div class="card" style="width:min(620px,96vw)">
 <h2>GENDOC // MISE À JOUR</h2>
-<p><b>Version installée :</b> 10.1.4</p>
+<p><b>Version installée :</b> 10.1.5</p>
 <p class="muted">Le moteur V10 sépare les données du projet du code de l’application. Les futures mises à jour 10.0.x pourront donc remplacer l’interface sans effacer saisons, dossiers, pièces ou bibliothèque IndexedDB.</p>
 <p class="muted">Pour la PWA hébergée, le service worker vérifiera une nouvelle version au démarrage et l’activera après rechargement.</p>
 <div class="bar"><button id="closeUpdateB">FERMER</button></div>
@@ -297,7 +297,21 @@ const uid=p=>p+"_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function toast(t){$("toast").textContent=t;$("toast").classList.add("on");setTimeout(()=>$("toast").classList.remove("on"),1400)}
 function openDB(){return new Promise((ok,no)=>{const r=indexedDB.open(DBNAME,VER);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains(PROJECT))d.createObjectStore(PROJECT);if(!d.objectStoreNames.contains(MEDIA))d.createObjectStore(MEDIA)};r.onsuccess=()=>{db=r.result;ok()};r.onerror=no})}
-function put(store,key,val){if(!db){try{localStorage.setItem("gd10_"+store+"_"+key,JSON.stringify(val));return Promise.resolve()}catch(e){return Promise.resolve()}}return new Promise(ok=>{try{const t=db.transaction(store,"readwrite");t.objectStore(store).put(val,key);t.oncomplete=ok;t.onerror=()=>ok()}catch(e){ok()}})}
+function put(store,key,val){
+ if(!db){
+  try{localStorage.setItem("gd10_"+store+"_"+key,JSON.stringify(val));return Promise.resolve(true)}
+  catch(e){return Promise.reject(e)}
+ }
+ return new Promise((ok,no)=>{
+  try{
+   const t=db.transaction(store,"readwrite");
+   t.objectStore(store).put(val,key);
+   t.oncomplete=()=>ok(true);
+   t.onerror=()=>no(t.error||new Error("Échec écriture IndexedDB"));
+   t.onabort=()=>no(t.error||new Error("Écriture IndexedDB annulée"));
+  }catch(e){no(e)}
+ })
+}
 function get(store,key){if(!db){try{return Promise.resolve(JSON.parse(localStorage.getItem("gd10_"+store+"_"+key)||"null"))}catch(e){return Promise.resolve(null)}}return new Promise(ok=>{try{const r=db.transaction(store).objectStore(store).get(key);r.onsuccess=()=>ok(r.result);r.onerror=()=>ok(null)}catch(e){ok(null)}})}
 function keys(store){if(!db){try{return Promise.resolve(Object.keys(localStorage).filter(k=>k.startsWith("gd10_"+store+"_")).map(k=>k.slice(("gd10_"+store+"_").length)))}catch(e){return Promise.resolve([])}}return new Promise(ok=>{try{const r=db.transaction(store).objectStore(store).getAllKeys();r.onsuccess=()=>ok(r.result||[]);r.onerror=()=>ok([])}catch(e){ok([])}})}
 function del(store,key){if(!db){try{localStorage.removeItem("gd10_"+store+"_"+key)}catch(e){}return Promise.resolve()}return new Promise(ok=>{try{const t=db.transaction(store,"readwrite");t.objectStore(store).delete(key);t.oncomplete=ok;t.onerror=()=>ok()}catch(e){ok()}})}
@@ -567,7 +581,7 @@ async function deleteSelectedOfficial(){
 }
 
 function preflight(){const d=doc(),issues=[];if(!d.ref)issues.push("Référence absente");if(!d.title)issues.push("Titre absent");if(!d.access)issues.push("Accès absent");if(d.date&&!/^\d{2}\.\d{2}\.\d{4}$/.test(d.date))issues.push("Date hors format JJ.MM.AAAA");const refs={};Object.values(P.docs).forEach(x=>refs[x.ref]=(refs[x.ref]||0)+1);if(refs[d.ref]>1)issues.push("Référence dupliquée");if(!d.emblem)issues.push("Emblème non renseigné"); const badLinks=validateLinks(d);if(badLinks.length)issues.push("Pièces liées introuvables : "+badLinks.join(", ")); if((d.qty||1)<1)issues.push("Quantité impression invalide");(page()?.objects||[]).forEach(o=>{if(o.x<0||o.y<0||o.x+o.w>210||o.y+o.h>297)issues.push("Objet hors page : "+o.id)});$("check").innerHTML=issues.length?`<div class="card preflight-warn">${issues.map(x=>"⚠ "+esc(x)).join("<br>")}</div>`:'<div class="card preflight-ok">✓ CONTRÔLE DOCUMENTAIRE : OK</div>'}
-async function backup(){const media={};for(const k of await keys(MEDIA))media[k]=await get(MEDIA,k);const payload={format:"GENDOC-V10",appVersion:"10.1.4",project:P,media,exported:new Date().toISOString()};const a=document.createElement("a"),u=URL.createObjectURL(new Blob([JSON.stringify(payload)],{type:"application/json"}));a.href=u;a.download="Ordre_des_Cinq_Ombres_"+new Date().toISOString().slice(0,10)+".gendoc";a.click();setTimeout(()=>URL.revokeObjectURL(u),5000);toast("Sauvegarde complète créée")}
+async function backup(){const media={};for(const k of await keys(MEDIA))media[k]=await get(MEDIA,k);const payload={format:"GENDOC-V10",appVersion:"10.1.5",project:P,media,exported:new Date().toISOString()};const a=document.createElement("a"),u=URL.createObjectURL(new Blob([JSON.stringify(payload)],{type:"application/json"}));a.href=u;a.download="Ordre_des_Cinq_Ombres_"+new Date().toISOString().slice(0,10)+".gendoc";a.click();setTimeout(()=>URL.revokeObjectURL(u),5000);toast("Sauvegarde complète créée")}
 async function restore(f){try{const x=JSON.parse(await f.text());if(x.format!=="GENDOC-V10"||!x.project)throw 0;if(!confirm("Restaurer cette sauvegarde complète ?\n\nLe projet actuellement chargé sera remplacé par le contenu du fichier .gendoc."))return;P=x.project;if(x.media)for(const [k,v] of Object.entries(x.media))await put(MEDIA,k,v);await saveNow();projectTree();toast("Projet + PDF + bibliothèque restaurés")}catch(e){alert("Sauvegarde V10 invalide.")}}
 
 function waitFrame(){return new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))}
@@ -877,8 +891,34 @@ function wire(){
  $("fontF").onchange=e=>document.execCommand("fontName",false,e.target.value);$("sizeF").onchange=e=>{document.execCommand("fontSize",false,"7");$("bodyEditor").querySelectorAll('font[size="7"]').forEach(x=>{x.removeAttribute("size");x.style.fontSize=e.target.value+"px"})};
  $("refreshOfficialB").onclick=async()=>{await refreshOfficialMenus();await library();toast("Bibliothèque actualisée")};
  $("deleteOfficialB").onclick=deleteSelectedOfficial;
- $("emblemF").onchange=async e=>{const f=e.target.files[0];if(f){const name=$("emblemSelectF").value||"ORDRE";await put(MEDIA,"emblem:"+name,{name:f.name,data:await fileData(f)});await refreshOfficialMenus();render();toast("Emblème "+name+" enregistré")}};
- $("sealFile").onchange=async e=>{const f=e.target.files[0],name=$("sealF").value;if(f&&name){await put(MEDIA,"seal:"+name,{name:f.name,data:await fileData(f)});await refreshOfficialMenus();render();toast("Sceau HD enregistré")}};
+ $("emblemF").onchange=async e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const name=$("emblemSelectF").value||"ORDRE",key="emblem:"+name;
+  try{
+   const value={name:f.name,data:await fileData(f),savedAt:new Date().toISOString()};
+   await put(MEDIA,key,value);
+   const check=await get(MEDIA,key);
+   if(!check?.data)throw new Error("La relecture de l’emblème a échoué");
+   await refreshOfficialMenus();await render();await library();
+   toast("✓ Emblème "+name+" enregistré et vérifié");
+  }catch(err){console.error(err);alert("L’emblème n’a PAS été enregistré. GenDoc a détecté une erreur de stockage. Fais une sauvegarde .GENDOC avant toute autre manipulation.")}
+  finally{e.target.value=""}
+ };
+ $("sealFile").onchange=async e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const name=$("sealF").value;
+  if(!name){e.target.value="";return alert("Choisis d’abord le nom du sceau à enregistrer (ORDRE, ŒIL FENDU, etc.), puis importe son image.")}
+  const key="seal:"+name;
+  try{
+   const value={name:f.name,data:await fileData(f),savedAt:new Date().toISOString()};
+   await put(MEDIA,key,value);
+   const check=await get(MEDIA,key);
+   if(!check?.data)throw new Error("La relecture du sceau a échoué");
+   await refreshOfficialMenus();await render();await library();
+   toast("✓ Sceau "+name+" enregistré et vérifié");
+  }catch(err){console.error(err);alert("Le sceau n’a PAS été enregistré. GenDoc a détecté une erreur de stockage. Fais une sauvegarde .GENDOC avant toute autre manipulation.")}
+  finally{e.target.value=""}
+ };
  $("assetAdd").onclick=async()=>{const f=$("assetFile").files[0];if(!f)return;await put(MEDIA,"asset:"+uid("a"),{name:$("assetName").value||f.name,data:await fileData(f)});$("assetFile").value="";$("assetName").value="";library();refreshOfficialMenus()};
  $("addPage").onclick=()=>{doc().pages.push({id:uid("page"),name:"PAGE "+(doc().pages.length+1),objects:[]});doc().page=doc().pages.length-1;saveSoon();renderPages();render()};
  $("dupPage").onclick=()=>{const p=clone(page());p.id=uid("page");p.name="PAGE "+(doc().pages.length+1);p.objects.forEach(o=>o.id=uid("obj"));doc().pages.splice(doc().page+1,0,p);doc().page++;saveSoon();renderPages();render()};
@@ -914,7 +954,7 @@ function wire(){
 }
 (async()=>{
   // Wire the UI even if Safari blocks IndexedDB in a temporary/file preview.
-  try{await openDB()}catch(e){db=null}
+  try{await openDB();if(navigator.storage?.persist){try{await navigator.storage.persist()}catch(_){}}}catch(e){db=null}
   try{P=await get(PROJECT,"main")||fresh()}catch(e){P=fresh()}
   try{
     wire(); projectTree();
